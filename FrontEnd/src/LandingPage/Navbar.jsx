@@ -1,13 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingCart, MapPin } from "lucide-react";
-import { ThemeContext } from "../App";
+import { useTheme } from "../app/providers/ThemeProvider";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme === "dark";
   const location = useLocation();
 
