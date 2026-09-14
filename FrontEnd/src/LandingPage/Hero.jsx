@@ -10,13 +10,12 @@ const Hero = ({
   eyebrow = homeHero.eyebrow,
   titleLine = "Your local marketplace,",
   rotating = homeHero.rotating,
-  description = homeHero.description,
   stats = homeHero.stats,
   primaryTo = "/marketplace",
   primaryLabel = "Shop nearby",
   secondaryTo = "/register",
   secondaryLabel = "Sell on NearMart",
-  footer = "Serving Srinagar neighborhoods · kiranas, boutiques & pharmacies",
+  footer,
 }) => {
   const [wordIndex, setWordIndex] = useState(0);
   const dark = tone === "dark";
@@ -78,17 +77,6 @@ const Hero = ({
                 </AnimatePresence>
               </span>
             </h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.18 }}
-              className={`mx-auto mt-5 max-w-xl text-sm leading-relaxed sm:text-base lg:mx-0 ${
-                dark ? "text-white/80" : "text-[var(--color-text-muted)]"
-              }`}
-            >
-              {description}
-            </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 14 }}

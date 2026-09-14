@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Globe, Mail, MessageCircle, Share2 } from "lucide-react";
 import BrandLogo from "../components/common/BrandLogo";
 import { footerColumns } from "../config/navigation";
 import { APP_CONFIG } from "../config/appConfig";
+import { useToast } from "../components/common/Toast";
 
 const socials = [
   { label: "Share NearMart", href: "#", icon: Share2 },
@@ -12,6 +14,16 @@ const socials = [
 ];
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const { showToast } = useToast();
+
+  const handleSubscribe = (event) => {
+    event.preventDefault();
+    if (!email.trim()) return;
+    showToast("You are subscribed to NearMart updates.");
+    setEmail("");
+  };
+
   return (
     <footer className="on-green relative overflow-hidden bg-[var(--color-primary-dark)]">
       <div className="container-app relative pt-8 pb-6 lg:pt-10">
@@ -58,7 +70,23 @@ const Footer = () => {
           <p className="text-xs text-white/50">
             &copy; {new Date().getFullYear()} {APP_CONFIG.name}. All rights reserved.
           </p>
-          <p className="text-xs text-white/50">{APP_CONFIG.supportEmail}</p>
+          <form onSubmit={handleSubscribe} className="flex w-full overflow-hidden rounded-lg bg-white sm:w-auto">
+            <label htmlFor="footer-subscribe-email" className="sr-only">
+              Email address
+            </label>
+            <input
+              id="footer-subscribe-email"
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="Email"
+              className="min-h-9 flex-1 px-3 text-sm text-[var(--color-text)] outline-none sm:w-48"
+            />
+            <button type="submit" className="min-h-9 bg-[var(--color-primary)] px-4 text-xs font-semibold text-white hover:bg-[var(--color-green)]">
+              Subscribe
+            </button>
+          </form>
         </div>
       </div>
     </footer>

@@ -34,7 +34,6 @@ const About = () => {
         eyebrow={aboutHero.eyebrow}
         titleLine={aboutHero.titleLine}
         rotating={aboutHero.rotating}
-        description={aboutHero.description}
         stats={aboutHero.stats}
         primaryTo="/marketplace"
         primaryLabel="Start shopping"

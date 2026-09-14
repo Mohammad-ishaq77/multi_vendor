@@ -82,8 +82,6 @@ const Contact = () => {
     },
   ];
 
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-
   return (
     <MainLayout>
       <PageHero {...pageHeroes.contact} />
@@ -291,35 +289,6 @@ const Contact = () => {
               </div>
             </motion.div>
           </div>
-
-          {/* Newsletter Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-[#1B4332] rounded-2xl p-6 lg:p-8 flex flex-col lg:flex-row items-center justify-between gap-6"
-          >
-            <div>
-              <h3 className="text-lg lg:text-xl font-bold text-white mb-1">
-                Stay Updated with NearMart
-              </h3>
-              <p className="text-sm text-white/70">
-                Subscribe to our newsletter for the latest offers, updates and more.
-              </p>
-            </div>
-            <div className="flex w-full lg:w-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="flex-1 lg:w-72 px-5 py-3 rounded-l-xl text-sm text-[#0F172A] placeholder-gray-400 outline-none bg-white"
-              />
-              <button className="px-6 py-3 bg-white text-[#1B4332] text-sm font-semibold rounded-r-xl hover:bg-gray-100 transition-colors border-l border-gray-100">
-                Subscribe
-              </button>
-            </div>
-          </motion.div>
         </div>
       </main>
 

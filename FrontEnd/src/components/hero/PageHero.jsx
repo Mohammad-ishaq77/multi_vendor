@@ -173,7 +173,6 @@ const PageHero = ({
   eyebrow,
   title,
   highlight,
-  description,
   image,
   mosaic = [],
   stats,
@@ -211,7 +210,6 @@ const PageHero = ({
             >
               {title} {highlight && <span className="text-[var(--color-green-soft)]">{highlight}</span>}
             </motion.h1>
-            {description && <p className="mx-auto mt-3 max-w-xl text-sm text-white/80">{description}</p>}
           </div>
           <Actions
             primaryTo={primaryTo}
@@ -239,16 +237,6 @@ const PageHero = ({
             <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-4">
               <TitleBlock title={title} highlight={highlight} variant="split" />
             </motion.div>
-            {description && (
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.16 }}
-                className="mt-5 max-w-xl text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base"
-              >
-                {description}
-              </motion.p>
-            )}
             <Actions
               primaryTo={primaryTo}
               primaryLabel={primaryLabel}
@@ -295,7 +283,6 @@ const PageHero = ({
             <div className="mt-3">
               <TitleBlock title={title} highlight={highlight} variant="mosaic" />
             </div>
-            {description && <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">{description}</p>}
             <Actions
               primaryTo={primaryTo}
               primaryLabel={primaryLabel}
@@ -399,17 +386,6 @@ const PageHero = ({
               </>
             )}
           </h1>
-
-          {description && (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12 }}
-              className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-white/88 sm:text-[15px]"
-            >
-              {description}
-            </motion.p>
-          )}
 
           {searchPlaceholder && <OverlaySearch placeholder={searchPlaceholder} />}
 
