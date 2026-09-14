@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { logoutAndRedirect } from "../../../services/authService";
 import {
   Search,
   MapPin,
@@ -198,7 +199,7 @@ const CustomerTopbar = ({ cartCount, onMenuToggle, isMenuOpen = false }) => {
           >
             <Bell className="w-[1.05rem] h-[1.05rem]" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4.5 h-4.5 min-w-[18px] bg-rose-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center ring-2 ring-white">
+              <span className="absolute -top-1 -right-1 w-4.5 h-4.5 min-w-[18px] bg-[var(--color-primary)] text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center ring-2 ring-white">
                 {unreadCount}
               </span>
             )}
@@ -262,7 +263,7 @@ const CustomerTopbar = ({ cartCount, onMenuToggle, isMenuOpen = false }) => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-rose-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center px-1 ring-2 ring-white"
+                className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-[var(--color-primary)] text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center px-1 ring-2 ring-white"
               >
                 {cartCount}
               </motion.span>
@@ -322,10 +323,7 @@ const CustomerTopbar = ({ cartCount, onMenuToggle, isMenuOpen = false }) => {
                 </div>
                 <div className="border-t border-gray-100 p-3">
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("nearmart_session");
-                      navigate("/login", { replace: true });
-                    }}
+                    onClick={() => logoutAndRedirect(navigate)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />

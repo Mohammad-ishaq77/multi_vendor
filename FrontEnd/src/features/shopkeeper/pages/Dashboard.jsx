@@ -32,9 +32,9 @@ const ShopkeeperDashboard = () => {
 
   const quickActions = [
     { label: "Add Product", icon: Plus, color: "from-emerald-500 to-teal-500", path: "/shopkeeper/products/add" },
-    { label: "Create Offer", icon: Tag, color: "from-rose-500 to-pink-500", path: "/shopkeeper/offers/create" },
-    { label: "View Orders", icon: ClipboardList, color: "from-blue-500 to-indigo-500", path: "/shopkeeper/orders" },
-    { label: "Earnings", icon: IndianRupee, color: "from-violet-500 to-purple-500", path: "/shopkeeper/earnings" },
+    { label: "Create Offer", icon: Tag, color: "from-emerald-600 to-emerald-500", path: "/shopkeeper/offers/create" },
+    { label: "View Orders", icon: ClipboardList, color: "from-teal-600 to-emerald-600", path: "/shopkeeper/orders" },
+    { label: "Earnings", icon: IndianRupee, color: "from-emerald-700 to-emerald-500", path: "/shopkeeper/earnings" },
   ];
 
   return (
@@ -48,7 +48,7 @@ const ShopkeeperDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-              Welcome back, {shop.name} 👋
+              Welcome back, {shop.name}
             </h1>
             <p className="text-emerald-100 text-sm mt-1">
               Here's what's happening with your shop today.
@@ -70,9 +70,9 @@ const ShopkeeperDashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard icon={IndianRupee} label="Today's Revenue" value={`₹${earnings.today.toLocaleString()}`} trend={12} trendUp color="emerald" />
-        <StatCard icon={ClipboardList} label="Total Orders" value={orders.length} trend={8} trendUp color="blue" />
-        <StatCard icon={Package} label="Products" value={totalProducts} trend={5} trendUp color="violet" />
-        <StatCard icon={Star} label="Rating" value={shop.rating} trend={2} trendUp color="amber" />
+        <StatCard icon={ClipboardList} label="Total Orders" value={orders.length} trend={8} trendUp color="emerald" />
+        <StatCard icon={Package} label="Products" value={totalProducts} trend={5} trendUp color="emerald" />
+        <StatCard icon={Star} label="Rating" value={shop.rating} trend={2} trendUp color="emerald" />
       </div>
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">

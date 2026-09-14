@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   MapPin,
   Mail,
   Phone,
@@ -15,8 +13,9 @@ import {
   Handshake,
   Shield,
 } from "lucide-react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import MainLayout from "../layouts/MainLayout";
+import PageHero from "../components/hero/PageHero";
+import { pageHeroes } from "../config/heroes";
 
 const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -86,26 +85,11 @@ const Contact = () => {
   const [newsletterEmail, setNewsletterEmail] = useState("");
 
   return (
-    <div className="relative bg-white min-h-screen">
-      <Navbar />
+    <MainLayout>
+      <PageHero {...pageHeroes.contact} />
 
-      <main className="pt-28 lg:pt-36 pb-12 px-6 lg:px-8">
+      <main className="py-10 lg:py-14 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Back Link */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-sm text-[#64748B] hover:text-[#1B4332] transition-colors mb-10"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Link>
-          </motion.div>
-
           {/* Main Grid: Contact Info + Form */}
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 mb-16">
             {/* Left Side */}
@@ -114,18 +98,14 @@ const Contact = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <span className="inline-block px-4 py-1.5 text-xs font-semibold tracking-wider text-[#1B4332] bg-[#1B4332]/10 rounded-full uppercase mb-6">
-                Get in Touch
-              </span>
+              <span className="badge-soft mb-5">Get in touch</span>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-[#0F172A] leading-[1.1] mb-4">
-                We're Here to<br />
-                <span className="text-[#1B4332]">Help You!</span>
-              </h1>
+              <h2 className="font-display text-3xl font-bold text-[var(--color-text)] leading-[1.15] mb-4">
+                Send a message
+              </h2>
 
-              <p className="text-base text-[#64748B] leading-relaxed mb-10 max-w-md">
-                Have a question, suggestion, or need assistance?<br />
-                Our team is ready to help you with anything you need.
+              <p className="text-base text-[var(--color-text-muted)] leading-relaxed mb-10 max-w-md">
+                Have a question, suggestion, or need assistance? Our Srinagar team is ready to help.
               </p>
 
               <div className="space-y-5">
@@ -157,7 +137,7 @@ const Contact = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="bg-white border border-gray-100 rounded-3xl p-8 lg:p-10 shadow-lg shadow-gray-100/50">
+              <div id="contact-form" className="scroll-mt-32 bg-white border border-gray-100 rounded-3xl p-8 lg:p-10 shadow-lg shadow-gray-100/50">
                 <h2 className="text-xl font-bold text-[#0F172A] mb-1">
                   Send Us a Message
                 </h2>
@@ -343,8 +323,7 @@ const Contact = () => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

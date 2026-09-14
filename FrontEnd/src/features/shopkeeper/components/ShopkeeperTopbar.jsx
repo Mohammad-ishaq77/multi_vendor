@@ -11,6 +11,7 @@ import {
   Store,
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
   const navigate = useNavigate();
@@ -184,10 +185,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
                 </div>
                 <div className="border-t border-gray-100 p-3">
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("nearmart_session");
-                      navigate("/login", { replace: true });
-                    }}
+                    onClick={() => logoutAndRedirect(navigate)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />

@@ -13,15 +13,14 @@ import {
   ArrowRight,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
-import CategoryCard from "../components/CategoryCard";
+import { categories as categoryData } from "../data/customerData";
 
-// Map category names to Lucide icons
 const iconMap = {
   Grocery: ShoppingBasket,
-  "Fruits & Vegetables": Salad,
+  "Fruits & Veggies": Salad,
   "Dairy & Bakery": Milk,
   Beverages: CupSoda,
-  Clothing: Shirt,
+  Fashion: Shirt,
   Electronics: Smartphone,
   Pharmacy: Pill,
   Beauty: Sparkles,
@@ -42,16 +41,10 @@ const heroVariants = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
 };
 
-const categories = [
-  { id: 1, name: "Grocery", icon: "🛒", count: 1240 },
-  { id: 2, name: "Fruits & Vegetables", icon: "🥦", count: 856 },
-  { id: 3, name: "Dairy & Bakery", icon: "🥛", count: 432 },
-  { id: 4, name: "Beverages", icon: "🥤", count: 678 },
-  { id: 5, name: "Clothing", icon: "👕", count: 2340 },
-  { id: 6, name: "Electronics", icon: "📱", count: 567 },
-  { id: 7, name: "Pharmacy", icon: "💊", count: 890 },
-  { id: 8, name: "Beauty", icon: "💄", count: 1120 },
-];
+const categories = categoryData.map((category) => ({
+  ...category,
+  count: category.count || 120,
+}));
 
 const Categories = () => {
   const navigate = useNavigate();

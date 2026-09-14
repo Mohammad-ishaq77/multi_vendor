@@ -43,7 +43,7 @@ const HERO_SLIDES = [
     cta: "Shop Offers",
     ctaPath: "/customer/products",
     accent: "from-[#1a5c3a] via-[#207a4e] to-[#145232]",
-    badgeColor: "bg-amber-400/20 border-amber-300/20 text-amber-100",
+    badgeColor: "bg-white/10 border-white/20 text-white",
     extraBadge: "Up to 30% OFF",
   },
   {
@@ -135,7 +135,7 @@ const HeroCarousel = ({ onNavigate }) => {
                   {slide.badge}
                 </span>
                 {slide.extraBadge && (
-                  <span className="inline-flex items-center rounded-full bg-amber-400/90 px-2.5 py-1 text-[10px] font-bold text-amber-950 sm:text-xs">
+                  <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-[var(--color-primary-dark)] sm:text-xs">
                     {slide.extraBadge}
                   </span>
                 )}
@@ -348,7 +348,7 @@ const CustomerDashboard = () => {
           {/* Welcome */}
           <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="mb-5 mt-5 sm:mb-6 sm:mt-6 md:mb-8 md:mt-8">
             <h1 className="text-[1.6rem] font-bold leading-tight tracking-tight text-[#14261f] sm:text-3xl lg:text-[2.25rem]">
-              {greeting} <span className="inline-block">👋</span>
+              {greeting}
             </h1>
             <p className="mt-1.5 text-sm text-gray-500 sm:mt-2 sm:text-base">
               Find what you need from trusted stores near you.

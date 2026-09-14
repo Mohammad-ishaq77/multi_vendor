@@ -1,57 +1,33 @@
 import { motion } from "framer-motion";
-import { Store, Truck, ShieldCheck, Tag } from "lucide-react";
+import { ShieldCheck, Store, Tag, Truck } from "lucide-react";
 
 const features = [
-  {
-    icon: Store,
-    title: "Local Shops",
-    desc: "Discover trusted local shops near you.",
-  },
-  {
-    icon: Truck,
-    title: "Fast Delivery",
-    desc: "Quick and reliable delivery right to your doorstep.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Secure Payments",
-    desc: "100% secure payments with multiple options.",
-  },
-  {
-    icon: Tag,
-    title: "Best Offers",
-    desc: "Exciting offers and discounts on your favorite products.",
-  },
+  { icon: Store, title: "Local shops", text: "Kiranas, boutiques and pharmacies you already know." },
+  { icon: Truck, title: "Fast delivery", text: "Same-day drops across Srinagar neighborhoods." },
+  { icon: ShieldCheck, title: "Secure pay", text: "Checkout once, with trusted payment options." },
+  { icon: Tag, title: "Fair prices", text: "Compare nearby sellers before you buy." },
 ];
 
 const Features = () => {
   return (
-    <section className="py-10 bg-white border-y border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-4"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
-                <feature.icon className="w-6 h-6 text-[#1B4332]" />
-              </div>
-              <div>
-                <h3 className="font-sans text-sm font-semibold text-[#0F172A] mb-1">
-                  {feature.title}
-                </h3>
-                <p className="font-sans text-xs text-[#64748B] leading-relaxed">
-                  {feature.desc}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+    <section className="border-y border-[var(--color-green-soft)] bg-white py-6 lg:py-8">
+      <div className="container-app grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {features.map((feature, index) => (
+          <motion.div
+            key={feature.title}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.05 }}
+            className="flex items-start gap-3 rounded-2xl bg-[var(--color-green-bg)] px-4 py-4"
+          >
+            <feature.icon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]" />
+            <div>
+              <h3 className="text-sm font-bold">{feature.title}</h3>
+              <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--color-text-muted)]">{feature.text}</p>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

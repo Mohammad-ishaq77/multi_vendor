@@ -25,6 +25,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const PAGE_TITLES = {
   "/admin/dashboard": "Dashboard",
@@ -374,7 +375,7 @@ const AdminTopbar = ({ isMenuOpen = false, onMenuToggle = () => {} }) => {
           >
             <Bell className="w-[1.05rem] h-[1.05rem]" />
             {unreadNotificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-rose-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center px-1 ring-2 ring-white">
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-[var(--color-primary)] text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center px-1 ring-2 ring-white">
                 {unreadNotificationCount}
               </span>
             )}
@@ -513,10 +514,7 @@ const AdminTopbar = ({ isMenuOpen = false, onMenuToggle = () => {} }) => {
                 </div>
                 <div className="border-t border-gray-100 p-3">
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("nearmart_session");
-                      navigate("/login", { replace: true });
-                    }}
+                    onClick={() => logoutAndRedirect(navigate)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />

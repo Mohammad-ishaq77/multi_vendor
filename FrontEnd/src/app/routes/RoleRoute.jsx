@@ -1,26 +1,22 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { getDashboardPath } from "../../config/roles";
 
-const roleRoutes = {
-  customer: "/customer/dashboard",
-  shopkeeper: "/shopkeeper/dashboard",
-  delivery: "/delivery/dashboard",
-  admin: "/admin/dashboard",
-};
-
-const RoleRoute = ({ children, allowedRole }) => {
+const RoleRoute = ({ children, allowedRoles, allowedRole }) => {
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem("nearmart_user") || "null");
+  const { isAuthenticated, user } = useAuth();
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRole && user.role !== allowedRole) {
-    const redirectPath = roleRoutes[user.role] || "/";
-    return <Navigate to={redirectPath} replace />;
+  const roles = allowedRoles || (allowedRole ? [allowedRole] : []);
+
+  if (roles.length > 0 && !roles.includes(user.role)) {
+    return <Navigate to={getDashboardPath(user.role)} replace />;
   }
 
-  return children;
+  return children || <Outlet />;
 };
 
 export default RoleRoute;

@@ -1,139 +1,219 @@
-import { motion } from "framer-motion";
-import { Search, ArrowRight, Play } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, MapPin, Sparkles, Store, Truck } from "lucide-react";
+import { APP_CONFIG } from "../config/appConfig";
+import { homeFloatCards, homeHero } from "../config/heroes";
 
-const Hero = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+const Hero = ({
+  tone = "light",
+  eyebrow = homeHero.eyebrow,
+  titleLine = "Your local marketplace,",
+  rotating = homeHero.rotating,
+  description = homeHero.description,
+  stats = homeHero.stats,
+  primaryTo = "/marketplace",
+  primaryLabel = "Shop nearby",
+  secondaryTo = "/register",
+  secondaryLabel = "Sell on NearMart",
+  footer = "Serving Srinagar neighborhoods · kiranas, boutiques & pharmacies",
+}) => {
+  const [wordIndex, setWordIndex] = useState(0);
+  const dark = tone === "dark";
 
-  // Staggered text animation
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWordIndex((current) => (current + 1) % rotating.length);
+    }, 2400);
+    return () => clearInterval(timer);
+  }, [rotating.length]);
 
   return (
-    <section className="relative pt-24 lg:pt-32 pb-16 lg:pb-20 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          
-          {/* TEXT CONTENT */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="text-center lg:text-left"
-          >
-            {/* Badge */}
-            <motion.span variants={item} className="inline-block">
-              <span className="px-4 py-1.5 text-[11px] font-bold tracking-widest text-[#1B4332] bg-[#1B4332]/10 rounded-full uppercase">
-                Your Local Stores, One Click Away
-              </span>
+    <section className={`relative overflow-hidden ${dark ? "on-green bg-[var(--color-primary-dark)]" : "bg-[var(--color-surface-tint)]"}`}>
+      {!dark && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <img
+            src={homeHero.image}
+            alt=""
+            className="hero-ken-burns h-full w-full object-cover opacity-[0.14]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-surface-tint)] via-[var(--color-surface-tint)]/92 to-white" />
+        </div>
+      )}
+
+      <div className="container-app relative">
+        <div className="grid items-start gap-10 pb-12 pt-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:pb-16 lg:pt-8">
+          <div className={`relative z-10 text-center lg:text-left ${dark ? "text-white" : ""}`}>
+            <motion.span
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={
+                dark
+                  ? "inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
+                  : "badge-soft"
+              }
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              {eyebrow}
             </motion.span>
 
-            {/* Title - Serif Font (Elegant) */}
-            <motion.h1
-              variants={item}
-              className="mt-5 mb-3 font-serif text-4xl sm:text-5xl lg:text-[3.5rem] font-bold text-[#0F172A] leading-[1.1]"
+            <h1
+              className={`mt-5 font-display text-3xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.35rem] ${
+                dark ? "text-white" : "text-[var(--color-text)]"
+              }`}
             >
-              Shop Local.
-            </motion.h1>
-            
-            <motion.h1
-              variants={item}
-              className="mb-5 font-serif text-4xl sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.1]"
-            >
-              <span className="text-[#1B4332]">Live Better.</span>
-            </motion.h1>
+              <span className="block">{titleLine}</span>
+              <span className="relative mt-1 block h-[1.15em] overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={rotating[wordIndex]}
+                    initial={{ y: "110%", opacity: 0 }}
+                    animate={{ y: "0%", opacity: 1 }}
+                    exit={{ y: "-110%", opacity: 0 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className={`absolute inset-x-0 top-0 ${dark ? "text-[var(--color-green-soft)]" : "text-[var(--color-primary)]"}`}
+                  >
+                    {rotating[wordIndex]}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </h1>
 
-            {/* Subtitle - Sans Font (Clean) */}
             <motion.p
-              variants={item}
-              className="font-sans text-base lg:text-lg text-[#64748B] leading-relaxed mb-8 max-w-md mx-auto lg:mx-0"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+              className={`mx-auto mt-5 max-w-xl text-sm leading-relaxed sm:text-base lg:mx-0 ${
+                dark ? "text-white/80" : "text-[var(--color-text-muted)]"
+              }`}
             >
-              NearMart connects you with trusted local shops near you. Explore products, place orders and get fast delivery at your doorstep.
+              {description}
             </motion.p>
 
-            {/* Search Bar */}
-            <motion.div variants={item} className="flex items-center max-w-md mx-auto lg:mx-0 mb-7 rounded-2xl border border-gray-200 bg-white shadow-sm focus-within:shadow-md focus-within:border-[#1B4332]/30 transition-all duration-300 overflow-hidden">
-              <div className="flex-1 flex items-center gap-3 px-5 py-3.5">
-                <Search className="w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search for products, shops..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 text-sm text-[#0F172A] placeholder-gray-400 outline-none bg-transparent"
-                />
-              </div>
-              <button className="px-6 py-3.5 bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#143728] transition-colors">
-                Search
-              </button>
-            </motion.div>
-
-            {/* CTAs */}
-            <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 px-7 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors w-full sm:w-auto justify-center"
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.26 }}
+              className="mt-7 flex flex-col items-center gap-3 sm:flex-row lg:justify-start"
+            >
+              <Link to={primaryTo} className={dark ? "btn-on-green w-full sm:w-auto" : "btn-primary w-full sm:w-auto"}>
+                {primaryLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to={secondaryTo}
+                className={
+                  dark
+                    ? "inline-flex min-h-11 w-full items-center justify-center rounded-[12px] border border-white/30 px-5 text-sm font-semibold text-white hover:bg-white/10 sm:w-auto"
+                    : "btn-secondary w-full sm:w-auto"
+                }
               >
-                Shop Now
-                <ArrowRight className="w-4 h-4" />
-              </motion.button>
+                {secondaryLabel}
+              </Link>
+            </motion.div>
 
-              <button className="flex items-center gap-2 px-7 py-3 text-sm font-medium text-[#0F172A] border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors w-full sm:w-auto justify-center">
-                <div className="w-7 h-7 rounded-full bg-[#1B4332]/10 flex items-center justify-center">
-                  <Play className="w-3 h-3 text-[#1B4332] fill-[#1B4332] ml-0.5" />
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.34 }}
+              className="mt-8 grid grid-cols-3 gap-2 sm:max-w-lg sm:gap-3 lg:max-w-none"
+            >
+              {stats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className={`rounded-2xl px-3 py-3 text-center sm:px-4 ${
+                    dark
+                      ? "border border-white/15 bg-white/10 backdrop-blur-sm"
+                      : "border border-[var(--color-green-soft)] bg-white/80 backdrop-blur-sm"
+                  }`}
+                >
+                  <p className={`font-display text-lg font-bold sm:text-xl ${dark ? "text-white" : "text-[var(--color-primary-dark)]"}`}>
+                    {stat.value}
+                  </p>
+                  <p className={`mt-0.5 text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] ${dark ? "text-white/70" : "text-[var(--color-text-muted)]"}`}>
+                    {stat.label}
+                  </p>
                 </div>
-                How it Works
-              </button>
+              ))}
             </motion.div>
-          </motion.div>
 
-          {/* IMAGE — First on mobile */}
+            {footer && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.45 }}
+                className={`mt-5 inline-flex items-center gap-2 text-xs font-medium ${dark ? "text-white/70" : "text-[var(--color-text-muted)]"}`}
+              >
+                <MapPin className={`h-3.5 w-3.5 ${dark ? "text-[var(--color-green-soft)]" : "text-[var(--color-primary)]"}`} />
+                {footer}
+              </motion.p>
+            )}
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, scale: 0.85, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative flex justify-center lg:justify-end"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 }}
+            className="relative mx-auto flex min-h-[420px] w-full max-w-[540px] items-center justify-center lg:max-w-none"
           >
-            {/* Soft glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-80 sm:h-80 bg-[#1B4332]/[0.06] rounded-full blur-3xl" />
+            <div className={`absolute h-64 w-64 rounded-full blur-3xl sm:h-80 sm:w-80 ${dark ? "bg-[var(--color-green)]/25" : "bg-[var(--color-green-light)]/20"}`} />
 
-            {/* Floating image */}
+            {homeFloatCards.map((card, index) => (
+              <motion.article
+                key={card.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + index * 0.12 }}
+                className={`hero-float absolute z-20 hidden w-[148px] overflow-hidden rounded-2xl border bg-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.45)] sm:block ${
+                  dark ? "border-white/40" : "border-white/70"
+                } ${
+                  index === 0
+                    ? "left-0 top-8"
+                    : index === 1
+                      ? "right-0 top-16"
+                      : "bottom-8 left-4"
+                }`}
+                style={{ animationDelay: `${index * 0.6}s` }}
+              >
+                <div className="h-20 overflow-hidden">
+                  <img src={card.image} alt={card.title} className="h-full w-full object-cover" />
+                </div>
+                <div className="px-3 py-2">
+                  <p className="text-[11px] font-bold text-[var(--color-text)]">{card.title}</p>
+                  <p className="text-[10px] text-[var(--color-text-muted)]">{card.meta}</p>
+                </div>
+              </motion.article>
+            ))}
+
+            <img
+              src={APP_CONFIG.heroImage}
+              alt="NearMart local marketplace"
+              className="relative z-10 h-auto w-full max-w-[280px] object-contain drop-shadow-2xl sm:max-w-[340px] lg:max-w-[400px]"
+            />
+
             <motion.div
-              animate={{ y: [0, -12, 0] }}
-              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              className="relative z-10 cursor-pointer"
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+              className="absolute bottom-6 right-2 z-20 hidden items-center gap-2 rounded-2xl border border-white/80 bg-white/95 px-3 py-2 shadow-lg sm:flex"
             >
-              <img
-                src="/images/loginBg.png"
-                alt="NearMart Illustration"
-                className="relative z-10 w-full max-w-[300px] sm:max-w-[400px] lg:max-w-[460px] h-auto object-contain drop-shadow-xl"
-              />
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                <Truck className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-[11px] font-bold text-[var(--color-text)]">Out for delivery</p>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Fresh Basket · 8 min</p>
+              </div>
             </motion.div>
 
-            {/* Live badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1, duration: 0.5 }}
-              className="absolute bottom-4 right-4 sm:right-8 lg:right-0 bg-white rounded-xl shadow-lg shadow-gray-100 px-4 py-2.5 flex items-center gap-2.5 border border-gray-50"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 }}
+              className="absolute left-8 top-1/2 z-20 hidden -translate-y-1/2 items-center gap-2 rounded-2xl border border-white/80 bg-white/95 px-3 py-2 shadow-lg md:flex"
             >
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-semibold text-[#0F172A]">Live in Srinagar</span>
+              <Store className="h-4 w-4 text-[var(--color-primary)]" />
+              <p className="text-[11px] font-bold text-[var(--color-text)]">50+ shops live</p>
             </motion.div>
           </motion.div>
         </div>

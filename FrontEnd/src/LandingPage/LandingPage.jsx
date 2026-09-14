@@ -1,26 +1,38 @@
-import Navbar from "./Navbar";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import MainLayout from "../layouts/MainLayout";
 import Hero from "./Hero";
 import Features from "./Features";
 import Categories from "./Categories";
 import FeaturedShops from "./FeaturedShops";
 import PopularProducts from "./PopularProducts";
 import HowItWorks from "./HowItWorks";
+import CTABanner from "./CTABanner";
 import Newsletter from "./Newsletter";
-import Footer from "./Footer";
 
 const LandingPage = () => {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) return;
+    const id = hash.replace("#", "");
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 80);
+    }
+  }, [hash]);
+
   return (
-    <div className="relative bg-white min-h-screen">
-      <Navbar />
+    <MainLayout>
       <Hero />
       <Features />
       <Categories />
       <FeaturedShops />
       <PopularProducts />
       <HowItWorks />
+      <CTABanner />
       <Newsletter />
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

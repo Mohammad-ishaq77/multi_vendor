@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Edit3, Trash2, Eye, EyeOff, Package } from "lucide-react";
+import CardImage from "../../../components/common/CardImage";
 
 const ProductCard = ({ product, index = 0, onEdit, onDelete, onToggleAvailability }) => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const ProductCard = ({ product, index = 0, onEdit, onDelete, onToggleAvailabilit
       {/* Image */}
       <div className="relative h-40 bg-gray-50 overflow-hidden">
         {product.image ? (
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          <CardImage src={product.image} alt={product.name} category={product.category} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <Package className="w-10 h-10 text-gray-300" />

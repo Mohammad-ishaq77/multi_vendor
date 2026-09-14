@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
+import { getDashboardPath } from "../../../config/roles";
+import AuthCloseButton from "../../../components/common/AuthCloseButton";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
@@ -23,23 +26,9 @@ import {
 
 const DUMMY_OTP = "123456";
 
-const getRedirectPath = (role) => {
-  switch (role) {
-    case "customer":
-      return "/customer/dashboard";
-    case "shopkeeper":
-      return "/shopkeeper/onboarding";
-    case "delivery":
-      return "/delivery/onboarding/guidelines";
-    case "admin":
-      return "/admin/dashboard";
-    default:
-      return "/";
-  }
-};
-
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [step, setStep] = useState("form");
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -82,8 +71,8 @@ const Register = () => {
       label: "Customer",
       desc: "Shop & get delivered",
       icon: UserCircle,
-      gradient: "from-violet-500 to-purple-500",
-      shadow: "shadow-violet-500/20",
+      gradient: "from-emerald-600 to-emerald-500",
+      shadow: "shadow-emerald-500/20",
     },
     {
       id: "shopkeeper",
@@ -98,16 +87,16 @@ const Register = () => {
       label: "Delivery Agent",
       desc: "Deliver & earn",
       icon: Bike,
-      gradient: "from-cyan-500 to-blue-500",
-      shadow: "shadow-cyan-500/20",
+      gradient: "from-emerald-500 to-teal-600",
+      shadow: "shadow-emerald-500/20",
     },
     {
       id: "admin",
       label: "Admin",
       desc: "Manage the platform",
       icon: Building2,
-      gradient: "from-amber-500 to-orange-500",
-      shadow: "shadow-amber-500/20",
+      gradient: "from-emerald-800 to-emerald-600",
+      shadow: "shadow-emerald-500/20",
     },
   ];
 
@@ -176,9 +165,20 @@ const Register = () => {
       setIsVerifying(false);
       if (otpValue === DUMMY_OTP) {
         setOtpSuccess(true);
+        const result = register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: selectedRole,
+        });
         setTimeout(() => {
-          const redirectPath = getRedirectPath(selectedRole);
-          navigate(redirectPath);
+          const fallback =
+            selectedRole === "shopkeeper"
+              ? "/shopkeeper/onboarding"
+              : selectedRole === "delivery"
+                ? "/delivery/onboarding/guidelines"
+                : getDashboardPath(selectedRole);
+          navigate(result.redirectTo || fallback, { replace: true });
         }, 1200);
       } else {
         setOtpError("Invalid OTP. Please try again.");
@@ -224,7 +224,7 @@ const Register = () => {
         <motion.div
           animate={{ x: [0, 20, -15, 0], y: [0, -20, 30, 0] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-cyan-400/[0.04] rounded-full blur-[80px]"
+          className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-emerald-400/[0.04] rounded-full blur-[80px]"
         />
       </div>
 
@@ -235,6 +235,7 @@ const Register = () => {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-[1100px] overflow-hidden rounded-[2rem] bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_32px_100px_-12px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.03)] lg:flex lg:min-h-[740px] relative z-10"
       >
+        <AuthCloseButton className="right-4 top-4 lg:right-5 lg:top-5" />
         {/* Left Visual Panel */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
@@ -339,7 +340,7 @@ const Register = () => {
         </motion.div>
 
         {/* Right Form Panel */}
-        <div className="flex w-full flex-col justify-center px-6 py-8 sm:px-10 lg:w-[58%] lg:px-12">
+        <div className="flex w-full flex-col justify-center px-6 pb-8 pt-14 sm:px-10 lg:w-[58%] lg:px-12 lg:pt-8">
           <motion.div
             variants={containerVariants}
             initial="hidden"

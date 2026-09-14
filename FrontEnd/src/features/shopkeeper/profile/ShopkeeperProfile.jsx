@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
@@ -100,7 +101,7 @@ const ShopkeeperProfile = () => {
               })}
               <div className="border-t border-gray-100 mt-1 pt-1">
                 <button
-                  onClick={() => { localStorage.removeItem("nearmart_session"); navigate("/login", { replace: true }); }}
+                  onClick={() => { logoutAndRedirect(navigate); }}
                   className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" /> Logout
@@ -198,7 +199,7 @@ const ShopkeeperProfile = () => {
                     </button>
                   );
                 })}
-                <button onClick={() => { localStorage.removeItem("nearmart_session"); navigate("/login", { replace: true }); }} className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors">
+                <button onClick={() => { logoutAndRedirect(navigate); }} className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors">
                   <LogOut className="w-4 h-4" /> Logout
                 </button>
               </div>

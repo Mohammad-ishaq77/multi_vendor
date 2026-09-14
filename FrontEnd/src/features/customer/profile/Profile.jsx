@@ -15,6 +15,7 @@ import {
   Package,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -143,10 +144,7 @@ const Profile = () => {
                 })}
                 <div className="border-t border-gray-100 mt-1 pt-1">
                   <button
-                    onClick={() => {
-                      localStorage.removeItem("nearmart_session");
-                      navigate("/login", { replace: true });
-                    }}
+                    onClick={() => logoutAndRedirect(navigate)}
                     className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />

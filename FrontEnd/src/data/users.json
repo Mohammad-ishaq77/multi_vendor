@@ -1,0 +1,26 @@
+[
+  {
+    "id": "user-admin-001",
+    "name": "NearMart Admin",
+    "email": "test@gmail.com",
+    "role": "admin"
+  },
+  {
+    "id": "user-shopkeeper-001",
+    "name": "NearMart Vendor",
+    "email": "test@gmail.com",
+    "role": "shopkeeper"
+  },
+  {
+    "id": "user-customer-001",
+    "name": "NearMart Customer",
+    "email": "test@gmail.com",
+    "role": "customer"
+  },
+  {
+    "id": "user-delivery-001",
+    "name": "NearMart Delivery",
+    "email": "test@gmail.com",
+    "role": "delivery"
+  }
+]

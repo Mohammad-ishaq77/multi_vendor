@@ -1,239 +1,231 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, MapPin } from "lucide-react";
-import { useTheme } from "../app/providers/ThemeProvider";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Home,
+  Info,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  Phone,
+  Search,
+  ShoppingCart,
+  Store,
+  User,
+  X,
+} from "lucide-react";
+import BrandLogo from "../components/common/BrandLogo";
+import { publicNav } from "../config/navigation";
+import { useAuth } from "../hooks/useAuth";
+import { useCart } from "../features/customer/context/CartContext";
+import { getDashboardPath } from "../config/roles";
+import { logoutAndRedirect } from "../services/authService";
+
+const NAV_ICONS = {
+  "/": Home,
+  "/categories": LayoutGrid,
+  "/marketplace": Store,
+  "/about": Info,
+  "/contact": Phone,
+};
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const [query, setQuery] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, dashboardPath } = useAuth();
+  const { cartCount } = useCart();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  const isHome = location.pathname === "/";
-
-  const scrollToSection = (id) => {
-    if (!isHome) return;
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const term = query.trim();
+    navigate(term ? `/marketplace?q=${encodeURIComponent(term)}` : "/marketplace");
   };
 
-  const navLinks = [
-    { label: "Home", to: "/", type: "link" },
-    { label: "Shops", to: "shops", type: "scroll" },
-    { label: "Categories", to: "categories", type: "scroll" },
-    { label: "About Us", to: "/about", type: "link" },
-    { label: "Contact", to: "/contact", type: "link" },
-  ];
+  const cartPath = isAuthenticated && user?.role === "customer" ? "/customer/cart" : "/login";
+  const accountPath = isAuthenticated ? dashboardPath || getDashboardPath(user?.role) : "/login";
 
-  const isActive = (item) => {
-    if (item.type === "link") return location.pathname === item.to;
-    return false;
+  const isNavActive = (to) => {
+    if (to === "/") return location.pathname === "/";
+    return location.pathname === to || location.pathname.startsWith(`${to}/`);
   };
-
-  const navbarTheme = isDarkMode
-    ? {
-        shell: "bg-[#0F172A]/90 text-slate-100 border-b border-slate-700/70 shadow-[0_8px_32px_rgba(15,23,42,0.35)]",
-        text: "text-slate-200",
-        muted: "text-slate-300",
-        chip: "bg-slate-800/80",
-        hover: "hover:bg-slate-800 hover:text-white",
-        active: "text-white bg-[#1B4332] shadow-md shadow-[#1B4332]/20",
-        button: "border-slate-600 text-slate-100 hover:bg-slate-800 hover:border-slate-500",
-        mobile: "bg-slate-900/95 border-t border-slate-700",
-        mobileItem: "text-slate-300 hover:text-white hover:bg-slate-800",
-        mobileActive: "text-white bg-[#1B4332]/20",
-        divider: "bg-slate-700",
-      }
-    : {
-        shell: "bg-white/60 text-[#0F172A] border-b border-transparent shadow-none",
-        text: "text-[#0F172A]",
-        muted: "text-[#64748B]",
-        chip: "bg-gray-100/60",
-        hover: "hover:bg-white/80 hover:text-[#0F172A]",
-        active: "text-white bg-[#1B4332] shadow-md shadow-[#1B4332]/20",
-        button: "border-gray-200 text-[#1B4332] hover:border-[#1B4332] hover:bg-[#1B4332]/5",
-        mobile: "bg-white/95 border-t border-gray-100",
-        mobileItem: "text-[#64748B] hover:text-[#0F172A] hover:bg-gray-50",
-        mobileActive: "text-[#1B4332] bg-[#1B4332]/10",
-        divider: "bg-gray-200",
-      };
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 backdrop-blur-md ${navbarTheme.shell} ${
-        scrolled ? "shadow-[0_8px_32px_rgba(0,0,0,0.06)]" : ""
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-18 lg:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 rounded-xl bg-[#1B4332] flex items-center justify-center shadow-lg shadow-[#1B4332]/20 group-hover:shadow-[#1B4332]/30 transition-all duration-300 group-hover:scale-105">
-              <MapPin className="w-5 h-5 text-white" strokeWidth={2.5} />
-              <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-            <div className="flex flex-col">
-              <span className={`text-xl font-bold tracking-tight leading-none ${navbarTheme.text}`}>
-                NearMart
-              </span>
-              <span className={`text-[10px] font-medium tracking-widest uppercase mt-0.5 ${navbarTheme.muted}`}>
-                Local Stores
-              </span>
-            </div>
+    <header className={`fixed inset-x-0 top-0 z-50 ${scrolled ? "shadow-[var(--shadow-card)]" : ""}`}>
+      <div className="hidden bg-[var(--color-primary-dark)] md:block">
+        <div className="container-app flex h-8 items-center justify-between gap-3 sm:h-9">
+          <Link to="/" className="flex min-w-0 shrink-0 flex-col leading-none">
+            <span className="text-[11px] font-bold tracking-tight text-white sm:text-xs">NearMart</span>
+            <span className="mt-px text-[8px] font-medium uppercase tracking-[0.14em] text-white/70">
+              Local Marketplace
+            </span>
           </Link>
-
-          {/* Desktop Nav */}
-          <div className={`hidden lg:flex items-center gap-1 rounded-full p-1 ${navbarTheme.chip}`}>
-            {navLinks.map((item) =>
-              item.type === "link" ? (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className={`relative px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300 ${
-                    isActive(item) ? navbarTheme.active : `${navbarTheme.muted} ${navbarTheme.hover}`
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <button
-                  key={item.label}
-                  onClick={() => scrollToSection(item.to)}
-                  className={`relative px-5 py-2.5 text-sm font-medium rounded-full transition-all duration-300 ${navbarTheme.muted} ${navbarTheme.hover}`}
-                >
-                  {item.label}
-                </button>
-              )
-            )}
-          </div>
-
-          {/* Right Side */}
-          <div className="hidden lg:flex items-center gap-4">
-            <Link
-              to="/cart"
-              className={`relative p-2.5 rounded-full transition-all duration-300 ${navbarTheme.muted} ${navbarTheme.hover}`}
-            >
-              <ShoppingCart className="w-5 h-5" strokeWidth={2} />
-              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#1B4332] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-                2
-              </span>
-            </Link>
-
-            <div className={`w-px h-6 ${navbarTheme.divider}`} />
-
-            <Link to="/login">
-              <button className={`px-5 py-2.5 text-sm font-semibold border rounded-full transition-all duration-300 ${navbarTheme.button}`}>
-                Login
-              </button>
-            </Link>
-            <Link to="/register">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-6 py-2.5 text-sm font-semibold text-white bg-[#1B4332] rounded-full shadow-lg shadow-[#1B4332]/25 hover:shadow-[#1B4332]/40 hover:bg-[#143728] transition-all duration-300"
+          <nav className="flex min-w-0 items-center justify-end gap-0.5 overflow-x-auto" aria-label="Primary">
+            {publicNav.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium text-white/85 sm:px-2 sm:text-[11px] ${
+                  isNavActive(item.to) ? "bg-white/15 text-white" : "hover:bg-white/10 hover:text-white"
+                }`}
               >
-                Register
-              </motion.button>
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className={`lg:hidden p-2.5 rounded-full transition-colors ${isDarkMode ? "text-slate-100 hover:bg-slate-800" : "text-[#0F172A] hover:bg-gray-100"}`}
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      <div className="border-b border-[var(--color-green-soft)] bg-white/95 backdrop-blur-xl">
+        <div className="container-app flex h-[60px] items-center gap-3 lg:gap-5">
+          <BrandLogo showText={false} size={36} />
+
+          <form onSubmit={handleSearch} className="relative hidden min-w-0 flex-1 md:block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products, shops and categories"
+              aria-label="Search marketplace"
+              className="h-10 w-full rounded-full border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-10 pr-4 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-green)] focus:bg-white focus:ring-4 focus:ring-[var(--color-green-light)]/15"
+            />
+          </form>
+
+          <div className="ml-auto hidden items-center gap-2 lg:flex">
+            <Link
+              to={cartPath}
+              aria-label="Open cart"
+              className="relative rounded-full p-2 text-[var(--color-text)] hover:bg-[var(--color-green-bg)]"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-[10px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
+            {isAuthenticated ? (
+              <>
+                <Link to={accountPath} className="btn-secondary !min-h-9 !rounded-full !px-4 !text-sm">
+                  <User className="h-4 w-4" />
+                  Account
+                </Link>
+                <button type="button" className="btn-primary !min-h-9 !rounded-full !px-4 !text-sm" onClick={() => logoutAndRedirect(navigate)}>
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn-secondary !min-h-9 !rounded-full !px-4 !text-sm">
+                  Login
+                </Link>
+                <Link to="/register" className="btn-primary !min-h-9 !rounded-full !px-4 !text-sm">
+                  Register
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="ml-auto flex items-center gap-1 lg:hidden">
+            <Link to={cartPath} aria-label="Open cart" className="relative rounded-full p-2 text-[var(--color-text)]">
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-primary)] text-[9px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <button
+              type="button"
+              className="rounded-full p-2 text-[var(--color-text)] hover:bg-[var(--color-green-bg)]"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((open) => !open)}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className={`lg:hidden backdrop-blur-xl overflow-hidden ${isDarkMode ? "bg-slate-900/95 border-t border-slate-700" : "bg-white/95 border-t border-gray-100"}`}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="border-b border-[var(--color-green-soft)] bg-white lg:hidden"
           >
-            <div className="px-6 py-6 space-y-1">
-              {navLinks.map((item, idx) =>
-                item.type === "link" ? (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Link
+            <div className="container-app space-y-3 py-3">
+              <form onSubmit={handleSearch} className="relative">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search marketplace"
+                  aria-label="Search marketplace"
+                  className="h-11 w-full rounded-xl border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-11 pr-4 text-sm outline-none"
+                />
+              </form>
+
+              <nav className="flex flex-col overflow-hidden rounded-2xl border border-[var(--color-green-soft)] bg-[var(--color-surface)]" aria-label="Mobile">
+                {publicNav.map((item) => {
+                  const Icon = NAV_ICONS[item.to] || Store;
+                  const active = isNavActive(item.to);
+
+                  return (
+                    <NavLink
+                      key={item.to}
                       to={item.to}
-                      onClick={() => setMobileOpen(false)}
-                      className={`block px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
-                        isActive(item)
-                          ? isDarkMode
-                            ? "text-white bg-[#1B4332]/20"
-                            : "text-[#1B4332] bg-[#1B4332]/10"
-                          : isDarkMode
-                            ? "text-slate-300 hover:text-white hover:bg-slate-800"
-                            : "text-[#64748B] hover:text-[#0F172A] hover:bg-gray-50"
+                      end={item.to === "/"}
+                      className={`flex items-center gap-3 border-b border-[var(--color-green-soft)] px-4 py-3.5 text-sm font-semibold last:border-b-0 ${
+                        active
+                          ? "bg-[var(--color-green-bg)] text-[var(--color-primary-dark)]"
+                          : "text-[var(--color-text)] hover:bg-white"
                       }`}
                     >
+                      <Icon className="h-4 w-4 shrink-0" />
                       {item.label}
-                    </Link>
-                  </motion.div>
+                    </NavLink>
+                  );
+                })}
+              </nav>
+
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                {isAuthenticated ? (
+                  <>
+                    <Link to={accountPath} className="btn-secondary">Account</Link>
+                    <button type="button" className="btn-primary" onClick={() => logoutAndRedirect(navigate)}>Logout</button>
+                  </>
                 ) : (
-                  <motion.button
-                    key={item.label}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    onClick={() => {
-                      scrollToSection(item.to);
-                      setMobileOpen(false);
-                    }}
-                    className={`w-full text-left block px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
-                      isDarkMode ? "text-slate-300 hover:text-white hover:bg-slate-800" : "text-[#64748B] hover:text-[#0F172A] hover:bg-gray-50"
-                    }`}
-                  >
-                    {item.label}
-                  </motion.button>
-                )
-              )}
-              <div className={`pt-4 mt-4 border-t flex flex-col gap-3 ${isDarkMode ? "border-slate-700" : "border-gray-100"}`}>
-                <Link to="/login" onClick={() => setMobileOpen(false)}>
-                  <button className={`w-full px-5 py-3 text-sm font-semibold border rounded-full transition-colors ${
-                    isDarkMode ? "border-slate-600 text-slate-100 hover:bg-slate-800" : "border-gray-200 text-[#1B4332] hover:bg-gray-50"
-                  }`}>
-                    Login
-                  </button>
-                </Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)}>
-                  <button className="w-full px-5 py-3 text-sm font-semibold text-white bg-[#1B4332] rounded-full">
-                    Register
-                  </button>
-                </Link>
+                  <>
+                    <Link to="/login" className="btn-secondary">Login</Link>
+                    <Link to="/register" className="btn-primary">Register</Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </header>
   );
 };
 

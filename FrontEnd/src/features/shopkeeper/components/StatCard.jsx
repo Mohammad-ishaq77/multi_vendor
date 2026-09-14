@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 const StatCard = ({ icon: Icon, label, value, trend, trendUp, color = "emerald" }) => {
   const colorMap = {
     emerald: { bg: "bg-emerald-50", text: "text-emerald-600", iconBg: "from-emerald-500 to-teal-500" },
-    blue: { bg: "bg-blue-50", text: "text-blue-600", iconBg: "from-blue-500 to-indigo-500" },
-    amber: { bg: "bg-amber-50", text: "text-amber-600", iconBg: "from-amber-500 to-orange-500" },
-    violet: { bg: "bg-violet-50", text: "text-violet-600", iconBg: "from-violet-500 to-purple-500" },
-    rose: { bg: "bg-rose-50", text: "text-rose-600", iconBg: "from-rose-500 to-pink-500" },
-    cyan: { bg: "bg-cyan-50", text: "text-cyan-600", iconBg: "from-cyan-500 to-blue-500" },
+    blue: { bg: "bg-emerald-50", text: "text-emerald-600", iconBg: "from-emerald-600 to-emerald-500" },
+    amber: { bg: "bg-[var(--color-green-bg)]", text: "text-[var(--color-primary)]", iconBg: "from-emerald-700 to-emerald-500" },
+    violet: { bg: "bg-teal-50", text: "text-teal-700", iconBg: "from-teal-600 to-emerald-500" },
+    rose: { bg: "bg-[var(--color-green-soft)]", text: "text-[var(--color-primary-dark)]", iconBg: "from-emerald-800 to-emerald-600" },
+    cyan: { bg: "bg-teal-50", text: "text-teal-600", iconBg: "from-teal-500 to-emerald-500" },
   };
 
   const c = colorMap[color] || colorMap.emerald;

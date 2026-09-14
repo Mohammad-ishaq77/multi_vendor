@@ -4,27 +4,27 @@ const accents = {
   emerald: {
     bg: "bg-emerald-50",
     text: "text-emerald-600",
-    gradient: "from-[#155c43] to-emerald-400",
+    gradient: "from-[#064E3B] to-[#10B981]",
   },
   blue: {
-    bg: "bg-blue-50",
-    text: "text-blue-600",
-    gradient: "from-blue-600 to-blue-400",
+    bg: "bg-emerald-50",
+    text: "text-emerald-600",
+    gradient: "from-[#047857] to-[#10B981]",
   },
   amber: {
-    bg: "bg-amber-50",
-    text: "text-amber-600",
-    gradient: "from-amber-600 to-amber-400",
+    bg: "bg-[var(--color-green-bg)]",
+    text: "text-[var(--color-primary)]",
+    gradient: "from-[#059669] to-[#10B981]",
   },
   violet: {
-    bg: "bg-violet-50",
-    text: "text-violet-600",
-    gradient: "from-violet-600 to-violet-400",
+    bg: "bg-teal-50",
+    text: "text-teal-700",
+    gradient: "from-[#047857] to-[#059669]",
   },
   rose: {
-    bg: "bg-rose-50",
-    text: "text-rose-600",
-    gradient: "from-rose-600 to-rose-400",
+    bg: "bg-[var(--color-green-soft)]",
+    text: "text-[var(--color-primary-dark)]",
+    gradient: "from-[#064E3B] to-[#047857]",
   },
 };
 

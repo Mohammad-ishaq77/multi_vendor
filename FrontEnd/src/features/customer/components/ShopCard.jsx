@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Star, Clock, MapPin, ArrowRight, Store } from "lucide-react";
+import CardImage from "../../../components/common/CardImage";
 
 const ShopCard = ({ shop, onClick }) => {
   return (
@@ -13,9 +14,10 @@ const ShopCard = ({ shop, onClick }) => {
       {/* Shop Image */}
       <div className="relative h-44 bg-gradient-to-br from-[#edf4f0] to-[#dff1e7] overflow-hidden">
         {shop.image ? (
-          <motion.img
+          <CardImage
             src={shop.image}
             alt={shop.name}
+            category={shop.category}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
@@ -33,7 +35,7 @@ const ShopCard = ({ shop, onClick }) => {
           animate={{ opacity: 1, scale: 1 }}
           className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm"
         >
-          <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+          <Star className="w-3.5 h-3.5 text-[var(--color-green-light)] fill-[var(--color-green-light)]" />
           <span className="text-xs font-bold text-[#14261f]">{shop.rating}</span>
           <span className="text-[0.65rem] text-gray-400">({shop.reviewCount || 120})</span>
         </motion.div>

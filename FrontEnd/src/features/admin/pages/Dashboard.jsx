@@ -25,23 +25,23 @@ import RevenueCard from "../components/RevenueCard";
 import PageTransition from "../components/PageTransition";
 
 const statusBadge = {
-  pending: "bg-amber-50 text-amber-700 border border-amber-200",
-  confirmed: "bg-blue-50 text-blue-700 border border-blue-200",
-  preparing: "bg-violet-50 text-violet-700 border border-violet-200",
-  ready_for_pickup: "bg-teal-50 text-teal-700 border border-teal-200",
-  out_for_delivery: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+  pending: "bg-[var(--color-green-bg)] text-[var(--color-primary-dark)] border border-[var(--color-green-soft)]",
+  confirmed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  preparing: "bg-teal-50 text-teal-700 border border-teal-200",
+  ready_for_pickup: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  out_for_delivery: "bg-[var(--color-green-bg)] text-[var(--color-primary)] border border-[var(--color-green-soft)]",
   delivered: "bg-green-50 text-green-700 border border-green-200",
   completed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  cancelled: "bg-rose-50 text-rose-700 border border-rose-200",
+  cancelled: "bg-slate-50 text-slate-600 border border-slate-200",
 };
 
 const quickActions = [
   { label: "Review Shop Approvals", icon: Store, route: "/admin/approvals/shopkeepers", color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" },
-  { label: "Review Delivery Partners", icon: Truck, route: "/admin/approvals/delivery-partners", color: "bg-blue-50 text-blue-600 hover:bg-blue-100" },
-  { label: "View Orders", icon: ShoppingCart, route: "/admin/orders", color: "bg-violet-50 text-violet-600 hover:bg-violet-100" },
-  { label: "Monitor Deliveries", icon: Navigation, route: "/admin/deliveries", color: "bg-amber-50 text-amber-600 hover:bg-amber-100" },
-  { label: "View Payments", icon: CreditCard, route: "/admin/payments", color: "bg-rose-50 text-rose-600 hover:bg-rose-100" },
-  { label: "View Reports", icon: FileText, route: "/admin/reports", color: "bg-indigo-50 text-indigo-600 hover:bg-indigo-100" },
+  { label: "Review Delivery Partners", icon: Truck, route: "/admin/approvals/delivery-partners", color: "bg-teal-50 text-teal-600 hover:bg-teal-100" },
+  { label: "View Orders", icon: ShoppingCart, route: "/admin/orders", color: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" },
+  { label: "Monitor Deliveries", icon: Navigation, route: "/admin/deliveries", color: "bg-[var(--color-green-bg)] text-[var(--color-primary)] hover:bg-[var(--color-green-soft)]" },
+  { label: "View Payments", icon: CreditCard, route: "/admin/payments", color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" },
+  { label: "View Reports", icon: FileText, route: "/admin/reports", color: "bg-teal-50 text-teal-700 hover:bg-teal-100" },
 ];
 
 function getGreeting() {
@@ -233,14 +233,7 @@ export default function AdminDashboard() {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
           <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "#14261f" }}>
-            {getGreeting()}, Admin{" "}
-            <motion.span
-              animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
-              transition={{ duration: 1.5, delay: 0.3, ease: "easeInOut" }}
-              className="inline-block origin-[70%_70%]"
-            >
-              👋
-            </motion.span>
+            {getGreeting()}, Admin
           </h1>
           <p className="mt-1.5 text-sm text-gray-500">
             Here's what's happening across your marketplace today.

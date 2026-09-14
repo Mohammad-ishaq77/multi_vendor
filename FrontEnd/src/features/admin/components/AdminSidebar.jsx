@@ -23,6 +23,7 @@ import {
   ShoppingBasket,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const navigationGroups = [
   {
@@ -45,33 +46,33 @@ const navigationGroups = [
         name: "Customers",
         icon: Users,
         path: "/admin/users/customers",
-        accent: "from-blue-500 to-indigo-500",
-        accentBg: "bg-blue-50",
-        accentText: "text-blue-600",
+        accent: "from-emerald-500 to-teal-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
       },
       {
         name: "Shopkeepers",
         icon: Store,
         path: "/admin/users/shopkeepers",
-        accent: "from-violet-500 to-purple-500",
-        accentBg: "bg-violet-50",
-        accentText: "text-violet-600",
+        accent: "from-emerald-600 to-emerald-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
       },
       {
         name: "Delivery Partners",
         icon: Truck,
         path: "/admin/users/delivery-partners",
-        accent: "from-amber-500 to-orange-500",
-        accentBg: "bg-amber-50",
-        accentText: "text-amber-600",
+        accent: "from-teal-600 to-emerald-500",
+        accentBg: "bg-teal-50",
+        accentText: "text-teal-700",
       },
       {
         name: "Shops",
         icon: Store,
         path: "/admin/shops",
-        accent: "from-cyan-500 to-blue-500",
-        accentBg: "bg-cyan-50",
-        accentText: "text-cyan-600",
+        accent: "from-emerald-700 to-emerald-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
       },
     ],
   },
@@ -91,18 +92,18 @@ const navigationGroups = [
         name: "Delivery Approvals",
         icon: ShieldCheck,
         path: "/admin/approvals/delivery-partners",
-        accent: "from-blue-500 to-cyan-500",
-        accentBg: "bg-blue-50",
-        accentText: "text-blue-600",
+        accent: "from-emerald-500 to-green-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
         badgeKey: "pendingDeliveryApprovalsCount",
       },
       {
         name: "Shop Type Requests",
         icon: Tag,
         path: "/admin/shops/requests",
-        accent: "from-amber-500 to-yellow-500",
-        accentBg: "bg-amber-50",
-        accentText: "text-amber-600",
+        accent: "from-emerald-400 to-emerald-600",
+        accentBg: "bg-teal-50",
+        accentText: "text-teal-700",
         badgeKey: "pendingShopTypeRequestsCount",
       },
     ],
@@ -114,17 +115,17 @@ const navigationGroups = [
         name: "Orders",
         icon: ShoppingBag,
         path: "/admin/orders",
-        accent: "from-rose-500 to-pink-500",
-        accentBg: "bg-rose-50",
-        accentText: "text-rose-600",
+        accent: "from-emerald-800 to-emerald-600",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-700",
       },
       {
         name: "Delivery Monitoring",
         icon: Map,
         path: "/admin/deliveries",
-        accent: "from-indigo-500 to-violet-500",
-        accentBg: "bg-indigo-50",
-        accentText: "text-indigo-600",
+        accent: "from-teal-500 to-emerald-500",
+        accentBg: "bg-teal-50",
+        accentText: "text-teal-700",
       },
     ],
   },
@@ -143,9 +144,9 @@ const navigationGroups = [
         name: "Offers",
         icon: Tag,
         path: "/admin/offers",
-        accent: "from-purple-500 to-fuchsia-500",
-        accentBg: "bg-purple-50",
-        accentText: "text-purple-600",
+        accent: "from-emerald-600 to-teal-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
       },
     ],
   },
@@ -172,17 +173,17 @@ const navigationGroups = [
         name: "User Reports",
         icon: Users,
         path: "/admin/reports/users",
-        accent: "from-blue-500 to-indigo-500",
-        accentBg: "bg-blue-50",
-        accentText: "text-blue-600",
+        accent: "from-emerald-500 to-teal-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
       },
       {
         name: "Delivery Reports",
         icon: Truck,
         path: "/admin/reports/delivery",
-        accent: "from-amber-500 to-orange-500",
-        accentBg: "bg-amber-50",
-        accentText: "text-amber-600",
+        accent: "from-teal-600 to-emerald-500",
+        accentBg: "bg-teal-50",
+        accentText: "text-teal-700",
       },
     ],
   },
@@ -193,9 +194,9 @@ const navigationGroups = [
         name: "Notifications",
         icon: Bell,
         path: "/admin/notifications",
-        accent: "from-rose-500 to-pink-500",
-        accentBg: "bg-rose-50",
-        accentText: "text-rose-600",
+        accent: "from-emerald-800 to-emerald-600",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-700",
         badgeKey: "unreadNotificationCount",
       },
       {
@@ -287,9 +288,9 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
           <motion.div
             whileHover={{ rotate: -8, scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="w-10 h-10 rounded-[14px] bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/25 flex-shrink-0 cursor-pointer"
+            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center"
           >
-            <ShoppingBasket className="w-5 h-5" strokeWidth={2.5} />
+            <img src="/logo/logo.png" alt="NearMart" className="h-10 w-10 object-contain" />
           </motion.div>
 
           <AnimatePresence>
@@ -450,7 +451,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                             <motion.span
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
-                              className="relative z-10 ml-auto bg-rose-500 text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
+                              className="relative z-10 ml-auto bg-emerald-500 text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
                             >
                               {badgeCount}
                             </motion.span>
@@ -472,12 +473,11 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
             whileHover={{ x: isCollapsed ? 0 : 3 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
-              localStorage.removeItem("nearmart_session");
-              navigate("/login", { replace: true });
+              logoutAndRedirect(navigate);
             }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
               isCollapsed ? "justify-center" : ""
-            } text-gray-400 hover:bg-rose-50/80 hover:text-rose-600`}
+            } text-gray-400 hover:bg-emerald-50/80 hover:text-emerald-700`}
           >
             <div className="flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center bg-gray-50 text-gray-400">
               <LogOut className="w-[18px] h-[18px]" />
@@ -520,12 +520,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
             >
               <div className="flex items-center justify-between border-b border-gray-100 p-5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-[11px] bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
-                    <ShoppingBasket
-                      className="w-[18px] h-[18px]"
-                      strokeWidth={2.5}
-                    />
-                  </div>
+                  <img src="/logo/logo.png" alt="NearMart" className="h-9 w-9 object-contain" />
                   <div>
                     <h1 className="text-lg font-bold tracking-tight text-gray-900">
                       Near<span className="text-emerald-600">Mart</span>
@@ -593,7 +588,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                             </div>
                             <span>{item.name}</span>
                             {badgeCount > 0 && (
-                              <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
+                              <span className="ml-auto rounded-full bg-emerald-500 px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
                                 {badgeCount}
                               </span>
                             )}
@@ -608,13 +603,10 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
               <div className="border-t border-gray-100 p-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    localStorage.removeItem("nearmart_session");
-                    navigate("/login", { replace: true });
-                  }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
+                  onClick={() => logoutAndRedirect(navigate)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-emerald-50 transition-colors"
                 >
-                  <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-rose-50 text-rose-500">
+                  <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-emerald-50 text-rose-500">
                     <LogOut className="w-[18px] h-[18px]" />
                   </div>
                   Logout

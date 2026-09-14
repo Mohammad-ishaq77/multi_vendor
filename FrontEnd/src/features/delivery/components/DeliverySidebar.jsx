@@ -16,15 +16,16 @@ import {
   CircleUser,
 } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/delivery/dashboard", accent: "from-emerald-500 to-teal-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
-  { name: "Available", icon: Package, path: "/delivery/available", accent: "from-blue-500 to-indigo-500", accentBg: "bg-blue-50", accentText: "text-blue-600", badge: true },
-  { name: "Active", icon: Truck, path: "/delivery/active", accent: "from-amber-500 to-orange-500", accentBg: "bg-amber-50", accentText: "text-amber-600" },
-  { name: "History", icon: ClipboardList, path: "/delivery/history", accent: "from-violet-500 to-purple-500", accentBg: "bg-violet-50", accentText: "text-violet-600" },
+  { name: "Available", icon: Package, path: "/delivery/available", accent: "from-emerald-600 to-emerald-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600", badge: true },
+  { name: "Active", icon: Truck, path: "/delivery/active", accent: "from-teal-600 to-emerald-500", accentBg: "bg-teal-50", accentText: "text-teal-700" },
+  { name: "History", icon: ClipboardList, path: "/delivery/history", accent: "from-emerald-700 to-emerald-500", accentBg: "bg-emerald-50", accentText: "text-emerald-700" },
   { name: "Earnings", icon: IndianRupee, path: "/delivery/earnings", accent: "from-teal-500 to-emerald-500", accentBg: "bg-teal-50", accentText: "text-teal-600" },
-  { name: "Notifications", icon: Bell, path: "/delivery/notifications", accent: "from-rose-500 to-pink-500", accentBg: "bg-rose-50", accentText: "text-rose-600" },
-  { name: "Profile", icon: CircleUser, path: "/delivery/profile", accent: "from-slate-500 to-gray-600", accentBg: "bg-slate-50", accentText: "text-slate-600" },
+  { name: "Notifications", icon: Bell, path: "/delivery/notifications", accent: "from-emerald-500 to-green-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
+  { name: "Profile", icon: CircleUser, path: "/delivery/profile", accent: "from-emerald-800 to-emerald-600", accentBg: "bg-emerald-50", accentText: "text-emerald-700" },
 ];
 
 const sidebarVariants = {
@@ -74,9 +75,9 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
           <motion.div
             whileHover={{ rotate: -8, scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="w-10 h-10 rounded-[14px] bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/25 flex-shrink-0 cursor-pointer"
+            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center"
           >
-            <ShoppingBasket className="w-5 h-5" strokeWidth={2.5} />
+            <img src="/logo/logo.png" alt="NearMart" className="h-10 w-10 object-contain" />
           </motion.div>
 
           <AnimatePresence>
@@ -271,8 +272,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
             whileHover={{ x: isCollapsed ? 0 : 3 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
-              localStorage.removeItem("nearmart_session");
-              navigate("/login", { replace: true });
+              logoutAndRedirect(navigate);
             }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
               isCollapsed ? "justify-center" : ""
@@ -319,9 +319,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
             >
               <div className="flex items-center justify-between border-b border-gray-100 p-5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-[11px] bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
-                    <ShoppingBasket className="w-[18px] h-[18px]" strokeWidth={2.5} />
-                  </div>
+                  <img src="/logo/logo.png" alt="NearMart" className="h-9 w-9 object-contain" />
                   <div>
                     <h1 className="text-lg font-bold tracking-tight text-gray-900">
                       Near<span className="text-emerald-600">Mart</span>
@@ -406,10 +404,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    localStorage.removeItem("nearmart_session");
-                    navigate("/login", { replace: true });
-                  }}
+                  onClick={() => logoutAndRedirect(navigate)}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                 >
                   <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-rose-50 text-rose-500">

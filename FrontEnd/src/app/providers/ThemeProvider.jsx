@@ -11,9 +11,9 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     document.body.style.backgroundColor =
-      theme === "dark" ? "#020817" : "#ffffff";
+      theme === "dark" ? "#064E3B" : "#F8FAFC";
     document.body.style.color =
-      theme === "dark" ? "#e2e8f0" : "#0f172a";
+      theme === "dark" ? "#ECFDF5" : "#042F2E";
     document.body.style.transition =
       "background-color 0.3s ease, color 0.3s ease";
   }, [theme]);

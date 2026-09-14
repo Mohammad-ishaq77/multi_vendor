@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft,
   Target,
   Eye,
   Heart,
@@ -18,8 +17,9 @@ import {
   UserCheck,
   BadgeCheck,
 } from "lucide-react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import MainLayout from "../layouts/MainLayout";
+import Hero from "./Hero";
+import { aboutHero } from "../config/heroes";
 
 const About = () => {
   const fadeUp = {
@@ -28,61 +28,20 @@ const About = () => {
   };
 
   return (
-    <div className="relative bg-white min-h-screen">
-      <Navbar />
-
-      {/* HERO SECTION */}
-      <section className="pt-28 lg:pt-36 pb-16 lg:pb-20 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-            <Link to="/" className="inline-flex items-center gap-2 text-sm text-[#64748B] hover:text-[#1B4332] transition-colors mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Link>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left Text */}
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 px-3 py-1 text-[10px] font-bold tracking-widest text-[#1B4332] bg-[#1B4332]/10 rounded-full uppercase mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#1B4332]" />
-                About NearMart
-              </span>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.2rem] font-bold text-[#0F172A] leading-[1.1] mb-2">
-                Empowering Local.
-              </h1>
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.2rem] font-bold text-[#1B4332] leading-[1.1] mb-6">
-                Delivering Happiness.
-              </h1>
-
-              <p className="text-[15px] text-[#64748B] leading-relaxed mb-4 max-w-lg">
-                NearMart is a local multi-vendor marketplace that connects customers with trusted shopkeepers and delivery partners in their neighborhood. Our mission is to make local shopping simple, reliable and rewarding for everyone.
-              </p>
-              <p className="text-[15px] text-[#64748B] leading-relaxed max-w-lg">
-                We support local businesses, create delivery opportunities and provide customers with a smooth, secure and delightful shopping experience.
-              </p>
-            </motion.div>
-
-            {/* Right Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative flex justify-center lg:justify-end"
-            >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#1B4332]/5 rounded-full blur-3xl" />
-              <motion.img
-                src="/images/loginBg.png"
-                alt="NearMart"
-                className="relative z-10 w-full max-w-[420px] h-auto object-contain drop-shadow-xl"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              />
-            </motion.div>
-          </div>
-        </div>
-      </section>
+    <MainLayout>
+      <Hero
+        tone="dark"
+        eyebrow={aboutHero.eyebrow}
+        titleLine={aboutHero.titleLine}
+        rotating={aboutHero.rotating}
+        description={aboutHero.description}
+        stats={aboutHero.stats}
+        primaryTo="/marketplace"
+        primaryLabel="Start shopping"
+        secondaryTo="/contact"
+        secondaryLabel="Talk to us"
+        footer="Built in Srinagar for neighborhood shops, riders and families"
+      />
 
       {/* OUR STORY */}
       <section className="py-12 px-6 lg:px-8 bg-gray-50/30">
@@ -291,13 +250,11 @@ const About = () => {
       <section className="py-16 px-6 lg:px-8 bg-gray-50/30">
         <div className="max-w-7xl mx-auto">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid lg:grid-cols-2 gap-10 items-center">
-            <div className="flex justify-center lg:justify-start">
-              <motion.img
-                src="/images/loginimg.png"
-                alt="NearMart Community"
-                className="w-full max-w-[200px] h-auto object-contain"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+            <div className="overflow-hidden rounded-[28px] shadow-[0_24px_50px_-28px_rgba(6,78,59,0.4)]">
+              <img
+                src="https://images.unsplash.com/photo-1526367790999-0150786686a2?auto=format&fit=crop&w=1400&q=85"
+                alt="NearMart community"
+                className="h-64 w-full object-cover sm:h-80"
               />
             </div>
             <div>
@@ -335,8 +292,7 @@ const About = () => {
         </div>
       </section>
 
-      <Footer />
-    </div>
+    </MainLayout>
   );
 };
 

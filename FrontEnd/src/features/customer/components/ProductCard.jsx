@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Star, ShoppingCart, Check } from "lucide-react";
+import CardImage from "../../../components/common/CardImage";
 
 const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
   const navigate = useNavigate();
@@ -50,9 +51,10 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
-        <motion.img
+        <CardImage
           src={product.image}
           alt={product.name}
+          category={product.category}
           onLoad={() => setImageLoaded(true)}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
@@ -64,8 +66,8 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
           onClick={toggleWishlist}
           className={`absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
             saved
-              ? "bg-red-50 border-red-200 text-red-500"
-              : "bg-white/80 border-white/50 text-gray-400 hover:text-red-400"
+              ? "bg-[var(--color-green-bg)] border-[var(--color-green-soft)] text-[var(--color-primary)]"
+              : "bg-white/80 border-white/50 text-gray-400 hover:text-[var(--color-primary)]"
           }`}
         >
           <AnimatePresence mode="wait">
@@ -100,8 +102,8 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
             {product.category}
           </span>
           {product.rating && (
-            <span className="flex items-center gap-0.5 text-[0.65rem] text-amber-500 font-medium">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+            <span className="flex items-center gap-0.5 text-[0.65rem] text-[var(--color-primary)] font-medium">
+              <Star className="w-3 h-3 fill-[var(--color-green-light)] text-[var(--color-green-light)]" />
               {product.rating}
             </span>
           )}

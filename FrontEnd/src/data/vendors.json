@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "name": "MB Collection",
+    "category": "Fashion",
+    "rating": 4.5,
+    "reviews": 230,
+    "reviewCount": 230,
+    "deliveryTime": "30-40 min",
+    "location": "Srinagar",
+    "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 2,
+    "name": "Fresh Basket",
+    "category": "Grocery",
+    "rating": 4.6,
+    "reviews": 315,
+    "reviewCount": 315,
+    "deliveryTime": "20-30 min",
+    "location": "Srinagar",
+    "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 3,
+    "name": "Kiryana Plus",
+    "category": "Daily Needs",
+    "rating": 4.3,
+    "reviews": 195,
+    "reviewCount": 195,
+    "deliveryTime": "15-25 min",
+    "location": "Srinagar",
+    "image": "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 4,
+    "name": "Health Plus",
+    "category": "Pharmacy",
+    "rating": 4.7,
+    "reviews": 260,
+    "reviewCount": 260,
+    "deliveryTime": "20-30 min",
+    "location": "Srinagar",
+    "image": "https://images.unsplash.com/photo-1576602976047-174e57a47881?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": 5,
+    "name": "Tech World",
+    "category": "Electronics",
+    "rating": 4.6,
+    "reviews": 188,
+    "reviewCount": 188,
+    "deliveryTime": "25-35 min",
+    "location": "Srinagar",
+    "image": "https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  }
+]

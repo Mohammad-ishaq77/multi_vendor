@@ -1,0 +1,170 @@
+[
+  {
+    "id": 1,
+    "name": "Grocery",
+    "slug": "grocery",
+    "icon": "ShoppingBasket",
+    "cover": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=85",
+    "variant": "overlay",
+    "description": "Daily essentials from neighborhood kiranas",
+    "headline": "Neighborhood groceries, delivered",
+    "intro": "Stock up on staples, snacks and household basics from trusted local grocers — without leaving home.",
+    "promise": ["Same-day delivery", "Trusted kiranas", "Everyday prices"],
+    "related": ["Grocery", "Daily Needs"],
+    "ctaLabel": "Shop groceries",
+    "spotlight": "Kirana staples this week",
+    "story": "NearMart grocery is built around the shops you already trust. Compare prices across neighborhood kiranas, refill pantry staples, and get the same brands you buy in person — delivered the same day.",
+    "stats": [
+      { "label": "Local grocers", "value": "40+" },
+      { "label": "Avg. delivery", "value": "25 min" },
+      { "label": "Everyday SKUs", "value": "1,200+" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Fruits & Veggies",
+    "slug": "fruits-veggies",
+    "icon": "Apple",
+    "cover": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=1600&q=85",
+    "variant": "split",
+    "description": "Fresh produce from local sellers",
+    "headline": "Farm-fresh produce nearby",
+    "intro": "Seasonal fruits and vegetables sourced from sellers around you, packed and delivered while they are still fresh.",
+    "promise": ["Picked locally", "Same-day drop", "Seasonal picks"],
+    "related": ["Fruits & Veggies", "Grocery"],
+    "ctaLabel": "Browse produce",
+    "spotlight": "Seasonal baskets",
+    "story": "This aisle is for shoppers who want produce that still looks like it came from the morning market. Sellers restock throughout the day, so tomatoes, greens and fruit stay closer to harvest.",
+    "stats": [
+      { "label": "Fresh sellers", "value": "18+" },
+      { "label": "Packed", "value": "Same day" },
+      { "label": "Seasonal SKUs", "value": "80+" }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Dairy & Bakery",
+    "slug": "dairy-bakery",
+    "icon": "Milk",
+    "cover": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1600&q=85",
+    "variant": "mosaic",
+    "description": "Milk, bread and bakery staples",
+    "headline": "Fresh dairy and bakery",
+    "intro": "Milk, butter, bread and bakery favorites from nearby shops that restock throughout the day.",
+    "promise": ["Morning-fresh", "Chilled handling", "Local bakeries"],
+    "related": ["Dairy & Bakery", "Grocery", "Daily Needs"],
+    "ctaLabel": "Shop dairy & bakery",
+    "spotlight": "Morning bakery run",
+    "story": "Chilled dairy and oven-fresh bread are treated as time-sensitive. NearMart partners with shops that restock early, so milk, butter and bakery items arrive closer to when they were packed.",
+    "stats": [
+      { "label": "Chilled shops", "value": "12+" },
+      { "label": "Morning restock", "value": "6 AM" },
+      { "label": "Bakery picks", "value": "35+" }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Beverages",
+    "slug": "beverages",
+    "icon": "Coffee",
+    "cover": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1600&q=85",
+    "variant": "overlay",
+    "description": "Tea, coffee, juices and more",
+    "headline": "Drinks from shops around you",
+    "intro": "Tea, coffee, juices and cold drinks from neighborhood stores, ready for quick delivery.",
+    "promise": ["Quick restocks", "Chilled options", "Local brands"],
+    "related": ["Beverages", "Grocery"],
+    "ctaLabel": "Shop drinks",
+    "spotlight": "Chilled and pantry drinks",
+    "story": "From morning chai supplies to cold juices, this collection pulls beverages from kiranas and specialty shops nearby so you are not waiting on a warehouse miles away.",
+    "stats": [
+      { "label": "Drink aisles", "value": "25+" },
+      { "label": "Chilled SKUs", "value": "60+" },
+      { "label": "Typical ETA", "value": "20 min" }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Fashion",
+    "slug": "fashion",
+    "icon": "Shirt",
+    "cover": "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1600&q=85",
+    "variant": "split",
+    "description": "Clothing and accessories nearby",
+    "headline": "Local fashion, delivered fast",
+    "intro": "Clothing, footwear and accessories from boutiques and stores in your city — styled locally, delivered to your door.",
+    "promise": ["Local boutiques", "Latest drops", "Easy returns"],
+    "related": ["Fashion"],
+    "ctaLabel": "Shop fashion",
+    "spotlight": "Boutique drops nearby",
+    "story": "Fashion on NearMart is not a generic catalog. It is the inventory sitting in boutiques and multi-brand stores around you — sneakers, denim, basics — with sizes you can actually try later in-store.",
+    "stats": [
+      { "label": "Local stores", "value": "22+" },
+      { "label": "New drops", "value": "Weekly" },
+      { "label": "Return window", "value": "7 days" }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Electronics",
+    "slug": "electronics",
+    "icon": "Smartphone",
+    "cover": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=85",
+    "variant": "mosaic",
+    "description": "Gadgets and accessories",
+    "headline": "Gadgets from trusted nearby sellers",
+    "intro": "Phones, audio, cables and accessories from electronics shops you can actually visit in your neighborhood.",
+    "promise": ["Verified sellers", "Accessory ready", "Fast delivery"],
+    "related": ["Electronics"],
+    "ctaLabel": "Shop electronics",
+    "spotlight": "Accessory desk",
+    "story": "Buy cables, audio and phone accessories from the same electronics counters people in your area already use. If something needs a swap, the seller is close enough to make it simple.",
+    "stats": [
+      { "label": "Tech shops", "value": "14+" },
+      { "label": "Verified sellers", "value": "100%" },
+      { "label": "Accessory SKUs", "value": "200+" }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Pharmacy",
+    "slug": "pharmacy",
+    "icon": "HeartPulse",
+    "cover": "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1600&q=85",
+    "variant": "overlay",
+    "description": "Health and wellness essentials",
+    "headline": "Wellness from local pharmacies",
+    "intro": "Everyday health, wellness and personal care products from pharmacies close to you.",
+    "promise": ["Nearby chemists", "Daily wellness", "Reliable stock"],
+    "related": ["Pharmacy"],
+    "ctaLabel": "Shop wellness",
+    "spotlight": "Chemist essentials",
+    "story": "Skip the last-minute chemist run. NearMart pharmacy listings come from local health stores so everyday wellness, personal care and first-aid items stay in stock nearby.",
+    "stats": [
+      { "label": "Local chemists", "value": "10+" },
+      { "label": "Daily hours", "value": "8 AM–10 PM" },
+      { "label": "Wellness SKUs", "value": "150+" }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Beauty",
+    "slug": "beauty",
+    "icon": "Sparkles",
+    "cover": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=85",
+    "variant": "split",
+    "description": "Personal care and beauty",
+    "headline": "Beauty from stores next door",
+    "intro": "Skincare, makeup and personal care from local beauty counters and health stores.",
+    "promise": ["Curated care", "Local counters", "Doorstep delivery"],
+    "related": ["Beauty"],
+    "ctaLabel": "Shop beauty",
+    "spotlight": "Skincare counters nearby",
+    "story": "Beauty on NearMart is curated from nearby counters — serums, gels, masks and everyday personal care — so you can restock favorites without a mall trip.",
+    "stats": [
+      { "label": "Beauty counters", "value": "9+" },
+      { "label": "Care SKUs", "value": "90+" },
+      { "label": "Typical ETA", "value": "30 min" }
+    ]
+  }
+]

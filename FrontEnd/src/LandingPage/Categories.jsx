@@ -1,117 +1,55 @@
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, ShoppingBasket, Apple, Milk, Coffee, Cookie, Sparkles, Home } from "lucide-react";
-
-const categories = [
-  {
-    name: "Grocery",
-    icon: ShoppingBasket,
-    gradient: "from-emerald-100 to-teal-50",
-    iconColor: "text-emerald-600",
-    shadow: "shadow-emerald-100",
-  },
-  {
-    name: "Fruits & Veggies",
-    icon: Apple,
-    gradient: "from-red-100 to-rose-50",
-    iconColor: "text-red-500",
-    shadow: "shadow-red-100",
-  },
-  {
-    name: "Dairy & Bakery",
-    icon: Milk,
-    gradient: "from-sky-100 to-blue-50",
-    iconColor: "text-sky-600",
-    shadow: "shadow-sky-100",
-  },
-  {
-    name: "Beverages",
-    icon: Coffee,
-    gradient: "from-amber-100 to-yellow-50",
-    iconColor: "text-amber-600",
-    shadow: "shadow-amber-100",
-  },
-  {
-    name: "Snacks",
-    icon: Cookie,
-    gradient: "from-orange-100 to-amber-50",
-    iconColor: "text-orange-500",
-    shadow: "shadow-orange-100",
-  },
-  {
-    name: "Personal Care",
-    icon: Sparkles,
-    gradient: "from-pink-100 to-rose-50",
-    iconColor: "text-pink-500",
-    shadow: "shadow-pink-100",
-  },
-  {
-    name: "Household",
-    icon: Home,
-    gradient: "from-violet-100 to-purple-50",
-    iconColor: "text-violet-600",
-    shadow: "shadow-violet-100",
-  },
-];
+import * as Icons from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import CardImage from "../components/common/CardImage";
+import categories from "../data/categories.json";
 
 const Categories = () => {
   return (
-    <section id="categories" className="py-20 lg:py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex items-end justify-between mb-12">
+    <section id="categories" className="bg-white py-10 lg:py-14">
+      <div className="container-app">
+        <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <span className="inline-block px-3 py-1 text-xs font-semibold tracking-wider text-[#1B4332] bg-[#1B4332]/10 rounded-full uppercase mb-4">
-              Browse
-            </span>
-            <h2 className="font-serif text-3xl lg:text-5xl font-bold text-[#0F172A] leading-[1.1]">
-              Shop by Categories
-            </h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-primary)]">Neighborhood aisles</p>
+            <h2 className="mt-1 font-display text-2xl font-bold lg:text-3xl">Shop by category</h2>
           </div>
-          <motion.button
-            whileHover={{ x: 4 }}
-            className="hidden sm:flex items-center gap-2 text-sm font-semibold text-[#1B4332] hover:text-[#143728] transition-colors group"
-          >
-            View all categories
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </motion.button>
+          <Link to="/categories" className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)]">
+            View all
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-5">
-          {categories.map((cat, index) => (
-            <motion.div
-              key={cat.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.06, duration: 0.5 }}
-              whileHover={{ y: -10 }}
-              className={`group relative flex flex-col items-center gap-4 p-6 rounded-3xl bg-white border border-gray-100 cursor-pointer transition-all duration-300 hover:border-[#1B4332]/20 hover:shadow-xl ${cat.shadow}`}
-            >
-              {/* Icon Container */}
-              <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${cat.gradient} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}>
-                <cat.icon className={`w-9 h-9 ${cat.iconColor} transition-transform duration-300 group-hover:scale-110`} />
-                
-                {/* Shine effect */}
-                <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-
-              {/* Text */}
-              <span className="font-sans text-sm font-semibold text-[#0F172A] text-center leading-tight group-hover:text-[#1B4332] transition-colors">
-                {cat.name}
-              </span>
-
-              {/* Hover indicator dot */}
-              <div className="absolute bottom-3 w-1.5 h-1.5 rounded-full bg-[#1B4332] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Mobile View All */}
-        <div className="sm:hidden mt-8 text-center">
-          <button className="inline-flex items-center gap-2 text-sm font-semibold text-[#1B4332]">
-            View all categories <ArrowRight className="w-4 h-4" />
-          </button>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
+          {categories.map((category, index) => {
+            const Icon = Icons[category.icon] || Icons.ShoppingBag;
+            return (
+              <motion.div
+                key={category.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.04 }}
+              >
+                <Link
+                  to={`/marketplace/${category.slug}`}
+                  className="card-surface card-shine group relative block overflow-hidden"
+                >
+                  <div className="card-media relative h-36 sm:h-44">
+                    <CardImage src={category.cover} alt={category.name} category={category.name} className="h-full w-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-dark)]/85 via-[var(--color-primary-dark)]/25 to-transparent" />
+                    <span className="absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-[var(--color-primary)]">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div className="absolute inset-x-0 bottom-0 z-10 p-3">
+                      <h3 className="font-display text-sm font-bold text-white">{category.name}</h3>
+                      <p className="mt-0.5 line-clamp-1 text-[11px] text-white/80">{category.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

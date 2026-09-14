@@ -18,18 +18,19 @@ import {
   Truck,
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import { logoutAndRedirect } from "../../../services/authService";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/shopkeeper/dashboard", accent: "from-emerald-500 to-teal-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
-  { name: "My Shop", icon: Store, path: "/shopkeeper/shop", accent: "from-violet-500 to-purple-500", accentBg: "bg-violet-50", accentText: "text-violet-600" },
-  { name: "Products", icon: Package, path: "/shopkeeper/products", accent: "from-blue-500 to-indigo-500", accentBg: "bg-blue-50", accentText: "text-blue-600" },
-  { name: "Orders", icon: ClipboardList, path: "/shopkeeper/orders", accent: "from-amber-500 to-orange-500", accentBg: "bg-amber-50", accentText: "text-amber-600", badge: true },
-  { name: "Ready for Pickup", icon: Truck, path: "/shopkeeper/ready-for-pickup", accent: "from-cyan-500 to-blue-500", accentBg: "bg-cyan-50", accentText: "text-cyan-600" },
-  { name: "Offers", icon: Tag, path: "/shopkeeper/offers", accent: "from-rose-500 to-pink-500", accentBg: "bg-rose-50", accentText: "text-rose-600" },
+  { name: "My Shop", icon: Store, path: "/shopkeeper/shop", accent: "from-emerald-600 to-emerald-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
+  { name: "Products", icon: Package, path: "/shopkeeper/products", accent: "from-teal-600 to-emerald-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
+  { name: "Orders", icon: ClipboardList, path: "/shopkeeper/orders", accent: "from-emerald-700 to-emerald-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600", badge: true },
+  { name: "Ready for Pickup", icon: Truck, path: "/shopkeeper/ready-for-pickup", accent: "from-teal-500 to-emerald-500", accentBg: "bg-teal-50", accentText: "text-teal-700" },
+  { name: "Offers", icon: Tag, path: "/shopkeeper/offers", accent: "from-emerald-500 to-green-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
   { name: "Earnings", icon: IndianRupee, path: "/shopkeeper/earnings", accent: "from-teal-500 to-emerald-500", accentBg: "bg-teal-50", accentText: "text-teal-600" },
-  { name: "Reviews", icon: Star, path: "/shopkeeper/reviews", accent: "from-yellow-500 to-amber-500", accentBg: "bg-yellow-50", accentText: "text-yellow-600" },
-  { name: "Profile", icon: User, path: "/shopkeeper/profile", accent: "from-slate-500 to-gray-600", accentBg: "bg-slate-50", accentText: "text-slate-600" },
-  { name: "Settings", icon: Settings, path: "/shopkeeper/settings", accent: "from-gray-500 to-gray-600", accentBg: "bg-gray-50", accentText: "text-gray-600" },
+  { name: "Reviews", icon: Star, path: "/shopkeeper/reviews", accent: "from-emerald-400 to-emerald-600", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
+  { name: "Profile", icon: User, path: "/shopkeeper/profile", accent: "from-emerald-800 to-emerald-600", accentBg: "bg-emerald-50", accentText: "text-emerald-700" },
+  { name: "Settings", icon: Settings, path: "/shopkeeper/settings", accent: "from-emerald-700 to-teal-600", accentBg: "bg-emerald-50", accentText: "text-emerald-700" },
 ];
 
 const sidebarVariants = {
@@ -74,9 +75,9 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
           <motion.div
             whileHover={{ rotate: -8, scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="w-10 h-10 rounded-[14px] bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/25 flex-shrink-0 cursor-pointer"
+            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center"
           >
-            <ShoppingBasket className="w-5 h-5" strokeWidth={2.5} />
+            <img src="/logo/logo.png" alt="NearMart" className="h-10 w-10 object-contain" />
           </motion.div>
           <AnimatePresence>
             {!isCollapsed && (
@@ -190,8 +191,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
             whileHover={{ x: isCollapsed ? 0 : 3 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
-              localStorage.removeItem("nearmart_session");
-              navigate("/login", { replace: true });
+              logoutAndRedirect(navigate);
             }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
               isCollapsed ? "justify-center" : ""
@@ -233,9 +233,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
             >
               <div className="flex items-center justify-between border-b border-gray-100 p-5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-[11px] bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
-                    <ShoppingBasket className="w-[18px] h-[18px]" strokeWidth={2.5} />
-                  </div>
+                  <img src="/logo/logo.png" alt="NearMart" className="h-9 w-9 object-contain" />
                   <div>
                     <h1 className="text-lg font-bold tracking-tight text-gray-900">
                       Near<span className="text-emerald-600">Mart</span>
@@ -288,10 +286,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
               <div className="border-t border-gray-100 p-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    localStorage.removeItem("nearmart_session");
-                    navigate("/login", { replace: true });
-                  }}
+                  onClick={() => logoutAndRedirect(navigate)}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                 >
                   <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-rose-50 text-rose-500">
