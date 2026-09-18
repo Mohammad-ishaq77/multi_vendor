@@ -23,7 +23,7 @@ export default function AdminProfile() {
 
   return (
     <PageTransition>
-      <div className="space-y-6 max-w-lg mx-auto">
+      <div className="w-full space-y-6">
         <div><h1 className="text-2xl font-bold text-[#14261f]">Admin Profile</h1><p className="text-sm text-gray-500 mt-1">Manage your account information.</p></div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -37,7 +37,7 @@ export default function AdminProfile() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
               {editMode ? (

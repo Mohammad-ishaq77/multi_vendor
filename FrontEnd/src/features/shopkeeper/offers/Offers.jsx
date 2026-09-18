@@ -12,7 +12,7 @@ const Offers = () => {
 
   return (
     <ShopkeeperShell>
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Offers & Discounts</h1>

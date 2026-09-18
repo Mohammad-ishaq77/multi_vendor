@@ -9,7 +9,7 @@ const statusColors = {
   paid: "bg-emerald-50 text-emerald-700 border-emerald-200",
   pending: "bg-amber-50 text-amber-700 border-amber-200",
   failed: "bg-rose-50 text-rose-700 border-rose-200",
-  refunded: "bg-blue-50 text-blue-700 border-blue-200",
+  refunded: "bg-teal-50 text-teal-700 border-teal-200",
 };
 
 const statusIcons = { paid: CheckCircle, pending: Clock, failed: XCircle, refunded: RotateCcw };
@@ -26,17 +26,17 @@ export default function Payments() {
       orderId: o.id,
       customerName: o.customerName,
       shopName: o.shopName,
-      productAmount: o.productAmount,
-      deliveryFee: o.deliveryFee,
-      totalAmount: o.totalAmount,
+      productAmount: o.productAmount ?? o.totalAmount ?? 0,
+      deliveryFee: o.deliveryFee || 0,
+      totalAmount: o.totalAmount ?? ((o.productAmount || 0) + (o.deliveryFee || 0)),
       paymentMethod: o.paymentMethod,
-      paymentStatus: o.paymentStatus || "paid",
-      orderDate: o.orderDate,
+      paymentStatus: (o.paymentStatus || "paid").toLowerCase() === "paid" ? "paid" : (o.paymentStatus || "pending").toLowerCase(),
+      orderDate: o.orderDate || o.createdAt,
       partnerShare: o.partnerShare,
       platformShare: o.platformShare,
     }));
     if (statusFilter !== "all") result = result.filter((p) => p.paymentStatus === statusFilter);
-    if (methodFilter !== "all") result = result.filter((p) => p.paymentMethod.toLowerCase() === methodFilter);
+    if (methodFilter !== "all") result = result.filter((p) => String(p.paymentMethod || "").toLowerCase().includes(methodFilter));
     if (search) {
       const q = search.toLowerCase();
       result = result.filter((p) => p.orderId.toLowerCase().includes(q) || p.customerName.toLowerCase().includes(q) || p.shopName.toLowerCase().includes(q));
@@ -45,10 +45,10 @@ export default function Payments() {
   }, [orders, search, statusFilter, methodFilter]);
 
   const stats = useMemo(() => ({
-    total: orders.reduce((s, o) => s + o.totalAmount, 0),
-    paid: orders.filter((o) => (o.paymentStatus || "paid") === "paid").reduce((s, o) => s + o.totalAmount, 0),
-    pending: orders.filter((o) => o.paymentStatus === "pending").reduce((s, o) => s + o.totalAmount, 0),
-    refunded: orders.filter((o) => o.paymentStatus === "refunded").reduce((s, o) => s + o.totalAmount, 0),
+    total: orders.reduce((s, o) => s + (o.totalAmount || 0), 0),
+    paid: orders.filter((o) => ["paid", "Paid"].includes(o.paymentStatus || "paid")).reduce((s, o) => s + (o.totalAmount || 0), 0),
+    pending: orders.filter((o) => String(o.paymentStatus || "").toLowerCase().includes("pending")).reduce((s, o) => s + (o.totalAmount || 0), 0),
+    refunded: orders.filter((o) => String(o.paymentStatus || "").toLowerCase() === "refunded").reduce((s, o) => s + (o.totalAmount || 0), 0),
   }), [orders]);
 
   return (
@@ -64,7 +64,7 @@ export default function Payments() {
             { label: "Total Revenue", value: `₹${stats.total.toLocaleString("en-IN")}`, icon: IndianRupee, color: "from-[#155c43] to-emerald-600" },
             { label: "Paid", value: `₹${stats.paid.toLocaleString("en-IN")}`, icon: CheckCircle, color: "from-emerald-500 to-teal-500" },
             { label: "Pending", value: `₹${stats.pending.toLocaleString("en-IN")}`, icon: Clock, color: "from-amber-500 to-orange-500" },
-            { label: "Refunded", value: `₹${stats.refunded.toLocaleString("en-IN")}`, icon: RotateCcw, color: "from-blue-500 to-indigo-500" },
+            { label: "Refunded", value: `₹${stats.refunded.toLocaleString("en-IN")}`, icon: RotateCcw, color: "from-teal-500 to-emerald-500" },
           ].map((s, i) => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center gap-3">
@@ -91,6 +91,8 @@ export default function Payments() {
             <option value="all">All Methods</option>
             <option value="cod">COD</option>
             <option value="online">Online</option>
+            <option value="upi">UPI</option>
+            <option value="razorpay">Razorpay</option>
           </select>
         </div>
 

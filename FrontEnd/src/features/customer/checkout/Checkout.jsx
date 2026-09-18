@@ -20,6 +20,10 @@ import {
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import CustomerShell from "../components/CustomerShell";
+import { useToast } from "../../../components/common/Toast";
+import orderService from "../../../services/orderService";
+import paymentService from "../../../services/paymentService";
+import { RAZORPAY_CONFIG, isRazorpayConfigured } from "../../../config/razorpay";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -49,9 +53,9 @@ const EMPTY_ADDRESS = {
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, cartCount, cartTotal, clearCart } = useCart();
+  const { showToast } = useToast();
   const [isPlacing, setIsPlacing] = useState(false);
-  const paymentMethod = "online";
-  const [paymentDetails, setPaymentDetails] = useState({ card: "", upi: "" });
+  const [paymentError, setPaymentError] = useState("");
 
   const [address, setAddress] = useState(EMPTY_ADDRESS);
   const [savedAddresses, setSavedAddresses] = useState(() => {
@@ -115,7 +119,7 @@ const Checkout = () => {
 
   const saveNewAddress = () => {
     if (!address.fullName || !address.phone || !address.address || !address.city || !address.state || !address.pincode) {
-      return alert("Please fill in all address details before saving.");
+      return showToast("Please fill in all address details before saving.", "error");
     }
 
     const savedAddress = {
@@ -142,33 +146,84 @@ const Checkout = () => {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    if (cart.length === 0) return alert("Your cart is empty.");
+    if (cart.length === 0) return showToast("Your cart is empty.", "error");
     if (!address.fullName || !address.phone || !address.address || !address.city || !address.pincode) {
-      return alert("Please fill in all delivery details.");
+      return showToast("Please fill in all delivery details.", "error");
     }
 
     setIsPlacing(true);
-    await new Promise((r) => setTimeout(r, 1500));
+    setPaymentError("");
+    const orderId = `NM-${Date.now()}`;
+    const shopName = cart.find((item) => item.shopName)?.shopName || cart[0]?.shop || "NearMart Shop";
 
-    const order = {
-      id: `NM-${Date.now()}`,
+    const draftOrder = {
+      id: orderId,
       items: cart,
       customer: address,
-      paymentMethod: "online",
+      customerName: address.fullName,
+      shopName,
+      paymentMethod: "Razorpay",
       subtotal: cartTotal,
       deliveryFee,
+      platformFee: 10,
       total,
       status: "Placed",
-      paymentStatus: "Paid (demo gateway)",
+      shopStatus: "New",
+      adminStatus: "confirmed",
+      paymentStatus: "pending",
       createdAt: new Date().toISOString(),
       date: new Date().toLocaleDateString(),
     };
 
-    const orders = JSON.parse(localStorage.getItem("nearmart_orders") || "[]");
-    localStorage.setItem("nearmart_orders", JSON.stringify([order, ...orders]));
-    localStorage.setItem("nearmart_last_order", JSON.stringify(order));
-    clearCart();
-    navigate("/customer/orders");
+    try {
+      if (isRazorpayConfigured()) {
+        const result = await paymentService.checkout({
+          amount: total,
+          orderId,
+          customer: address,
+          description: `NearMart order ${orderId}`,
+        });
+        const paidOrder = {
+          ...draftOrder,
+          paymentStatus: result.verified || result.ok ? "Paid" : "Pending verification",
+          paymentMethod: result.payment?.method || "Razorpay",
+          razorpay: result.razorpay,
+          payment: result.payment,
+        };
+        orderService.placeOrder(paidOrder);
+        clearCart();
+        showToast("Payment successful. Your order has been placed.");
+        navigate("/customer/orders");
+        return;
+      }
+
+      const sandboxPayment = {
+        id: `PAY-${orderId}`,
+        orderId,
+        amount: total,
+        currency: "INR",
+        status: "pending",
+        method: "razorpay",
+        createdAt: new Date().toISOString(),
+        note: "Add VITE_RAZORPAY_KEY_ID and start the payment API to capture live Razorpay payments.",
+      };
+      orderService.placeOrder({
+        ...draftOrder,
+        paymentStatus: "Pending",
+        payment: sandboxPayment,
+      });
+      clearCart();
+      showToast("Order saved. Add Razorpay credentials to collect live payments.");
+      navigate("/customer/orders");
+    } catch (error) {
+      const message = error?.cancelled
+        ? "Payment was cancelled before completion."
+        : error.message || "Payment failed. Please try again.";
+      setPaymentError(message);
+      showToast(message, "error");
+    } finally {
+      setIsPlacing(false);
+    }
   };
 
   if (cart.length === 0) {
@@ -207,7 +262,7 @@ const Checkout = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="max-w-7xl mx-auto"
+        className="w-full"
       >
         {/* Header */}
         <motion.div variants={itemVariants} className="mb-8">
@@ -396,8 +451,8 @@ const Checkout = () => {
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-[#14261f]">Payment Method</h2>
-                  <p className="text-xs text-gray-500">Choose how you want to pay.</p>
+                  <h2 className="text-lg font-bold text-[#14261f]">Pay with Razorpay</h2>
+                  <p className="text-xs text-gray-500">UPI, cards, net banking, wallets and other supported methods.</p>
                 </div>
               </div>
 
@@ -418,8 +473,8 @@ const Checkout = () => {
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="font-semibold text-sm text-[#14261f]">Online Payment</p>
-                    <p className="text-xs text-gray-500">Pay securely via UPI / Card.</p>
+                    <p className="font-semibold text-sm text-[#14261f]">Razorpay Checkout</p>
+                    <p className="text-xs text-gray-500">Google Pay, PhonePe, BharatPe, UPI apps, cards, net banking and wallets.</p>
                   </div>
                   <motion.div
                     initial={{ opacity: 0, scale: 0 }}
@@ -431,11 +486,23 @@ const Checkout = () => {
                 </motion.label>
               </div>
 
-              {paymentMethod === "online" && (
-                <div className="mt-4 grid md:grid-cols-2 gap-3">
-                  <input value={paymentDetails.card} onChange={(event) => setPaymentDetails({ ...paymentDetails, card: event.target.value, upi: "" })} inputMode="numeric" placeholder="Card number (demo gateway)" className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#155c43]" />
-                  <input value={paymentDetails.upi} onChange={(event) => setPaymentDetails({ ...paymentDetails, upi: event.target.value, card: "" })} placeholder="UPI ID (demo gateway)" className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#155c43]" />
-                </div>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {RAZORPAY_CONFIG.methods.map((method) => (
+                  <div key={method.id} className="rounded-xl border border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/60 px-4 py-3">
+                    <p className="text-sm font-semibold text-[#14261f]">{method.label}</p>
+                    <p className="text-xs text-gray-500">{method.detail}</p>
+                  </div>
+                ))}
+              </div>
+              {!isRazorpayConfigured() && (
+                <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                  Razorpay key is not configured yet. Add `VITE_RAZORPAY_KEY_ID` and start the payment API to collect live payments. Your order will still be saved so dashboards keep working.
+                </p>
+              )}
+              {paymentError && (
+                <p className="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
+                  {paymentError}
+                </p>
               )}
             </motion.section>
 
@@ -530,7 +597,7 @@ const Checkout = () => {
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
-                    Place Order
+                    Place & Pay
                   </>
                 )}
                 <motion.div
@@ -543,7 +610,7 @@ const Checkout = () => {
 
               <div className="flex items-center justify-center gap-2 mt-4 text-[0.65rem] text-gray-400">
                 <ShieldCheck className="w-3 h-3" />
-                Secured by NearMart
+                Secured by Razorpay
               </div>
             </div>
           </motion.aside>

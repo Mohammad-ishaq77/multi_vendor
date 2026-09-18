@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -13,6 +13,7 @@ import {
   IndianRupee,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
+import orderService, { ORDERS_CHANGE_EVENT } from "../../../services/orderService";
 
 const statusConfig = {
   Placed: {
@@ -38,17 +39,17 @@ const statusConfig = {
   },
   Shipped: {
     icon: Truck,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    dot: "bg-blue-500",
+    color: "text-emerald-700",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    dot: "bg-emerald-600",
   },
   "Out for Delivery": {
     icon: Truck,
-    color: "text-violet-600",
-    bg: "bg-violet-50",
-    border: "border-violet-200",
-    dot: "bg-violet-500",
+    color: "text-teal-700",
+    bg: "bg-teal-50",
+    border: "border-teal-200",
+    dot: "bg-teal-600",
   },
   Cancelled: {
     icon: XCircle,
@@ -62,14 +63,25 @@ const statusConfig = {
 const tabs = ["All", "Processing", "Shipped", "Delivered", "Cancelled"];
 
 const Orders = () => {
-  const [orders] = useState(() =>
-    JSON.parse(localStorage.getItem("nearmart_orders") || "[]")
-  );
+  const [orders, setOrders] = useState(() => orderService.getCustomerOrders());
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    const refresh = () => setOrders(orderService.getCustomerOrders());
+    window.addEventListener(ORDERS_CHANGE_EVENT, refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener(ORDERS_CHANGE_EVENT, refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
   const filtered = orders.filter((order) => {
-    const matchesTab = activeTab === "All" || order.status === activeTab;
+    const matchesTab =
+      activeTab === "All" ||
+      order.status === activeTab ||
+      (activeTab === "Processing" && order.status === "Placed");
     const matchesSearch =
       !searchQuery ||
       order.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -81,7 +93,7 @@ const Orders = () => {
 
   const statusCounts = {
     All: orders.length,
-    Processing: orders.filter((o) => o.status === "Processing").length,
+    Processing: orders.filter((o) => o.status === "Processing" || o.status === "Placed").length,
     Shipped: orders.filter((o) => o.status === "Shipped").length,
     Delivered: orders.filter((o) => o.status === "Delivered").length,
     Cancelled: orders.filter((o) => o.status === "Cancelled").length,
@@ -89,15 +101,9 @@ const Orders = () => {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-[#fafcfb]">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-100/60">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">My Orders</h1>
-                <p className="text-xs text-gray-400 mt-0.5">Track and manage your purchases</p>
-              </div>
+      <div className="w-full">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-sm text-gray-500">Track and manage your purchases</p>
               <Link
                 to="/customer/products"
                 className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
@@ -106,10 +112,7 @@ const Orders = () => {
                 Shop Again
               </Link>
             </div>
-          </div>
-        </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
           {orders.length === 0 ? (
             /* Empty State */
             <motion.div
@@ -286,7 +289,6 @@ const Orders = () => {
               </div>
             </>
           )}
-        </div>
       </div>
     </CustomerShell>
   );

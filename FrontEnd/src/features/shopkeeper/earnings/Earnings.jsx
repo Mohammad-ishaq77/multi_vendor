@@ -21,7 +21,7 @@ const Earnings = () => {
 
   return (
     <ShopkeeperShell>
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Earnings</h1>
           <p className="text-xs text-gray-500 mt-0.5">Track your revenue and transactions</p>
@@ -31,9 +31,9 @@ const Earnings = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
             { label: "Total Earnings", value: `₹${earnings.total.toLocaleString()}`, icon: IndianRupee, color: "from-emerald-500 to-teal-500", trend: "+12%" },
-            { label: "Today's Earnings", value: `₹${earnings.today.toLocaleString()}`, icon: TrendingUp, color: "from-blue-500 to-indigo-500", trend: "+8%" },
-            { label: "This Month", value: `₹${earnings.thisMonth.toLocaleString()}`, icon: ArrowUpRight, color: "from-violet-500 to-purple-500", trend: "+15%" },
-            { label: "Pending Settlement", value: `₹${earnings.pendingSettlement.toLocaleString()}`, icon: Clock, color: "from-amber-500 to-orange-500" },
+            { label: "Today's Earnings", value: `₹${earnings.today.toLocaleString()}`, icon: TrendingUp, color: "from-emerald-600 to-teal-500", trend: "+8%" },
+            { label: "This Month", value: `₹${earnings.thisMonth.toLocaleString()}`, icon: ArrowUpRight, color: "from-emerald-700 to-emerald-500", trend: "+15%" },
+            { label: "Pending Settlement", value: `₹${earnings.pendingSettlement.toLocaleString()}`, icon: Clock, color: "from-amber-500 to-emerald-500" },
           ].map((stat, i) => {
             const Icon = stat.icon;
             return (

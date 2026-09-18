@@ -44,7 +44,7 @@ const Login = () => {
     setIsLoading(true);
 
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const result = login({ email, password, role });
+    const result = login({ email, password, role, remember });
     setIsLoading(false);
 
     if (!result.ok) {

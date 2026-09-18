@@ -18,7 +18,7 @@ const Reviews = () => {
 
   return (
     <ShopkeeperShell>
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full">
         <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Reviews & Ratings</h1>
           <p className="text-xs text-gray-500 mt-0.5">See what customers are saying about your shop</p>

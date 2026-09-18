@@ -1,10 +1,11 @@
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { adminProfile as defaultAdminProfile } from "../data/adminData";
-import { dummyCustomers, dummyShopkeepers, allUsers as dummyUsers } from "../data/dummyUsers";
+import { dummyCustomers, dummyShopkeepers } from "../data/dummyUsers";
 import { dummyShops } from "../data/dummyShops";
 import { dummyDeliveryPartners } from "../data/dummyDeliveryPartners";
 import { dummyOrders } from "../data/dummyOrders";
 import { dummyReports } from "../data/dummyReports";
+import orderService, { ORDERS_CHANGE_EVENT } from "../../../services/orderService";
 
 const AdminContext = createContext(null);
 
@@ -13,7 +14,12 @@ const LS_PREFIX = "nearmart_admin_";
 function loadFromLS(key, fallback) {
   try {
     const raw = localStorage.getItem(LS_PREFIX + key);
-    return raw ? JSON.parse(raw) : fallback;
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length === 0 && Array.isArray(fallback) && fallback.length > 0) {
+      return fallback;
+    }
+    return parsed;
   } catch {
     return fallback;
   }
@@ -774,13 +780,13 @@ export function AdminProvider({ children }) {
   const [customers, setCustomers] = useState(() =>
     loadFromLS(
       "customers",
-      dummyUsers.length ? dummyUsers.filter((u) => u.role === "customer") : SEED_CUSTOMERS
+      dummyCustomers.length ? dummyCustomers.map((user) => ({ ...user, role: "customer" })) : SEED_CUSTOMERS
     )
   );
   const [shopkeepers, setShopkeepers] = useState(() =>
     loadFromLS(
       "shopkeepers",
-      dummyUsers.length ? dummyUsers.filter((u) => u.role === "shopkeeper") : SEED_SHOPKEEPERS
+      dummyShopkeepers.length ? dummyShopkeepers.map((user) => ({ ...user, role: "shopkeeper" })) : SEED_SHOPKEEPERS
     )
   );
   const [deliveryPartners, setDeliveryPartners] = useState(() =>
@@ -888,6 +894,25 @@ export function AdminProvider({ children }) {
   useEffect(() => { saveToLS("approvals", approvals); }, [approvals]);
   useEffect(() => { saveToLS("settings", settings); }, [settings]);
   useEffect(() => { saveToLS("recentActivities", recentActivities); }, [recentActivities]);
+
+  useEffect(() => {
+    const mergeLiveOrders = () => {
+      const live = orderService.getCustomerOrders().map((order) => orderService.toAdminOrder(order));
+      if (!live.length) return;
+      setOrders((prev) => {
+        const map = new Map(prev.map((order) => [order.id, order]));
+        live.forEach((order) => map.set(order.id, { ...map.get(order.id), ...order }));
+        return Array.from(map.values());
+      });
+    };
+    mergeLiveOrders();
+    window.addEventListener(ORDERS_CHANGE_EVENT, mergeLiveOrders);
+    window.addEventListener("storage", mergeLiveOrders);
+    return () => {
+      window.removeEventListener(ORDERS_CHANGE_EVENT, mergeLiveOrders);
+      window.removeEventListener("storage", mergeLiveOrders);
+    };
+  }, []);
 
   // ── Derived state ───────────────────────────────────────────────────────────
 

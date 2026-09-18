@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -17,13 +17,12 @@ import {
   Bell,
   UserCircle,
   Settings,
-  LogOut,
   ChevronLeft,
   ChevronRight,
-  ShoppingBasket,
+  Package,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
-import { logoutAndRedirect } from "../../../services/authService";
+import DashboardNavFooter, { DashboardMobileFooter } from "../../../components/dashboard/DashboardNavFooter";
 
 const navigationGroups = [
   {
@@ -73,6 +72,14 @@ const navigationGroups = [
         accent: "from-emerald-700 to-emerald-500",
         accentBg: "bg-emerald-50",
         accentText: "text-emerald-600",
+      },
+      {
+        name: "Products",
+        icon: Package,
+        path: "/admin/products",
+        accent: "from-teal-600 to-emerald-500",
+        accentBg: "bg-teal-50",
+        accentText: "text-teal-700",
       },
     ],
   },
@@ -157,9 +164,9 @@ const navigationGroups = [
         name: "Reports",
         icon: BarChart3,
         path: "/admin/reports",
-        accent: "from-sky-500 to-blue-500",
-        accentBg: "bg-sky-50",
-        accentText: "text-sky-600",
+        accent: "from-emerald-500 to-teal-500",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-600",
       },
       {
         name: "Sales Reports",
@@ -203,17 +210,17 @@ const navigationGroups = [
         name: "Profile",
         icon: UserCircle,
         path: "/admin/profile",
-        accent: "from-slate-500 to-gray-600",
-        accentBg: "bg-slate-50",
-        accentText: "text-slate-600",
+        accent: "from-emerald-700 to-teal-600",
+        accentBg: "bg-emerald-50",
+        accentText: "text-emerald-700",
       },
       {
         name: "Settings",
         icon: Settings,
         path: "/admin/settings",
-        accent: "from-gray-500 to-zinc-600",
-        accentBg: "bg-gray-50",
-        accentText: "text-gray-600",
+        accent: "from-teal-600 to-emerald-600",
+        accentBg: "bg-teal-50",
+        accentText: "text-teal-700",
       },
     ],
   },
@@ -242,7 +249,6 @@ const itemVariants = {
 };
 
 const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const {
     pendingApprovalsCount,
@@ -466,35 +472,8 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
           ))}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="p-3 space-y-0.5 border-t border-gray-100/80">
-          {/* Logout */}
-          <motion.button
-            whileHover={{ x: isCollapsed ? 0 : 3 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              logoutAndRedirect(navigate);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-              isCollapsed ? "justify-center" : ""
-            } text-gray-400 hover:bg-emerald-50/80 hover:text-emerald-700`}
-          >
-            <div className="flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center bg-gray-50 text-gray-400">
-              <LogOut className="w-[18px] h-[18px]" />
-            </div>
-            <AnimatePresence>
-              {!isCollapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="text-[0.82rem] font-semibold whitespace-nowrap overflow-hidden"
-                >
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
+        <div className="p-3 border-t border-gray-100/80">
+          <DashboardNavFooter isCollapsed={isCollapsed} />
         </div>
       </motion.aside>
 
@@ -600,18 +579,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                 ))}
               </nav>
 
-              <div className="border-t border-gray-100 p-3">
-                <button
-                  type="button"
-                  onClick={() => logoutAndRedirect(navigate)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-emerald-50 transition-colors"
-                >
-                  <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-emerald-50 text-rose-500">
-                    <LogOut className="w-[18px] h-[18px]" />
-                  </div>
-                  Logout
-                </button>
-              </div>
+              <DashboardMobileFooter />
             </motion.aside>
           </>
         )}

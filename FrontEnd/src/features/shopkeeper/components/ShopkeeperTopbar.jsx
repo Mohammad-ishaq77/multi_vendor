@@ -1,23 +1,30 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
   User,
-  AlignJustify,
-  X,
   ChevronDown,
   LogOut,
   Store,
+  ExternalLink,
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
-import { logoutAndRedirect } from "../../../services/authService";
+import { useLogoutConfirm } from "../../../context/LogoutContext";
+import DashboardHeader from "../../../components/dashboard/DashboardHeader";
+import { resolvePageTitle } from "../../../components/dashboard/pageTitles";
 
 const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { notifications, unreadCount, markNotificationRead, markAllNotificationsRead, profile, shop } = useShopkeeper();
+  const { requestLogout } = useLogoutConfirm();
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const pageTitle = useMemo(
+    () => resolvePageTitle(location.pathname),
+    [location.pathname]
+  );
 
   useEffect(() => {
     const handler = (e) => {
@@ -29,175 +36,180 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
   }, []);
 
   return (
-    <header className="flex items-center gap-3 mb-6 sm:mb-8 relative z-[40]">
-      {/* Hamburger */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.92 }}
-        onClick={onMenuToggle}
-        className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-gray-200/80 text-gray-500 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50/50 shadow-sm transition-all"
-        aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        aria-expanded={isMenuOpen}
-      >
-        <AnimatePresence mode="wait">
-          {isMenuOpen ? (
-            <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-              <X className="w-5 h-5" />
-            </motion.div>
-          ) : (
-            <motion.div key="menu" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-              <AlignJustify className="w-5 h-5" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
-
-      {/* Mobile Logo */}
-      <div className="lg:hidden flex-shrink-0">
-        <h1 className="text-lg font-bold tracking-tight text-gray-900">
-          Near<span className="text-emerald-600">Mart</span>
-        </h1>
-      </div>
-
-      {/* Shop Name (Desktop) */}
-      <div className="hidden lg:flex items-center gap-3 flex-1">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-sm">
-            <Store className="w-4 h-4" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-gray-900">{shop?.name || "My Shop"}</p>
-            <p className="text-[0.6rem] text-gray-400 font-medium">{shop?.type || "Shop Type"}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Actions */}
-      <div className="flex items-center gap-2 ml-auto">
-        {/* Shop Status Badge */}
-        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border ${
+    <DashboardHeader title={pageTitle} isMenuOpen={isMenuOpen} onMenuToggle={onMenuToggle}>
+      <div
+        className={`hidden items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold sm:flex ${
           shop?.isOpen
-            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-            : "bg-gray-50 text-gray-500 border-gray-200"
-        }`}>
-          <div className={`w-2 h-2 rounded-full ${shop?.isOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"}`} />
-          {shop?.isOpen ? "Open" : "Closed"}
-        </div>
+            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+            : "border-gray-200 bg-gray-50 text-gray-500"
+        }`}
+      >
+        <div
+          className={`h-2 w-2 rounded-full ${
+            shop?.isOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
+          }`}
+        />
+        {shop?.isOpen ? "Open" : "Closed"}
+      </div>
 
-        {/* Notifications */}
-        <div className="relative" data-notif>
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
-            className="relative w-10 h-10 bg-white border border-gray-200/80 rounded-xl flex items-center justify-center text-gray-500 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all shadow-sm"
-          >
-            <Bell className="w-[1.05rem] h-[1.05rem]" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4.5 h-4.5 min-w-[18px] bg-rose-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center ring-2 ring-white">
-                {unreadCount}
-              </span>
-            )}
-          </motion.button>
+      <div className="relative" data-notif>
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.92 }}
+          onClick={() => {
+            setNotifOpen(!notifOpen);
+            setProfileOpen(false);
+          }}
+          className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-sm transition-all hover:border-emerald-200 hover:bg-emerald-50/50 hover:text-emerald-600"
+        >
+          <Bell className="h-4 w-4" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-[0.55rem] font-bold text-white ring-2 ring-white">
+              {unreadCount}
+            </span>
+          )}
+        </motion.button>
 
-          <AnimatePresence>
-            {notifOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-2xl shadow-black/10 border border-gray-100 overflow-hidden z-50"
-              >
-                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-gray-900">Notifications</h3>
-                  {unreadCount > 0 && (
-                    <button onClick={markAllNotificationsRead} className="text-xs text-emerald-600 font-semibold hover:underline">
-                      Mark all read
-                    </button>
-                  )}
-                </div>
-                <div className="max-h-72 overflow-y-auto">
-                  {notifications.map((notif) => (
+        <AnimatePresence>
+          {notifOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-11 z-50 w-80 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-black/10"
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 p-4">
+                <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={markAllNotificationsRead}
+                    className="text-xs font-semibold text-emerald-600 hover:underline"
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+              <div className="max-h-72 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <Bell className="mx-auto mb-2 h-8 w-8 text-gray-300" />
+                    <p className="text-sm text-gray-400">No notifications</p>
+                  </div>
+                ) : (
+                  notifications.slice(0, 8).map((notif) => (
                     <div
                       key={notif.id}
                       onClick={() => markNotificationRead(notif.id)}
-                      className={`p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50/50 transition-colors ${
+                      className={`cursor-pointer border-b border-gray-50 p-4 transition-colors hover:bg-gray-50/50 ${
                         !notif.read ? "bg-emerald-50/30" : ""
                       }`}
                     >
                       <div className="flex gap-3">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${!notif.read ? "bg-emerald-500" : "bg-gray-300"}`} />
+                        <div
+                          className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+                            !notif.read ? "bg-emerald-500" : "bg-gray-300"
+                          }`}
+                        />
                         <div>
-                          <p className="text-sm text-gray-700 leading-snug">{notif.text}</p>
-                          <p className="text-xs text-gray-400 mt-1">{notif.time}</p>
+                          <p className="text-sm leading-snug text-gray-700">
+                            {notif.text || notif.title || notif.message}
+                          </p>
+                          <p className="mt-1 text-xs text-gray-400">{notif.time || ""}</p>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Profile */}
-        <div className="relative" data-profile>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
-            className="flex items-center gap-2 bg-white border border-gray-200/80 rounded-xl pl-1 pr-2.5 py-1 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white overflow-hidden">
-              {profile?.image ? (
-                <img src={profile.image} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <User className="w-4 h-4" />
-              )}
-            </div>
-            <span className="hidden sm:block text-sm font-semibold text-gray-700 max-w-[80px] truncate">{profile?.name || "Shopkeeper"}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-gray-400 hidden sm:block" />
-          </motion.button>
-
-          <AnimatePresence>
-            {profileOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-0 top-12 w-56 bg-white rounded-2xl shadow-2xl shadow-black/10 border border-gray-100 overflow-hidden z-50"
-              >
-                <div className="p-3">
-                  <button
-                    onClick={() => { navigate("/shopkeeper/profile"); setProfileOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                  >
-                    <User className="w-4 h-4 text-gray-400" />
-                    My Profile
-                  </button>
-                  <button
-                    onClick={() => { navigate("/shopkeeper/shop"); setProfileOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                  >
-                    <Store className="w-4 h-4 text-gray-400" />
-                    My Shop
-                  </button>
-                </div>
-                <div className="border-t border-gray-100 p-3">
-                  <button
-                    onClick={() => logoutAndRedirect(navigate)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </header>
+
+      <div className="relative" data-profile>
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            setProfileOpen(!profileOpen);
+            setNotifOpen(false);
+          }}
+          className="flex items-center gap-2 rounded-lg border border-gray-200/80 bg-white py-1 pl-1 pr-2 shadow-sm transition-shadow hover:shadow-md"
+        >
+          <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+            {profile?.image ? (
+              <img src={profile.image} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <User className="h-3.5 w-3.5" />
+            )}
+          </div>
+          <span className="hidden max-w-[80px] truncate text-sm font-semibold text-gray-700 sm:block">
+            {profile?.name || "Vendor"}
+          </span>
+          <ChevronDown className="hidden h-3.5 w-3.5 text-gray-400 sm:block" />
+        </motion.button>
+
+        <AnimatePresence>
+          {profileOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-black/10"
+            >
+              <div className="p-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/shopkeeper/profile");
+                    setProfileOpen(false);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                >
+                  <User className="h-4 w-4 text-gray-400" />
+                  My Profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/shopkeeper/shop");
+                    setProfileOpen(false);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                >
+                  <Store className="h-4 w-4 text-gray-400" />
+                  My Shop
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/");
+                    setProfileOpen(false);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                >
+                  <ExternalLink className="h-4 w-4 text-gray-400" />
+                  View to Site
+                </button>
+              </div>
+              <div className="border-t border-gray-100 p-3">
+                <button
+                  type="button"
+                  onClick={requestLogout}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </DashboardHeader>
   );
 };
 

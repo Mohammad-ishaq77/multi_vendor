@@ -133,15 +133,9 @@ const Addresses = () => {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-[#fafcfb]">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-100/60">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">My Addresses</h1>
-                <p className="text-xs text-gray-400 mt-0.5">Manage your delivery locations</p>
-              </div>
+      <div className="w-full">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-sm text-gray-500">Manage your delivery locations</p>
               {!showForm && (
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -154,10 +148,7 @@ const Addresses = () => {
                 </motion.button>
               )}
             </div>
-          </div>
-        </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           {/* Mobile Add Button */}
           {!showForm && (
             <motion.button
@@ -419,7 +410,6 @@ const Addresses = () => {
               </AnimatePresence>
             </div>
           )}
-        </div>
       </div>
     </CustomerShell>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -10,15 +10,14 @@ import {
   IndianRupee,
   Star,
   User,
-  LogOut,
   ChevronLeft,
   ChevronRight,
-  ShoppingBasket,
   Settings,
   Truck,
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
-import { logoutAndRedirect } from "../../../services/authService";
+import DashboardNavFooter, { DashboardMobileFooter } from "../../../components/dashboard/DashboardNavFooter";
+import { isNavActive } from "../../../utils/nav";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/shopkeeper/dashboard", accent: "from-emerald-500 to-teal-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
@@ -47,7 +46,6 @@ const itemVariants = {
 };
 
 const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -117,7 +115,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
         <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto scrollbar-hide">
           {menuItems.map((item, i) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isNavActive(location.pathname, item.path);
             const isHovered = hoveredItem === item.name;
             return (
               <motion.div key={item.name} custom={i} variants={itemVariants} initial="hidden" animate="visible">
@@ -185,29 +183,8 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
           })}
         </nav>
 
-        {/* Bottom */}
-        <div className="p-3 space-y-0.5 border-t border-gray-100/80">
-          <motion.button
-            whileHover={{ x: isCollapsed ? 0 : 3 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              logoutAndRedirect(navigate);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-              isCollapsed ? "justify-center" : ""
-            } text-gray-400 hover:bg-rose-50/80 hover:text-rose-600`}
-          >
-            <div className="flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center bg-gray-50 text-gray-400">
-              <LogOut className="w-[18px] h-[18px]" />
-            </div>
-            <AnimatePresence>
-              {!isCollapsed && (
-                <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: "auto" }} exit={{ opacity: 0, width: 0 }} className="text-[0.82rem] font-semibold whitespace-nowrap overflow-hidden">
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
+        <div className="p-3 border-t border-gray-100/80">
+          <DashboardNavFooter isCollapsed={isCollapsed} />
         </div>
       </motion.aside>
 
@@ -283,18 +260,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                   );
                 })}
               </nav>
-              <div className="border-t border-gray-100 p-3">
-                <button
-                  type="button"
-                  onClick={() => logoutAndRedirect(navigate)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
-                >
-                  <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-rose-50 text-rose-500">
-                    <LogOut className="w-[18px] h-[18px]" />
-                  </div>
-                  Logout
-                </button>
-              </div>
+              <DashboardMobileFooter />
             </motion.aside>
           </>
         )}
@@ -305,7 +271,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
         <div className="flex items-center justify-around py-2">
           {menuItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isNavActive(location.pathname, item.path);
             return (
               <NavLink key={item.name} to={item.path} className="relative flex flex-col items-center gap-1 p-2">
                 {isActive && (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -8,15 +8,13 @@ import {
   IndianRupee,
   Bell,
   HelpCircle,
-  LogOut,
   ChevronLeft,
   ChevronRight,
-  ShoppingBasket,
   Truck,
   CircleUser,
 } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
-import { logoutAndRedirect } from "../../../services/authService";
+import DashboardNavFooter, { DashboardMobileFooter } from "../../../components/dashboard/DashboardNavFooter";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/delivery/dashboard", accent: "from-emerald-500 to-teal-500", accentBg: "bg-emerald-50", accentText: "text-emerald-600" },
@@ -51,7 +49,6 @@ const itemVariants = {
 };
 
 export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = () => {} }) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { isOnline, unreadCount, availableDeliveries } = useDeliveryPartner();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -218,7 +215,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="relative z-10 ml-auto bg-blue-500 text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
+                        className="relative z-10 ml-auto bg-[var(--color-primary)] text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
                       >
                         {availableCount}
                       </motion.span>
@@ -227,7 +224,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="relative z-10 ml-auto bg-rose-500 text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
+                        className="relative z-10 ml-auto bg-emerald-600 text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
                       >
                         {unreadCount}
                       </motion.span>
@@ -267,33 +264,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
             </AnimatePresence>
           </motion.button>
 
-          {/* Logout */}
-          <motion.button
-            whileHover={{ x: isCollapsed ? 0 : 3 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              logoutAndRedirect(navigate);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-              isCollapsed ? "justify-center" : ""
-            } text-gray-400 hover:bg-rose-50/80 hover:text-rose-600`}
-          >
-            <div className="flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center bg-gray-50 text-gray-400 group-hover:bg-rose-50 group-hover:text-rose-500">
-              <LogOut className="w-[18px] h-[18px]" />
-            </div>
-            <AnimatePresence>
-              {!isCollapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="text-[0.82rem] font-semibold whitespace-nowrap overflow-hidden"
-                >
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
+          <DashboardNavFooter isCollapsed={isCollapsed} />
         </div>
       </motion.aside>
 
@@ -375,12 +346,12 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                           </div>
                           <span>{item.name}</span>
                           {item.badge && availableCount > 0 && (
-                            <span className="ml-auto rounded-full bg-blue-500 px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
+                            <span className="ml-auto rounded-full bg-[var(--color-primary)] px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
                               {availableCount}
                             </span>
                           )}
                           {item.name === "Notifications" && unreadCount > 0 && (
-                            <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
+                            <span className="ml-auto rounded-full bg-emerald-600 px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
                               {unreadCount}
                             </span>
                           )}
@@ -391,27 +362,19 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                 })}
               </nav>
 
-              <div className="border-t border-gray-100 p-3 space-y-0.5">
+              <div className="border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => window.open("mailto:support@nearmart.example?subject=NearMart%20Support", "_blank")}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-500 hover:bg-gray-50 transition-colors mx-3 mt-3"
+                  style={{ width: "calc(100% - 1.5rem)" }}
                 >
                   <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-gray-50 text-gray-400">
                     <HelpCircle className="w-[18px] h-[18px]" />
                   </div>
                   Help & Support
                 </button>
-                <button
-                  type="button"
-                  onClick={() => logoutAndRedirect(navigate)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
-                >
-                  <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-rose-50 text-rose-500">
-                    <LogOut className="w-[18px] h-[18px]" />
-                  </div>
-                  Logout
-                </button>
+                <DashboardMobileFooter />
               </div>
             </motion.aside>
           </>
@@ -451,12 +414,12 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                   {item.name.split(" ")[0]}
                 </span>
                 {item.badge && availableCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-blue-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-[var(--color-primary)] text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
                     {availableCount}
                   </span>
                 )}
                 {item.name === "Notifications" && unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-emerald-600 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
                     {unreadCount}
                   </span>
                 )}

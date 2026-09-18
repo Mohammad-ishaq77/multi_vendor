@@ -69,7 +69,7 @@ export default function DeliveryVerification() {
   };
 
   return (
-    <div className="max-w-lg mx-auto space-y-4">
+    <div className="w-full space-y-4">
       <button onClick={() => navigate("/delivery/active")} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 font-medium">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>

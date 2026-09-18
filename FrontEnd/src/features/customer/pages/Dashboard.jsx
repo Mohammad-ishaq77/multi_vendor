@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 
-import CustomerSidebar from "../components/CustomerSidebar";
-import CustomerTopbar from "../components/CustomerTopbar";
+import CustomerShell from "../components/CustomerShell";
 import CategoryCard from "../components/CategoryCard";
 import ShopCard from "../components/ShopCard";
 import ProductCard from "../components/ProductCard";
 import PageTransition from "../components/PageTransition";
 
 import { categories, shops, products } from "../data/customerData";
+import orderService, { ORDERS_CHANGE_EVENT } from "../../../services/orderService";
+import { ClipboardList, Heart, ShoppingCart, Truck } from "lucide-react";
 
 // ─── SHARED NAVIGATION ───
 export const NAV_ITEMS = [
@@ -230,7 +231,12 @@ const ActiveOrder = ({ order }) => {
           <p className="text-xs text-gray-500 sm:text-sm">
             Estimated arrival: <span className="font-semibold text-[#14261f]">{order.estimatedArrival}</span>
           </p>
-          <button className="text-xs font-semibold text-[#155c43] hover:underline sm:text-sm">Track Order →</button>
+          <button
+            onClick={() => window.location.assign(`/customer/orders/${order.id}/track`)}
+            className="text-xs font-semibold text-[#155c43] hover:underline sm:text-sm"
+          >
+            Track Order →
+          </button>
         </div>
       </div>
     </motion.section>
@@ -291,14 +297,19 @@ const ScrollToTop = () => {
 // ─── MAIN DASHBOARD ───
 const CustomerDashboard = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { addToCart, cartCount } = useCart();
   const [greeting, setGreeting] = useState("Good morning");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const reducedMotion = useReducedMotion();
+  const [orders, setOrders] = useState(() => orderService.getCustomerOrders());
+  const [wishlistCount] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("nearmart_wishlist") || "[]").length;
+    } catch {
+      return 0;
+    }
+  });
 
-  const [activeOrder] = useState(null);
+  const activeOrder = orders.find((order) => !["Delivered", "Cancelled", "Completed"].includes(order.status));
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -309,14 +320,10 @@ const CustomerDashboard = () => {
   }, []);
 
   useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  const handleSearch = (e) => {
-    if (e.key === "Enter" && searchQuery.trim()) {
-      navigate(`/customer/products?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  };
+    const refresh = () => setOrders(orderService.getCustomerOrders());
+    window.addEventListener(ORDERS_CHANGE_EVENT, refresh);
+    return () => window.removeEventListener(ORDERS_CHANGE_EVENT, refresh);
+  }, []);
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -328,25 +335,21 @@ const CustomerDashboard = () => {
     visible: { opacity: 1, y: 0, transition: { duration: reducedMotion ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] } },
   };
 
+  const mappedActiveOrder = activeOrder
+    ? {
+        id: activeOrder.id,
+        shopName: activeOrder.shopName || activeOrder.items?.[0]?.shopName || "NearMart",
+        status: ["Shipped", "Out for Delivery"].includes(activeOrder.status) ? "on_the_way" : activeOrder.status === "Delivered" ? "delivered" : "processing",
+        estimatedTime: "Live tracking",
+        estimatedArrival: "Soon",
+      }
+    : null;
+
   return (
-    <PageTransition>
-      <div className="flex min-h-screen bg-[#f7faf8] font-sans selection:bg-[#155c43]/20 selection:text-[#155c43]">
-        <CustomerSidebar isMobileOpen={mobileMenuOpen} onMobileClose={() => setMobileMenuOpen(false)} />
-
-        <main className="min-w-0 flex-1 overflow-x-hidden p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
-          {/* Topbar */}
-          <CustomerTopbar
-            cartCount={cartCount}
-            isMenuOpen={mobileMenuOpen}
-            onMenuToggle={() => setMobileMenuOpen((v) => !v)}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSearchSubmit={handleSearch}
-            location="Pathankot"
-          />
-
+    <CustomerShell>
+      <PageTransition>
           {/* Welcome */}
-          <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="mb-5 mt-5 sm:mb-6 sm:mt-6 md:mb-8 md:mt-8">
+          <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="mb-5 sm:mb-6 md:mb-8">
             <h1 className="text-[1.6rem] font-bold leading-tight tracking-tight text-[#14261f] sm:text-3xl lg:text-[2.25rem]">
               {greeting}
             </h1>
@@ -355,11 +358,37 @@ const CustomerDashboard = () => {
             </p>
           </motion.section>
 
-          {/* Hero */}
-          <HeroCarousel onNavigate={navigate} />
+          <div className="mb-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+            {[
+              { label: "Orders", value: orders.length, icon: ClipboardList, path: "/customer/orders" },
+              { label: "Active tracking", value: activeOrder ? 1 : 0, icon: Truck, path: activeOrder ? `/customer/orders/${activeOrder.id}/track` : "/customer/orders" },
+              { label: "Cart", value: cartCount, icon: ShoppingCart, path: "/customer/cart" },
+              { label: "Wishlist", value: wishlistCount, icon: Heart, path: "/customer/wishlist" },
+            ].map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <button
+                  key={stat.label}
+                  type="button"
+                  onClick={() => navigate(stat.path)}
+                  className="rounded-2xl border border-gray-100 bg-white p-4 text-left shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">{stat.label}</p>
+                      <p className="text-xl font-bold text-[#14261f]">{stat.value}</p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
 
-          {/* Active Order */}
-          <ActiveOrder order={activeOrder} />
+          <HeroCarousel onNavigate={navigate} />
+          <ActiveOrder order={mappedActiveOrder} />
 
           {/* Categories — horizontal scroll on mobile, grid on desktop */}
           <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-10 sm:mb-12">
@@ -406,11 +435,9 @@ const CustomerDashboard = () => {
           </motion.section>
 
           <div className="h-6 sm:h-8" />
-        </main>
-
         <ScrollToTop />
-      </div>
-    </PageTransition>
+      </PageTransition>
+    </CustomerShell>
   );
 };
 

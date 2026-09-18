@@ -55,7 +55,7 @@ const EditShop = () => {
 
   return (
     <ShopkeeperShell>
-      <div className="max-w-3xl mx-auto">
+      <div className="w-full">
         <button
           onClick={() => navigate("/shopkeeper/shop")}
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors mb-6"

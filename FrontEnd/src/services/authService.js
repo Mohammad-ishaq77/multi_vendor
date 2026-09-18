@@ -1,4 +1,4 @@
-import { APP_CONFIG, STORAGE_KEYS, TEST_CREDENTIALS } from "../config/appConfig";
+import { APP_CONFIG, AUTH_STORAGE_KEYS, STORAGE_KEYS, TEST_CREDENTIALS } from "../config/appConfig";
 import { ROLES, getDashboardPath, getRoleMeta, isValidRole } from "../config/roles";
 import storageService from "./storageService";
 
@@ -60,31 +60,28 @@ export const authService = {
     return Boolean(auth?.authenticated && user);
   },
 
-  saveSession(user) {
+  saveSession(user, persist = true) {
     const session = {
       authenticated: true,
       role: user.role,
       userId: user.id,
+      persist,
       savedAt: new Date().toISOString(),
     };
-    storageService.setJSON(STORAGE_KEYS.AUTH, session);
-    storageService.setJSON(STORAGE_KEYS.USER, user);
-    storageService.set(STORAGE_KEYS.ROLE, user.role);
-    storageService.setJSON(STORAGE_KEYS.SESSION, session);
+    storageService.setJSON(STORAGE_KEYS.AUTH, session, persist);
+    storageService.setJSON(STORAGE_KEYS.USER, user, persist);
+    storageService.set(STORAGE_KEYS.ROLE, user.role, persist);
+    storageService.setJSON(STORAGE_KEYS.SESSION, session, persist);
+    storageService.set(STORAGE_KEYS.PERSIST, persist ? "1" : "0", persist);
     emitAuthChange();
   },
 
   clearSession() {
-    storageService.removeMany([
-      STORAGE_KEYS.AUTH,
-      STORAGE_KEYS.USER,
-      STORAGE_KEYS.ROLE,
-      STORAGE_KEYS.SESSION,
-    ]);
+    storageService.removeMany([...AUTH_STORAGE_KEYS, STORAGE_KEYS.PERSIST]);
     emitAuthChange();
   },
 
-  login({ email, password, role }) {
+  login({ email, password, role, remember = true }) {
     if (!email?.trim() || !password) {
       return { ok: false, error: "Please enter your email and password." };
     }
@@ -102,7 +99,7 @@ export const authService = {
 
     prepareRoleWorkspace(role);
     const user = buildUser(role, { email: TEST_CREDENTIALS.email });
-    this.saveSession(user);
+    this.saveSession(user, remember !== false);
 
     return {
       ok: true,
@@ -111,7 +108,7 @@ export const authService = {
     };
   },
 
-  register({ name, email, password, role }) {
+  register({ name, email, password, role, remember = true }) {
     if (!name?.trim() || !email?.trim() || !password) {
       return { ok: false, error: "Please complete all required fields." };
     }
@@ -121,7 +118,7 @@ export const authService = {
     }
 
     const user = buildUser(role, { name: name.trim(), email: email.trim() });
-    this.saveSession(user);
+    this.saveSession(user, remember !== false);
 
     return {
       ok: true,

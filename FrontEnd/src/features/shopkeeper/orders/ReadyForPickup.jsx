@@ -12,7 +12,7 @@ const ReadyForPickup = () => {
 
   return (
     <ShopkeeperShell>
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Ready for Pickup</h1>
           <p className="text-xs text-gray-500 mt-0.5">Orders packed and ready for delivery partner pickup</p>

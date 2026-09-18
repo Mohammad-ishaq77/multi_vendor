@@ -3,22 +3,7 @@ import { useLocation, Outlet } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
-
-const pageVariants = {
-  initial: { opacity: 0, y: 15, scale: 0.98 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    scale: 0.98,
-    transition: { duration: 0.3 },
-  },
-};
+import { DASHBOARD_INSET } from "../../../components/dashboard/DashboardHeader";
 
 const AdminShell = () => {
   const location = useLocation();
@@ -33,13 +18,12 @@ const AdminShell = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen bg-[#f7faf8] font-sans selection:bg-[#155c43]/20 selection:text-[#155c43]">
-      {/* Ambient background glow */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+    <div className="flex h-screen min-h-screen overflow-hidden bg-[#f7faf8] font-sans selection:bg-[#155c43]/20 selection:text-[#155c43]">
+      <div className="pointer-events-none fixed inset-0 z-0">
         <motion.div
           animate={{ opacity: [0.03, 0.06, 0.03], scale: [1, 1.2, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-[#155c43] rounded-full blur-[150px]"
+          className="absolute -top-20 -right-20 h-[500px] w-[500px] rounded-full bg-[#155c43] blur-[150px]"
         />
       </div>
 
@@ -48,33 +32,34 @@ const AdminShell = () => {
         onMobileClose={closeMobileMenu}
       />
 
-      <main className="min-w-0 flex-1 overflow-x-hidden p-3 sm:p-4 md:p-6 lg:p-8 xl:p-10">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         <AdminTopbar
           isMenuOpen={mobileMenuOpen}
           onMenuToggle={() => setMobileMenuOpen((v) => !v)}
         />
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 15, scale: 0.98 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-            }}
-            exit={{
-              opacity: 0,
-              y: -10,
-              scale: 0.98,
-              transition: { duration: 0.3 },
-            }}
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
-      </main>
+        <main className={`${DASHBOARD_INSET} flex-1 overflow-x-hidden overflow-y-auto py-5 pb-24 lg:py-6 lg:pb-8`}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+              }}
+              exit={{
+                opacity: 0,
+                y: -8,
+                transition: { duration: 0.2 },
+              }}
+              className="w-full"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
     </div>
   );
 };

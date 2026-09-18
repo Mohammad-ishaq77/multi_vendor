@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { deliveryPartnerProfile, defaultNotifications, defaultEarnings } from "../data/deliveryPartnerData";
 import { dummyDeliveries } from "../data/dummyDeliveries";
+import orderService, { ORDERS_CHANGE_EVENT } from "../../../services/orderService";
 
 const DeliveryPartnerContext = createContext(null);
 
@@ -81,6 +82,27 @@ export function DeliveryPartnerProvider({ children }) {
   useEffect(() => { saveLS(LS_KEYS.agreedToGuidelines, agreedToGuidelines); }, [agreedToGuidelines]);
   useEffect(() => { saveLS(LS_KEYS.hasCompletedOnboarding, hasCompletedOnboarding); }, [hasCompletedOnboarding]);
   useEffect(() => { saveLS(LS_KEYS.digilockerVerified, digilockerVerified); }, [digilockerVerified]);
+
+  useEffect(() => {
+    const mergeLiveDeliveries = () => {
+      const live = orderService
+        .getCustomerOrders()
+        .filter((order) => ["Ready for Pickup", "Shipped"].includes(order.shopStatus || order.status))
+        .map((order) => ({
+          ...orderService.toDeliveryJob(order),
+          status: "ready_for_pickup",
+        }));
+      if (!live.length) return;
+      setAvailableDeliveries((prev) => {
+        const map = new Map(prev.map((item) => [item.id || item.orderId, item]));
+        live.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+        return Array.from(map.values());
+      });
+    };
+    mergeLiveDeliveries();
+    window.addEventListener(ORDERS_CHANGE_EVENT, mergeLiveDeliveries);
+    return () => window.removeEventListener(ORDERS_CHANGE_EVENT, mergeLiveDeliveries);
+  }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 

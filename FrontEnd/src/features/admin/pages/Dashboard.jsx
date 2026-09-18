@@ -102,6 +102,7 @@ export default function AdminDashboard() {
     shopkeepers,
     deliveryPartners,
     shops,
+    products,
     orders,
     recentActivities,
     approvals,
@@ -273,6 +274,13 @@ export default function AdminDashboard() {
               value={shops.length}
               accent="violet"
               delay={3}
+            />
+            <StatCard
+              icon={<ShoppingCart size={22} />}
+              label="Catalog Products"
+              value={products.length}
+              accent="emerald"
+              delay={4}
             />
             <StatCard
               icon={<CalendarCheck size={22} />}

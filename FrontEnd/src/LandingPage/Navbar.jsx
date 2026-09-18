@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Home,
   Info,
+  LayoutDashboard,
   LayoutGrid,
   LogOut,
   Menu,
   Phone,
   ShoppingCart,
   Store,
-  User,
   X,
 } from "lucide-react";
 import BrandLogo from "../components/common/BrandLogo";
@@ -19,7 +19,7 @@ import { publicNav } from "../config/navigation";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../features/customer/context/CartContext";
 import { getDashboardPath } from "../config/roles";
-import { logoutAndRedirect } from "../services/authService";
+import { useLogoutConfirm } from "../context/LogoutContext";
 
 const NAV_ICONS = {
   "/": Home,
@@ -33,9 +33,9 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const { isAuthenticated, user, dashboardPath } = useAuth();
   const { cartCount } = useCart();
+  const { requestLogout } = useLogoutConfirm();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -107,10 +107,10 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <Link to={accountPath} className="btn-secondary !min-h-9 !rounded-full !px-4 !text-sm">
-                  <User className="h-4 w-4" />
-                  Account
+                  <LayoutDashboard className="h-4 w-4" />
+                  View Dashboard
                 </Link>
-                <button type="button" className="btn-primary !min-h-9 !rounded-full !px-4 !text-sm" onClick={() => logoutAndRedirect(navigate)}>
+                <button type="button" className="btn-primary !min-h-9 !rounded-full !px-4 !text-sm" onClick={requestLogout}>
                   <LogOut className="h-4 w-4" />
                   Logout
                 </button>
@@ -186,8 +186,8 @@ const Navbar = () => {
               <div className="grid grid-cols-2 gap-2 pt-1">
                 {isAuthenticated ? (
                   <>
-                    <Link to={accountPath} className="btn-secondary">Account</Link>
-                    <button type="button" className="btn-primary" onClick={() => logoutAndRedirect(navigate)}>Logout</button>
+                    <Link to={accountPath} className="btn-secondary">View Dashboard</Link>
+                    <button type="button" className="btn-primary" onClick={requestLogout}>Logout</button>
                   </>
                 ) : (
                   <>

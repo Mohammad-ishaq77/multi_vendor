@@ -47,7 +47,7 @@ const OrderDetails = () => {
 
   return (
     <ShopkeeperShell>
-      <div className="max-w-3xl mx-auto">
+      <div className="w-full">
         <button onClick={() => navigate("/shopkeeper/orders")} className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Orders
         </button>

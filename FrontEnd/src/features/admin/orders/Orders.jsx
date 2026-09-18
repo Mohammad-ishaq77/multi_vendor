@@ -34,16 +34,16 @@ const statusLabels = {
 };
 const statusBadge = {
   pending: "bg-amber-50 text-amber-700 border border-amber-200",
-  confirmed: "bg-blue-50 text-blue-700 border border-blue-200",
-  out_for_delivery: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+  confirmed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  out_for_delivery: "bg-teal-50 text-teal-700 border border-teal-200",
   delivered: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   cancelled: "bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 const statusDot = {
   pending: "bg-amber-500",
-  confirmed: "bg-blue-500",
-  out_for_delivery: "bg-indigo-500",
+  confirmed: "bg-emerald-500",
+  out_for_delivery: "bg-teal-500",
   delivered: "bg-emerald-500",
   cancelled: "bg-rose-500",
 };

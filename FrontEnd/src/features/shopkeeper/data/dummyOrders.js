@@ -12,11 +12,11 @@ export const dummyOrders = [
 export const orderStatusFlow = ["New", "Accepted", "Preparing", "Ready for Pickup", "Picked Up", "Delivered", "Completed"];
 
 export const orderStatusConfig = {
-  New: { color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", dot: "bg-blue-500" },
-  Accepted: { color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-200", dot: "bg-indigo-500" },
+  New: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", dot: "bg-emerald-500" },
+  Accepted: { color: "text-teal-700", bg: "bg-teal-50", border: "border-teal-200", dot: "bg-teal-600" },
   Preparing: { color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", dot: "bg-amber-500" },
-  "Ready for Pickup": { color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-200", dot: "bg-violet-500" },
-  "Picked Up": { color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-200", dot: "bg-cyan-500" },
+  "Ready for Pickup": { color: "text-emerald-700", bg: "bg-[var(--color-green-bg)]", border: "border-[var(--color-green-soft)]", dot: "bg-[var(--color-primary)]" },
+  "Picked Up": { color: "text-teal-700", bg: "bg-teal-50", border: "border-teal-200", dot: "bg-teal-600" },
   Delivered: { color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", dot: "bg-emerald-500" },
   Completed: { color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", dot: "bg-emerald-600" },
   Cancelled: { color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", dot: "bg-rose-500" },

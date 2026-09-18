@@ -30,8 +30,8 @@ const stepIcons = {
 const statusConfig = {
   Delivered: "bg-emerald-500",
   Processing: "bg-amber-500",
-  Shipped: "bg-sky-500",
-  "Out for Delivery": "bg-violet-500",
+  Shipped: "bg-emerald-500",
+  "Out for Delivery": "bg-teal-600",
   Placed: "bg-gray-400",
 };
 
@@ -63,7 +63,7 @@ const TrackOrder = () => {
 
   return (
     <CustomerShell>
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+      <div className="w-full">
         {/* Back */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}

@@ -133,21 +133,15 @@ const ProductDetail = () => {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-gray-50/50">
-        {/* Breadcrumb & Back */}
-        <div className="bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+      <div className="w-full">
             <button
               onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors mb-5"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to products
             </button>
-          </div>
-        </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Left - Images */}
             <motion.div
@@ -423,7 +417,6 @@ const ProductDetail = () => {
               </div>
             </motion.div>
           )}
-        </div>
 
         {/* Order Success Modal */}
         <AnimatePresence>

@@ -1,19 +1,27 @@
 const isBrowser = () => typeof window !== "undefined";
 
+const stores = () => {
+  if (!isBrowser()) return [];
+  return [window.localStorage, window.sessionStorage];
+};
+
 export const storageService = {
   get(key) {
     if (!isBrowser()) return null;
     try {
-      return localStorage.getItem(key);
+      return window.localStorage.getItem(key) ?? window.sessionStorage.getItem(key);
     } catch {
       return null;
     }
   },
 
-  set(key, value) {
+  set(key, value, persist = true) {
     if (!isBrowser()) return;
     try {
-      localStorage.setItem(key, value);
+      const primary = persist ? window.localStorage : window.sessionStorage;
+      const secondary = persist ? window.sessionStorage : window.localStorage;
+      primary.setItem(key, value);
+      secondary.removeItem(key);
     } catch {
       /* silent */
     }
@@ -29,17 +37,18 @@ export const storageService = {
     }
   },
 
-  setJSON(key, value) {
-    this.set(key, JSON.stringify(value));
+  setJSON(key, value, persist = true) {
+    this.set(key, JSON.stringify(value), persist);
   },
 
   remove(key) {
-    if (!isBrowser()) return;
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      /* silent */
-    }
+    stores().forEach((store) => {
+      try {
+        store.removeItem(key);
+      } catch {
+        /* silent */
+      }
+    });
   },
 
   removeMany(keys = []) {

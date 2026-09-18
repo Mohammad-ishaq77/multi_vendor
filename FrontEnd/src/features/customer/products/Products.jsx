@@ -423,24 +423,9 @@ const Products = () => {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-gray-50/50">
-        {/* Header */}
-        <div className="sticky top-0 z-30 bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between h-16 gap-4">
-              {/* Title */}
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
-                  <Package className="w-4 h-4" />
-                </div>
-                <div>
-                  <h1 className="text-base font-bold text-gray-900">Products</h1>
-                  <p className="text-[0.65rem] text-gray-400 -mt-0.5">Fresh & local</p>
-                </div>
-              </div>
-
-              {/* Search */}
-              <div className="flex-1 max-w-lg">
+      <div className="w-full">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="relative flex-1">
                 <div className="relative">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -448,7 +433,7 @@ const Products = () => {
                     value={search}
                     onChange={(e) => updateParam("search", e.target.value)}
                     placeholder="Search products, shops..."
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-9 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50"
+                    className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-9 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50"
                   />
                   {search && (
                     <button
@@ -461,7 +446,6 @@ const Products = () => {
                 </div>
               </div>
 
-              {/* Mobile Filter Toggle */}
               <button
                 onClick={() => setShowMobileFilters(!showMobileFilters)}
                 className="lg:hidden flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shrink-0"
@@ -475,8 +459,6 @@ const Products = () => {
                 )}
               </button>
             </div>
-          </div>
-        </div>
 
         {/* Mobile Filters */}
         <AnimatePresence>
@@ -485,7 +467,7 @@ const Products = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden overflow-hidden bg-white border-b border-gray-100"
+              className="lg:hidden overflow-hidden bg-white border border-gray-100 rounded-2xl mb-4"
             >
               <div className="px-4 py-4 space-y-4">
                 {/* Sort */}
@@ -549,11 +531,11 @@ const Products = () => {
           )}
         </AnimatePresence>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="w-full">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
             <aside className="hidden lg:block w-64 shrink-0">
-              <div className="sticky top-24 space-y-2">
+              <div className="sticky top-4 space-y-2">
                 {/* Sort */}
                 <SidebarSection title="Sort By">
                   <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">

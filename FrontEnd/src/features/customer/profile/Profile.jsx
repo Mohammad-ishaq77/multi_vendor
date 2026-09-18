@@ -8,17 +8,17 @@ import {
   MapPin,
   Camera,
   CheckCircle2,
-  ArrowLeft,
   Shield,
   Bell,
   LogOut,
   Package,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
-import { logoutAndRedirect } from "../../../services/authService";
+import { useLogoutConfirm } from "../../../context/LogoutContext";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { requestLogout } = useLogoutConfirm();
   const [profile, setProfile] = useState(() =>
     JSON.parse(
       localStorage.getItem("nearmart_profile") ||
@@ -65,24 +65,10 @@ const Profile = () => {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-[#fafcfb]">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-100/60">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div className="w-full">
           <div className="grid lg:grid-cols-[260px_1fr] gap-6">
             {/* Sidebar */}
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="lg:sticky lg:top-4 lg:self-start">
               {/* Profile Card */}
               <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-4">
                 {/* Banner */}
@@ -144,7 +130,7 @@ const Profile = () => {
                 })}
                 <div className="border-t border-gray-100 mt-1 pt-1">
                   <button
-                    onClick={() => logoutAndRedirect(navigate)}
+                    onClick={requestLogout}
                     className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
@@ -280,7 +266,6 @@ const Profile = () => {
               </motion.div>
             </div>
           </div>
-        </div>
       </div>
     </CustomerShell>
   );

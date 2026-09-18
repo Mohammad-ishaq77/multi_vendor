@@ -24,7 +24,7 @@ export default function OfferDetails() {
 
   return (
     <PageTransition>
-      <div className="space-y-6 max-w-2xl mx-auto">
+      <div className="w-full space-y-6">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate("/admin/offers")} className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-[#155c43] hover:border-emerald-200 transition-all shadow-sm">
             <ArrowLeft className="w-5 h-5" />

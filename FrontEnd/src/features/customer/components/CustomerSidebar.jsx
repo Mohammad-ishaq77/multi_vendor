@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
-import { logoutAndRedirect } from "../../../services/authService";
 import {
   Store,
   Grid3X3,
@@ -10,15 +9,16 @@ import {
   Heart,
   MapPin,
   HelpCircle,
-  LogOut,
   ChevronLeft,
   ChevronRight,
-  ShoppingBasket,
   Home,
   Compass,
   ClipboardList,
   CircleUser,
+  CreditCard,
 } from "lucide-react";
+import DashboardNavFooter, { DashboardMobileFooter } from "../../../components/dashboard/DashboardNavFooter";
+import { isNavActive } from "../../../utils/nav";
 
 const menuItems = [
   {
@@ -79,6 +79,14 @@ const menuItems = [
     accentText: "text-emerald-700",
   },
   {
+    name: "Payments",
+    icon: CreditCard,
+    path: "/customer/payments",
+    accent: "from-teal-600 to-emerald-500",
+    accentBg: "bg-teal-50",
+    accentText: "text-teal-700",
+  },
+  {
     name: "Addresses",
     icon: MapPin,
     path: "/customer/addresses",
@@ -119,7 +127,6 @@ const itemVariants = {
 };
 
 const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -192,7 +199,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
         <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto scrollbar-hide">
           {menuItems.map((item, i) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isNavActive(location.pathname, item.path);
             const isHovered = hoveredItem === item.name;
 
             return (
@@ -277,7 +284,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="relative z-10 ml-auto bg-rose-500 text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
+                        className="relative z-10 ml-auto bg-[var(--color-primary)] text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
                       >
                         {cartCount}
                       </motion.span>
@@ -317,33 +324,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
             </AnimatePresence>
           </motion.button>
 
-          {/* Logout */}
-          <motion.button
-            whileHover={{ x: isCollapsed ? 0 : 3 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              logoutAndRedirect(navigate);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
-              isCollapsed ? "justify-center" : ""
-            } text-gray-400 hover:bg-rose-50/80 hover:text-rose-600`}
-          >
-            <div className="flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center bg-gray-50 text-gray-400 group-hover:bg-rose-50 group-hover:text-rose-500">
-              <LogOut className="w-[18px] h-[18px]" />
-            </div>
-            <AnimatePresence>
-              {!isCollapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="text-[0.82rem] font-semibold whitespace-nowrap overflow-hidden"
-                >
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
+          <DashboardNavFooter isCollapsed={isCollapsed} />
         </div>
       </motion.aside>
 
@@ -412,7 +393,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
                           </div>
                           <span>{item.name}</span>
                           {item.badge && cartCount > 0 && (
-                            <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
+                            <span className="ml-auto rounded-full bg-[var(--color-primary)] px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
                               {cartCount}
                             </span>
                           )}
@@ -422,18 +403,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
                   );
                 })}
               </nav>
-              <div className="border-t border-gray-100 p-3">
-                <button
-                  type="button"
-                  onClick={() => logoutAndRedirect(navigate)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
-                >
-                  <div className="w-9 h-9 rounded-[11px] flex items-center justify-center bg-rose-50 text-rose-500">
-                    <LogOut className="w-[18px] h-[18px]" />
-                  </div>
-                  Logout
-                </button>
-              </div>
+              <DashboardMobileFooter />
             </motion.aside>
           </>
         )}
@@ -444,7 +414,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
         <div className="flex items-center justify-around py-2">
           {menuItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = isNavActive(location.pathname, item.path);
             return (
               <NavLink
                 key={item.name}
@@ -472,7 +442,7 @@ const CustomerSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => 
                   {item.name}
                 </span>
                 {item.badge && cartCount > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-[var(--color-primary)] text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
                     {cartCount}
                   </span>
                 )}

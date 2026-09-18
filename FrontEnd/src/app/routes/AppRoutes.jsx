@@ -24,6 +24,7 @@ import TrackOrder from "../../features/customer/orders/TrackOrder";
 import Wishlist from "../../features/customer/wishlist/Wishlist";
 import Addresses from "../../features/customer/addresses/Addresses";
 import Profile from "../../features/customer/profile/Profile";
+import CustomerPayments from "../../features/customer/payments/Payments";
 
 import ShopkeeperEntry from "../../features/shopkeeper/pages/Entry";
 import ShopkeeperDashboard from "../../features/shopkeeper/pages/Dashboard";
@@ -85,6 +86,7 @@ const AppRoutes = () => {
         <Route path="/customer/wishlist" element={<Wishlist />} />
         <Route path="/customer/addresses" element={<Addresses />} />
         <Route path="/customer/profile" element={<Profile />} />
+        <Route path="/customer/payments" element={<CustomerPayments />} />
       </Route>
 
       <Route

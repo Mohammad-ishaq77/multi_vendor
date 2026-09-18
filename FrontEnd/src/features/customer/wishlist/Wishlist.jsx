@@ -38,7 +38,7 @@ const Wishlist = () => {
 
   return (
     <CustomerShell>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}

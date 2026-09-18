@@ -136,30 +136,18 @@ const Cart = () => {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-[#fafcfb]">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-100/60">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+      <div className="w-full">
             <button
               onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Continue Shopping
             </button>
-          </div>
-        </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-          {/* Page Title */}
-          <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
-              Shopping Cart
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mb-6">
               {cartCount} {cartCount === 1 ? "item" : "items"} in your cart
             </p>
-          </div>
 
           <AnimatePresence mode="wait">
             {cart.length === 0 ? (
@@ -316,7 +304,6 @@ const Cart = () => {
               </div>
             )}
           </AnimatePresence>
-        </div>
       </div>
     </CustomerShell>
   );
