@@ -19,7 +19,7 @@ const Hero = ({
   const dark = tone === "dark";
 
   return (
-    <section className={`hero-shell relative flex items-center ${dark ? "on-green bg-[var(--color-primary-dark)]" : "bg-[var(--color-surface-tint)]"}`}>
+    <section className={`hero-shell relative flex items-end lg:items-center ${dark ? "on-green bg-[var(--color-primary-dark)]" : "bg-[var(--color-surface-tint)]"}`}>
       {!dark && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <img
@@ -32,14 +32,14 @@ const Hero = ({
       )}
 
       <div className="container-app relative h-full">
-        <div className="grid h-full items-center gap-4 py-4 lg:grid-cols-[1fr_auto] lg:gap-8 lg:py-5">
-          <div className={`relative z-10 text-center lg:text-left ${dark ? "text-white" : ""}`}>
+        <div className="grid h-full items-end gap-[max(0.7rem,1.6vh)] pt-[max(0.9rem,2.2vh)] pb-[max(1.6rem,4.2vh)] lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:py-5">
+          <div className={`relative z-10 w-[min(100%,92%)] text-left lg:w-full ${dark ? "text-white" : ""}`}>
             <motion.span
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               className={
                 dark
-                  ? "inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
+                  ? "inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-[max(0.7rem,2.6vw)] py-[max(0.28rem,0.65vh)] text-[clamp(9px,2.6vw,11px)] font-bold uppercase tracking-[0.14em] text-white lg:px-3 lg:py-1 lg:text-[10px]"
                   : "badge-soft"
               }
             >
@@ -53,9 +53,9 @@ const Hero = ({
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.26 }}
-              className="mt-5 flex flex-col items-center gap-2.5 sm:flex-row lg:justify-start"
+              className="mt-[max(1.1rem,2.6vh)] flex flex-row flex-wrap items-center justify-start gap-x-[max(1.1rem,4vw)] gap-y-[max(0.7rem,1.6vh)] lg:mt-5 lg:gap-3"
             >
-              <Link to={primaryTo} className={dark ? "btn-on-green w-full sm:w-auto" : "btn-primary w-full sm:w-auto"}>
+              <Link to={primaryTo} className={`hero-cta ${dark ? "btn-on-green" : "btn-primary"}`}>
                 {primaryLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -63,8 +63,8 @@ const Hero = ({
                 to={secondaryTo}
                 className={
                   dark
-                    ? "inline-flex min-h-11 w-full items-center justify-center rounded-[12px] border border-white/30 px-5 text-sm font-semibold text-white hover:bg-white/10 sm:w-auto"
-                    : "btn-secondary btn-green-border w-full sm:w-auto"
+                    ? "hero-cta lg:inline-flex lg:min-h-11 lg:items-center lg:justify-center lg:rounded-[12px] lg:border lg:border-white/30 lg:px-5 lg:text-sm lg:font-semibold lg:text-white lg:hover:bg-white/10"
+                    : "hero-cta btn-secondary btn-green-border"
                 }
               >
                 {secondaryLabel}

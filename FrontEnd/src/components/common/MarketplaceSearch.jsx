@@ -63,7 +63,7 @@ const MarketplaceSearch = ({
       <form onSubmit={handleSubmit} role="search" className="relative">
         <Search
           className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] ${
-            hero || mobile ? "left-4 h-4 w-4" : "left-3.5 h-4 w-4"
+            hero ? "left-3 h-3.5 w-3.5 lg:left-4 lg:h-4 lg:w-4" : mobile ? "left-4 h-4 w-4" : "left-3.5 h-4 w-4"
           }`}
         />
         <input
@@ -81,7 +81,7 @@ const MarketplaceSearch = ({
           aria-label="Search marketplace"
           className={
             hero
-              ? "h-12 w-full rounded-2xl border border-white/70 bg-white pl-11 pr-[6.5rem] text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white"
+              ? "h-9 w-full rounded-xl border border-white/70 bg-white pl-9 pr-[5.4rem] text-xs text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[6.5rem] lg:text-sm"
               : mobile
                 ? "h-11 w-full rounded-xl border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-11 pr-[5.75rem] text-sm outline-none"
                 : "h-10 w-full rounded-full border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-10 pr-[6.25rem] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-green)] focus:bg-white focus:ring-4 focus:ring-[var(--color-green-light)]/15"
@@ -96,7 +96,7 @@ const MarketplaceSearch = ({
             }}
             aria-label="Clear search"
             className={`absolute top-1/2 -translate-y-1/2 rounded-full p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-green-bg)] hover:text-[var(--color-text)] ${
-              hero || mobile ? "right-[4.6rem]" : "right-[5.15rem]"
+              hero ? "right-[3.85rem] lg:right-[4.6rem]" : mobile ? "right-[4.6rem]" : "right-[5.15rem]"
             }`}
           >
             <X className="h-3.5 w-3.5" />
@@ -106,7 +106,7 @@ const MarketplaceSearch = ({
           type="submit"
           className={
             hero
-              ? "btn-on-green absolute right-1.5 top-1/2 !min-h-9 -translate-y-1/2 !rounded-xl !px-3.5 !text-sm"
+              ? "btn-on-green absolute right-1 top-1/2 !min-h-7 -translate-y-1/2 !rounded-lg !px-2.5 !text-[11px] lg:right-1.5 lg:!min-h-9 lg:!rounded-xl lg:!px-3.5 lg:!text-sm"
               : "absolute right-1 top-1/2 inline-flex h-7 -translate-y-1/2 items-center rounded-lg bg-[var(--color-primary)] px-3 text-xs font-semibold text-white hover:bg-[var(--color-primary-dark)]"
           }
         >

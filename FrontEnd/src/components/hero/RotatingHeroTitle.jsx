@@ -25,7 +25,7 @@ const RotatingHeroTitle = ({
   return (
     <>
       <h1
-        className={`mt-3 font-display text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.6rem] ${
+        className={`mt-[max(0.7rem,1.6vh)] font-display text-[clamp(2.7rem,13vw,3.45rem)] font-extrabold leading-[1.06] tracking-tight sm:text-[clamp(2.85rem,6.8vw,3.5rem)] lg:mt-3 lg:text-[3.6rem] lg:font-bold lg:leading-[1.08] ${
           dark ? "text-white" : "text-[var(--color-text)]"
         }`}
       >
@@ -34,10 +34,10 @@ const RotatingHeroTitle = ({
             {line}
           </span>
         ))}
-        <span className="relative mt-2 inline-grid justify-items-center lg:justify-items-start">
+        <span className="relative mt-[max(0.2rem,0.55vh)] inline-grid justify-items-start lg:mt-2">
           <span
             aria-hidden
-            className="invisible col-start-1 row-start-1 text-[1.2em] font-extrabold tracking-tight sm:text-[1.24em]"
+            className="invisible col-start-1 row-start-1 text-[1.16em] font-extrabold tracking-tight sm:text-[1.2em] lg:text-[1.24em]"
           >
             {`${[...rotating].sort((a, b) => b.length - a.length)[0].replace(/\.$/, "")}.`}
           </span>
@@ -57,7 +57,7 @@ const RotatingHeroTitle = ({
               whileTap={{ opacity: 0.75 }}
               transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               aria-label={`${currentWord} Click to see the next title`}
-              className={`hero-rotating-word col-start-1 row-start-1 w-max justify-self-center text-[1.2em] sm:text-[1.24em] lg:justify-self-start ${
+              className={`hero-rotating-word col-start-1 row-start-1 w-max justify-self-start text-[1.16em] sm:text-[1.2em] lg:text-[1.24em] lg:justify-self-start ${
                 dark ? "text-[var(--color-green-soft)]" : "text-[var(--color-primary)]"
               }`}
             >
@@ -66,7 +66,7 @@ const RotatingHeroTitle = ({
           </AnimatePresence>
         </span>
       </h1>
-      <div className={`mt-2 flex items-center justify-center gap-1.5 lg:justify-start ${dark ? "text-white" : "text-[var(--color-primary)]"}`}>
+      <div className={`mt-[max(0.35rem,0.8vh)] flex items-center justify-start gap-1.5 lg:mt-2 ${dark ? "text-white" : "text-[var(--color-primary)]"}`}>
         {rotating.map((word, index) => (
           <button
             key={word}

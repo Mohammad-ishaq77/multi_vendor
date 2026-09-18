@@ -3,7 +3,7 @@ import { ArrowRight, Store } from "lucide-react";
 
 const CTABanner = () => {
   return (
-    <section className="px-4 py-8 lg:px-8 lg:py-10">
+    <section className="cta-banner px-4 py-8 lg:px-8 lg:py-10">
       <div className="container-app relative overflow-hidden shadow-[0_28px_60px_-18px_rgba(0,0,0,0.72)]">
         <img
           src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1600&q=85"
@@ -19,14 +19,14 @@ const CTABanner = () => {
               Browse nearby shops now, or list your store and start selling to customers around you.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Link to="/marketplace" className="btn-on-green">
+          <div className="flex flex-wrap items-center gap-x-[max(1.1rem,4vw)] gap-y-[max(0.65rem,1.5vh)] lg:gap-2">
+            <Link to="/marketplace" className="hero-cta btn-on-green">
               Shop now
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/register"
-              className="inline-flex min-h-11 items-center gap-2 rounded-[12px] border border-[var(--color-primary)] px-5 text-sm font-semibold text-white hover:bg-white/10"
+              className="hero-cta lg:inline-flex lg:min-h-11 lg:items-center lg:gap-2 lg:rounded-[12px] lg:border lg:border-[var(--color-primary)] lg:px-5 lg:text-sm lg:font-semibold lg:text-white lg:hover:bg-white/10"
             >
               <Store className="h-4 w-4" />
               Sell on NearMart
