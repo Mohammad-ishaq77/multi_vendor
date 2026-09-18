@@ -39,7 +39,7 @@ export default function Notifications() {
             <p className="text-sm text-gray-500 mt-1">{unreadNotificationCount} unread notification{unreadNotificationCount !== 1 ? "s" : ""}</p>
           </div>
           {unreadNotificationCount > 0 && (
-            <button onClick={markAllNotificationsRead} className="flex items-center gap-2 px-4 py-2 bg-[#155c43] text-white text-sm font-semibold rounded-xl hover:bg-[#155c43]/90 transition-colors">
+            <button onClick={markAllNotificationsRead} className="flex items-center gap-2 px-4 py-2 bg-[#155c43] text-white text-sm font-semibold rounded-md hover:bg-[#155c43]/90 transition-colors">
               <CheckCheck className="w-4 h-4" /> Mark All Read
             </button>
           )}
@@ -58,9 +58,9 @@ export default function Notifications() {
             {filtered.map((n) => {
               const Icon = typeIcons[n.type] || Bell;
               return (
-                <motion.div key={n.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} onClick={() => !n.read && markNotificationRead(n.id)} className={`bg-white rounded-2xl border p-4 cursor-pointer transition-all ${!n.read ? "border-[#155c43]/20 shadow-sm" : "border-gray-100 hover:bg-gray-50/50"}`}>
+                <motion.div key={n.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} onClick={() => !n.read && markNotificationRead(n.id)} className={`bg-white rounded-lg border p-4 cursor-pointer transition-all ${!n.read ? "border-[#155c43]/20 shadow-sm" : "border-gray-100 hover:bg-gray-50/50"}`}>
                   <div className="flex items-start gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${typeColors[n.type] || "bg-gray-50 text-gray-600"}`}>
+                    <div className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${typeColors[n.type] || "bg-gray-50 text-gray-600"}`}>
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">

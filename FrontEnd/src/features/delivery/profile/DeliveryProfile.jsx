@@ -15,7 +15,7 @@ export default function DeliveryProfile() {
       </div>
 
       {/* Profile Card */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="bg-linear-to-r from-emerald-600 to-teal-600 p-6 text-white text-center">
           <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3 overflow-hidden">{profile.profileImage ? <img src={profile.profileImage} alt="Profile" className="w-full h-full object-cover" /> : <User className="w-10 h-10" />}</div>
           <h2 className="text-xl font-bold">{profile.name}</h2>
@@ -60,15 +60,15 @@ export default function DeliveryProfile() {
           <div className="border-t border-gray-100 pt-4">
             <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Performance</h3>
             <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <div className="text-center p-3 bg-gray-50 rounded-md">
                 <p className="text-lg font-bold text-gray-900">{profile.rating}</p>
                 <p className="text-[0.6rem] text-gray-400">Rating</p>
               </div>
-              <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <div className="text-center p-3 bg-gray-50 rounded-md">
                 <p className="text-lg font-bold text-gray-900">{profile.completedDeliveries}</p>
                 <p className="text-[0.6rem] text-gray-400">Completed</p>
               </div>
-              <div className="text-center p-3 bg-gray-50 rounded-xl">
+              <div className="text-center p-3 bg-gray-50 rounded-md">
                 <p className="text-lg font-bold text-gray-900">{profile.cancelledDeliveries}</p>
                 <p className="text-[0.6rem] text-gray-400">Cancelled</p>
               </div>
@@ -77,7 +77,7 @@ export default function DeliveryProfile() {
         </div>
       </motion.div>
 
-      <button onClick={() => navigate("/delivery/profile/settings")} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all">
+      <button onClick={() => navigate("/delivery/profile/settings")} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all">
         <Settings className="w-4 h-4" /> Edit Profile
       </button>
     </div>

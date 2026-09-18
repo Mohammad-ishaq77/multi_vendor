@@ -31,13 +31,13 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
       animate={{ opacity: removing ? 0 : 1, y: removing ? -10 : 0, scale: removing ? 0.95 : 1 }}
       exit={{ opacity: 0, x: -40, scale: 0.95 }}
       transition={{ duration: 0.25 }}
-      className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300"
+      className="bg-white rounded-lg border border-gray-100 p-4 sm:p-5 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300"
     >
       <div className="flex gap-4">
         {/* Image */}
         <Link
           to={`/customer/product/${item.id}`}
-          className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100"
+          className="w-24 h-24 sm:w-28 sm:h-28 rounded-md overflow-hidden bg-gray-50 shrink-0 border border-gray-100"
         >
           <img
             src={item.image}
@@ -82,7 +82,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
               )}
             </div>
 
-            <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-0.5">
+            <div className="flex items-center bg-gray-50 rounded-md border border-gray-200 p-0.5">
               <motion.button
                 whileTap={{ scale: 0.85 }}
                 onClick={() => onDecrease(item.id)}
@@ -172,7 +172,7 @@ const Cart = () => {
                 </p>
                 <Link
                   to="/customer/products"
-                  className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+                  className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
                 >
                   <ShoppingCart className="w-4 h-4" />
                   Start Shopping
@@ -208,7 +208,7 @@ const Cart = () => {
 
                 {/* Order Summary */}
                 <div className="lg:col-span-1">
-                  <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm sticky top-24">
+                  <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm sticky top-24">
                     <h2 className="text-base font-bold text-gray-900 mb-5">Order Summary</h2>
 
                     {/* Promo Code */}
@@ -225,14 +225,14 @@ const Cart = () => {
                             onChange={(e) => setPromoCode(e.target.value)}
                             placeholder="Enter code"
                             disabled={promoApplied}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50 disabled:opacity-50"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-md py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50 disabled:opacity-50"
                           />
                         </div>
                         <motion.button
                           whileTap={{ scale: 0.95 }}
                           onClick={handleApplyPromo}
                           disabled={promoApplied || !promoCode}
-                          className="px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-md hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           {promoApplied ? "Applied" : "Apply"}
                         </motion.button>
@@ -278,7 +278,7 @@ const Cart = () => {
                     {/* Checkout Button */}
                     <Link
                       to="/customer/checkout"
-                      className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-emerald-600/30 transition-all"
+                      className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white py-3.5 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-emerald-600/30 transition-all"
                     >
                       Proceed to Checkout
                       <ArrowRight className="w-4 h-4" />

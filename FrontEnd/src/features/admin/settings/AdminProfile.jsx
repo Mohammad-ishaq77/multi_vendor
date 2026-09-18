@@ -26,9 +26,9 @@ export default function AdminProfile() {
       <div className="w-full space-y-6">
         <div><h1 className="text-2xl font-bold text-[#14261f]">Admin Profile</h1><p className="text-sm text-gray-500 mt-1">Manage your account information.</p></div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#155c43] to-emerald-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+            <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#155c43] to-emerald-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
               {form.name.charAt(0)}
             </div>
             <div>
@@ -41,46 +41,46 @@ export default function AdminProfile() {
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
               {editMode ? (
-                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
+                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2.5 rounded-md border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
               ) : (
-                <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl text-sm text-gray-700"><User className="w-4 h-4 text-gray-400" />{form.name}</div>
+                <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-md text-sm text-gray-700"><User className="w-4 h-4 text-gray-400" />{form.name}</div>
               )}
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
               {editMode ? (
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
+                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2.5 rounded-md border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
               ) : (
-                <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl text-sm text-gray-700"><Mail className="w-4 h-4 text-gray-400" />{form.email}</div>
+                <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-md text-sm text-gray-700"><Mail className="w-4 h-4 text-gray-400" />{form.email}</div>
               )}
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Phone</label>
               {editMode ? (
-                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
+                <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-3 py-2.5 rounded-md border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
               ) : (
-                <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl text-sm text-gray-700"><Phone className="w-4 h-4 text-gray-400" />{form.phone}</div>
+                <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-md text-sm text-gray-700"><Phone className="w-4 h-4 text-gray-400" />{form.phone}</div>
               )}
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Role</label>
-              <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl text-sm text-gray-700"><Shield className="w-4 h-4 text-gray-400" />Administrator</div>
+              <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-md text-sm text-gray-700"><Shield className="w-4 h-4 text-gray-400" />Administrator</div>
             </div>
           </div>
 
           <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
             {editMode ? (
               <>
-                <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2.5 bg-[#155c43] text-white text-sm font-semibold rounded-xl hover:bg-[#155c43]/90 transition-colors"><Save className="w-4 h-4" /> Save Changes</button>
-                <button onClick={() => setEditMode(false)} className="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+                <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2.5 bg-[#155c43] text-white text-sm font-semibold rounded-md hover:bg-[#155c43]/90 transition-colors"><Save className="w-4 h-4" /> Save Changes</button>
+                <button onClick={() => setEditMode(false)} className="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
               </>
             ) : (
-              <button onClick={() => setEditMode(true)} className="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-200 transition-colors">Edit Profile</button>
+              <button onClick={() => setEditMode(true)} className="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-200 transition-colors">Edit Profile</button>
             )}
           </div>
 
           {saved && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-700 font-medium">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-700 font-medium">
               <CheckCircle className="w-4 h-4" /> Profile updated successfully.
             </motion.div>
           )}

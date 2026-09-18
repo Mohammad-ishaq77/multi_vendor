@@ -59,7 +59,7 @@ const Wishlist = () => {
           {saved.length > 0 && (
             <button
               onClick={moveAllToCart}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors self-start"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-md hover:bg-[#143728] transition-colors self-start"
             >
               <ShoppingBag className="w-4 h-4" />
               Move All to Cart
@@ -105,7 +105,7 @@ const Wishlist = () => {
             </p>
             <Link
               to="/customer/products"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-md hover:bg-[#143728] transition-colors"
             >
               Explore Products
               <ArrowRight className="w-4 h-4" />

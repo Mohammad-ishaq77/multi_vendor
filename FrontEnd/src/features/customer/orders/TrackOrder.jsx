@@ -82,7 +82,7 @@ const TrackOrder = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8 text-center"
+          className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-8 text-center"
         >
           <div
             className={`w-14 h-14 rounded-full ${
@@ -104,7 +104,7 @@ const TrackOrder = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 shadow-sm"
+          className="bg-white border border-gray-100 rounded-lg p-6 sm:p-8 shadow-sm"
         >
           <h3 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider mb-8">
             Tracking History

@@ -110,11 +110,11 @@ const HeroCarousel = ({ onNavigate }) => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="relative mb-10 overflow-hidden rounded-2xl shadow-lg shadow-[#155c43]/10 sm:mb-12"
+      className="relative mb-6 overflow-hidden rounded-md shadow-lg shadow-[#155c43]/10 sm:mb-10 sm:rounded-lg lg:mb-12"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className={`relative bg-gradient-to-br ${slide.accent} text-white p-5 sm:p-8 lg:p-10 min-h-[220px] sm:min-h-[260px] md:min-h-[280px] flex flex-col justify-center`}>
+      <div className={`relative bg-gradient-to-br ${slide.accent} text-white p-3 min-h-[150px] flex flex-col justify-center sm:p-8 sm:min-h-[260px] lg:p-10 md:min-h-[280px]`}>
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full border border-white/[0.06] sm:h-64 sm:w-64 md:h-80 md:w-80" />
           <div className="absolute -bottom-12 -right-12 h-36 w-36 rounded-full border border-white/[0.04] sm:h-48 sm:w-48 md:h-64 md:w-64" />
@@ -127,26 +127,26 @@ const HeroCarousel = ({ onNavigate }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={reducedMotion ? {} : { opacity: 0, x: -20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
+            className="relative z-10 flex flex-col gap-3 sm:gap-5 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="max-w-xl">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-medium tracking-wide uppercase backdrop-blur-sm sm:text-xs ${slide.badgeColor}`}>
+              <div className="mb-2 flex flex-wrap items-center gap-1.5 sm:mb-3 sm:gap-2">
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[9px] font-medium tracking-wide uppercase backdrop-blur-sm sm:gap-2 sm:px-3 sm:py-1 sm:text-[10px] md:text-xs ${slide.badgeColor}`}>
                   <span className="h-1.5 w-1.5 rounded-full bg-green-300" />
                   {slide.badge}
                 </span>
                 {slide.extraBadge && (
-                  <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-[var(--color-primary-dark)] sm:text-xs">
+                  <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[9px] font-bold text-[var(--color-primary-dark)] sm:px-2.5 sm:py-1 sm:text-[10px] md:text-xs">
                     {slide.extraBadge}
                   </span>
                 )}
               </div>
 
-              <h2 className="text-xl font-bold leading-tight sm:text-2xl md:text-3xl lg:text-[2rem]">
+              <h2 className="text-base font-bold leading-tight sm:text-xl md:text-2xl lg:text-[2rem]">
                 {slide.headline}
               </h2>
 
-              <p className="mt-3 max-w-md text-sm leading-relaxed text-green-100/80 sm:text-base">
+              <p className="mt-1.5 max-w-md text-[10px] leading-relaxed text-green-100/80 sm:mt-3 sm:text-sm md:text-base">
                 {slide.subtext}
               </p>
             </div>
@@ -155,7 +155,7 @@ const HeroCarousel = ({ onNavigate }) => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onNavigate(slide.ctaPath)}
-              className="relative z-10 inline-flex items-center gap-2 self-start rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#155c43] shadow-md transition-colors hover:bg-green-50 sm:self-center sm:px-6 sm:py-3.5"
+              className="relative z-10 inline-flex items-center gap-1 self-start rounded-md bg-white px-3 py-1.5 text-[10px] font-semibold text-[#155c43] shadow-md transition-colors hover:bg-green-50 sm:gap-2 sm:self-center sm:rounded-md sm:px-6 sm:py-3.5 sm:text-sm"
             >
               {slide.cta}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -196,29 +196,29 @@ const ActiveOrder = ({ order }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-10 sm:mb-12"
+      className="mb-6 sm:mb-12"
     >
-      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <div className="rounded-md border border-gray-200 bg-white p-2.5 shadow-sm sm:rounded-lg sm:p-6">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-1.5 sm:mb-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#155c43]">Your Order</p>
-            <h3 className="mt-1 text-base font-bold text-[#14261f] sm:text-lg">
-              Order #{order.id} <span className="text-xs font-normal text-gray-400 sm:text-sm">• {order.shopName}</span>
+            <p className="text-[9px] font-semibold uppercase tracking-wider text-[#155c43] sm:text-xs">Your Order</p>
+            <h3 className="mt-0.5 text-xs font-bold text-[#14261f] sm:mt-1 sm:text-lg">
+              Order #{order.id} <span className="text-[9px] font-normal text-gray-400 sm:text-sm">• {order.shopName}</span>
             </h3>
           </div>
-          <span className="rounded-full bg-[#155c43]/10 px-3 py-1 text-xs font-semibold text-[#155c43]">
+          <span className="rounded-full bg-[#155c43]/10 px-2 py-0.5 text-[9px] font-semibold text-[#155c43] sm:px-3 sm:py-1 sm:text-xs">
             {order.estimatedTime}
           </span>
         </div>
 
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between sm:mb-5">
           {steps.map((step, idx) => (
             <div key={step.label} className="flex flex-1 items-center">
               <div className="flex flex-col items-center">
-                <div className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-[10px] font-bold sm:h-8 sm:w-8 sm:text-xs ${step.done ? "border-[#155c43] bg-[#155c43] text-white" : "border-gray-200 bg-white text-gray-300"}`}>
+                <div className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-[9px] font-bold sm:h-8 sm:w-8 sm:text-xs ${step.done ? "border-[#155c43] bg-[#155c43] text-white" : "border-gray-200 bg-white text-gray-300"}`}>
                   {step.done ? "✓" : idx + 1}
                 </div>
-                <span className={`mt-1 text-[10px] font-medium sm:text-xs ${step.done ? "text-[#14261f]" : "text-gray-400"}`}>{step.label}</span>
+                <span className={`mt-0.5 text-[9px] font-medium sm:mt-1 sm:text-xs ${step.done ? "text-[#14261f]" : "text-gray-400"}`}>{step.label}</span>
               </div>
               {idx < steps.length - 1 && (
                 <div className={`mx-0.5 h-0.5 flex-1 sm:mx-1 ${steps[idx + 1].done ? "bg-[#155c43]" : "bg-gray-200"}`} />
@@ -245,17 +245,17 @@ const ActiveOrder = ({ order }) => {
 
 // ─── SECTION HEADER ───
 const SectionHeader = ({ title, subtitle, actionLabel, onAction, showCartCount, cartCount }) => (
-  <div className="mb-5 flex items-end justify-between sm:mb-6">
+  <div className="mb-2 flex items-end justify-between sm:mb-5 md:mb-6">
     <div className="min-w-0">
-      <h2 className="text-lg font-bold text-[#14261f] sm:text-xl md:text-2xl">{title}</h2>
-      {subtitle && <p className="mt-1 text-xs text-gray-500 sm:text-sm">{subtitle}</p>}
+      <h2 className="text-sm font-bold text-[#14261f] sm:text-lg md:text-xl lg:text-2xl">{title}</h2>
+      {subtitle && <p className="mt-0.5 text-[10px] text-gray-500 sm:mt-1 sm:text-xs md:text-sm">{subtitle}</p>}
     </div>
     {showCartCount && cartCount > 0 ? (
-      <span className="flex-shrink-0 rounded-full bg-[#155c43]/10 px-3 py-1.5 text-xs font-semibold text-[#155c43]">
+      <span className="flex-shrink-0 rounded-full bg-[#155c43]/10 px-2.5 py-1 text-[10px] font-semibold text-[#155c43] sm:px-3 sm:py-1.5 sm:text-xs">
         {cartCount} {cartCount === 1 ? "item" : "items"}
       </span>
     ) : actionLabel ? (
-      <button onClick={onAction} className="flex-shrink-0 inline-flex items-center gap-1 rounded-full bg-[#155c43]/5 px-3 py-2 text-xs font-semibold text-[#155c43] transition-colors hover:bg-[#155c43]/10 sm:px-4 sm:text-sm">
+      <button onClick={onAction} className="flex-shrink-0 inline-flex items-center gap-1 rounded-full bg-[#155c43]/5 px-2.5 py-1.5 text-[10px] font-semibold text-[#155c43] transition-colors hover:bg-[#155c43]/10 sm:px-3 sm:py-2 sm:text-xs md:px-4 md:text-sm">
         {actionLabel}
         <span>→</span>
       </button>
@@ -349,16 +349,16 @@ const CustomerDashboard = () => {
     <CustomerShell>
       <PageTransition>
           {/* Welcome */}
-          <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="mb-5 sm:mb-6 md:mb-8">
-            <h1 className="text-[1.6rem] font-bold leading-tight tracking-tight text-[#14261f] sm:text-3xl lg:text-[2.25rem]">
+          <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.05 }} className="mb-3 sm:mb-6 md:mb-8">
+            <h1 className="text-base font-bold leading-tight tracking-tight text-[#14261f] sm:text-[1.6rem] lg:text-[2.25rem]">
               {greeting}
             </h1>
-            <p className="mt-1.5 text-sm text-gray-500 sm:mt-2 sm:text-base">
+            <p className="mt-0.5 text-[10px] text-gray-500 sm:mt-1.5 sm:text-sm lg:text-base">
               Find what you need from trusted stores near you.
             </p>
           </motion.section>
 
-          <div className="mb-6 grid grid-cols-2 gap-3 xl:grid-cols-4">
+          <div className="mb-3 grid grid-cols-2 gap-1.5 sm:mb-6 sm:gap-3 xl:grid-cols-4">
             {[
               { label: "Orders", value: orders.length, icon: ClipboardList, path: "/customer/orders" },
               { label: "Active tracking", value: activeOrder ? 1 : 0, icon: Truck, path: activeOrder ? `/customer/orders/${activeOrder.id}/track` : "/customer/orders" },
@@ -371,15 +371,15 @@ const CustomerDashboard = () => {
                   key={stat.label}
                   type="button"
                   onClick={() => navigate(stat.path)}
-                  className="rounded-2xl border border-gray-100 bg-white p-4 text-left shadow-sm transition hover:shadow-md"
+                  className="rounded-md border border-gray-100 bg-white p-2 text-left shadow-sm transition hover:shadow-md sm:rounded-lg sm:p-4"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
-                      <Icon className="h-5 w-5" />
+                  <div className="flex items-center gap-1.5 sm:gap-3">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)] sm:h-10 sm:w-10 sm:rounded-md">
+                      <Icon className="h-3 w-3 sm:h-5 sm:w-5" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500">{stat.label}</p>
-                      <p className="text-xl font-bold text-[#14261f]">{stat.value}</p>
+                    <div className="min-w-0">
+                      <p className="text-[8px] text-gray-500 sm:text-xs">{stat.label}</p>
+                      <p className="text-xs font-bold text-[#14261f] leading-tight sm:text-xl">{stat.value}</p>
                     </div>
                   </div>
                 </button>
@@ -391,7 +391,7 @@ const CustomerDashboard = () => {
           <ActiveOrder order={mappedActiveOrder} />
 
           {/* Categories — horizontal scroll on mobile, grid on desktop */}
-          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-10 sm:mb-12">
+          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-6 sm:mb-10 lg:mb-12">
             <SectionHeader title="Shop by Category" subtitle="Find what you need quickly." actionLabel="View all" onAction={() => navigate("/customer/categories")} />
             <motion.div
               variants={staggerContainer}
@@ -407,9 +407,9 @@ const CustomerDashboard = () => {
           </motion.section>
 
           {/* Shops */}
-          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-10 sm:mb-12">
+          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-6 sm:mb-10 lg:mb-12">
             <SectionHeader title="Popular Shops Near You" subtitle="Discover trusted local stores." actionLabel="View all" onAction={() => navigate("/customer/shops")} />
-            <motion.div variants={staggerContainer} className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4">
               {shops.map((shop) => (
                 <motion.div key={shop.id} variants={fadeUpItem}>
                   <ShopCard shop={shop} onClick={() => navigate(`/customer/shops/${shop.id}`)} />
@@ -420,7 +420,7 @@ const CustomerDashboard = () => {
 
           
           {/* Popular Products — only 4-5 cards with View More button */}
-          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-10 sm:mb-12">
+          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-6 sm:mb-10 lg:mb-12">
             <SectionHeader title="Popular Products" subtitle="Trending items from local shops." actionLabel="View More" onAction={() => navigate("/customer/products")} />
             <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {products.slice(0, 5).map((product) => (

@@ -42,7 +42,7 @@ export default function DeliveryDetails() {
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         {/* Header */}
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
@@ -59,7 +59,7 @@ export default function DeliveryDetails() {
 
         <div className="p-5 space-y-5">
           {/* Route Visualization */}
-          <div className="bg-gray-50 rounded-xl p-4">
+          <div className="bg-gray-50 rounded-md p-4">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-emerald-500" />
               <div className="flex-1 border-l-2 border-dashed border-gray-300 ml-1">
@@ -76,7 +76,7 @@ export default function DeliveryDetails() {
           {/* Shop Info */}
           <div>
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Shop Information</h2>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="bg-gray-50 rounded-md p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-700"><Store className="w-4 h-4 text-gray-400" /><span className="font-medium">{delivery.shopName}</span></div>
               <div className="flex items-center gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 text-gray-400" /><span>{delivery.shopAddress}</span></div>
               <div className="flex items-center gap-2 text-sm text-gray-600"><Phone className="w-4 h-4 text-gray-400" /><span>{delivery.shopPhone}</span></div>
@@ -86,7 +86,7 @@ export default function DeliveryDetails() {
           {/* Customer Info */}
           <div>
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Customer Information</h2>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="bg-gray-50 rounded-md p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-700"><User className="w-4 h-4 text-gray-400" /><span className="font-medium">{delivery.customerName}</span></div>
               <div className="flex items-center gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 text-gray-400" /><span>{delivery.customerAddress}</span></div>
               <div className="flex items-center gap-2 text-sm text-gray-600"><Phone className="w-4 h-4 text-gray-400" /><span>{delivery.customerPhone}</span></div>
@@ -99,7 +99,7 @@ export default function DeliveryDetails() {
           {/* Order Info */}
           <div>
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Order Information</h2>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 rounded-md p-4">
               <div className="space-y-2 mb-3">
                 {delivery.items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between text-sm">
@@ -118,17 +118,17 @@ export default function DeliveryDetails() {
 
           {/* Delivery Info */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
+            <div className="bg-gray-50 rounded-md p-3 text-center">
               <MapPin className="w-4 h-4 text-gray-400 mx-auto mb-1" />
               <p className="text-sm font-bold text-gray-900">{delivery.distance} km</p>
               <p className="text-[0.6rem] text-gray-400">Distance</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
+            <div className="bg-gray-50 rounded-md p-3 text-center">
               <Clock className="w-4 h-4 text-gray-400 mx-auto mb-1" />
               <p className="text-sm font-bold text-gray-900">{delivery.estimatedTime}</p>
               <p className="text-[0.6rem] text-gray-400">Est. Time</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
+            <div className="bg-gray-50 rounded-md p-3 text-center">
               <IndianRupee className="w-4 h-4 text-gray-400 mx-auto mb-1" />
               <p className="text-sm font-bold text-gray-900">₹{delivery.deliveryFee}</p>
               <p className="text-[0.6rem] text-gray-400">Fee</p>
@@ -138,16 +138,16 @@ export default function DeliveryDetails() {
 
         {/* Actions */}
         <div className="p-5 border-t border-gray-100 flex gap-3">
-          <button onClick={() => navigate(-1)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all">
+          <button onClick={() => navigate(-1)} className="flex-1 px-4 py-2.5 rounded-md text-sm font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all">
             Go Back
           </button>
           {canAccept && (
-            <button onClick={handleAccept} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all">
+            <button onClick={handleAccept} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all">
               Accept Delivery
             </button>
           )}
           {!isOnline && (
-            <button disabled className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-400 bg-gray-100 cursor-not-allowed">
+            <button disabled className="flex-1 px-4 py-2.5 rounded-md text-sm font-semibold text-gray-400 bg-gray-100 cursor-not-allowed">
               Go Online to Accept
             </button>
           )}

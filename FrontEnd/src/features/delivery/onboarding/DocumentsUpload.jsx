@@ -24,7 +24,7 @@ export default function DocumentsUpload() {
       <div className="p-5 sm:p-6 space-y-5">
         {/* Title */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-lg bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
             <ClipboardList className="w-6 h-6 text-[#1B4332]" />
           </div>
           <h1 className="font-serif text-xl font-bold text-[#0F172A]">
@@ -40,7 +40,7 @@ export default function DocumentsUpload() {
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-3 p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-xl"
+            className="flex items-center gap-3 p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-md"
           >
             <div className="w-9 h-9 rounded-lg bg-[#1B4332]/10 flex items-center justify-center shrink-0">
               <Shield className="w-4.5 h-4.5 text-[#1B4332]" />
@@ -64,7 +64,7 @@ export default function DocumentsUpload() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="flex items-center gap-3 p-3 rounded-xl bg-[#F8FAFC] border border-gray-100"
+              className="flex items-center gap-3 p-3 rounded-md bg-[#F8FAFC] border border-gray-100"
             >
               <div className="w-8 h-8 rounded-lg bg-[#1B4332]/10 flex items-center justify-center shrink-0">
                 <item.icon className="w-4 h-4 text-[#1B4332]" />
@@ -83,7 +83,7 @@ export default function DocumentsUpload() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleContinue}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
         >
           Submit Application
           <ChevronRight className="w-4 h-4" />

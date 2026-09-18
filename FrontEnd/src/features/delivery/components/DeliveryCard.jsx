@@ -16,7 +16,7 @@ export default function DeliveryCard({ delivery, showAccept = false, onAccept })
   };
 
   return (
-    <motion.div whileHover={{ y: -2 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all">
+    <motion.div whileHover={{ y: -2 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all">
       <div className="flex items-start justify-between mb-3">
         <div>
           <p className="text-sm font-bold text-gray-900">{delivery.id}</p>
@@ -63,7 +63,7 @@ export default function DeliveryCard({ delivery, showAccept = false, onAccept })
       <div className="flex items-center gap-2">
         <button
           onClick={() => navigate(`/delivery/details/${delivery.id}`)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-sm font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all"
         >
           View Details
           <ArrowRight className="w-3.5 h-3.5" />
@@ -71,7 +71,7 @@ export default function DeliveryCard({ delivery, showAccept = false, onAccept })
         {showAccept && (
           <button
             onClick={() => onAccept?.(delivery.id)}
-            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
+            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
           >
             Accept Delivery
           </button>

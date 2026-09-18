@@ -74,7 +74,7 @@ export default function DeliveryVerification() {
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-100">
           <h1 className="text-lg font-bold text-gray-900">Delivery Verification</h1>
           <p className="text-sm text-gray-500 mt-1">Enter the OTP provided by the customer</p>
@@ -82,7 +82,7 @@ export default function DeliveryVerification() {
 
         <div className="p-5 border-b border-gray-100 bg-gray-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600">
+            <div className="w-10 h-10 rounded-md bg-rose-100 flex items-center justify-center text-rose-600">
               <User className="w-5 h-5" />
             </div>
             <div>
@@ -96,7 +96,7 @@ export default function DeliveryVerification() {
 
         <div className="p-5 space-y-5">
           {result && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`flex items-center gap-3 p-4 rounded-xl border ${result.success ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200"}`}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`flex items-center gap-3 p-4 rounded-md border ${result.success ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200"}`}>
               {result.success ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-rose-500" />}
               <p className={`text-sm font-medium ${result.success ? "text-emerald-800" : "text-rose-800"}`}>{result.message}</p>
             </motion.div>
@@ -114,14 +114,14 @@ export default function DeliveryVerification() {
                 onChange={(e) => handleOtpChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={i === 0 ? handlePaste : undefined}
-                className="w-12 h-14 text-center text-xl font-bold rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-12 h-14 text-center text-xl font-bold rounded-md border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
               />
             ))}
           </div>
 
           <p className="text-center text-xs text-gray-400">Ask the customer for the 6-digit delivery OTP</p>
 
-          <button onClick={handleVerify} disabled={verifying || result?.success} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50">
+          <button onClick={handleVerify} disabled={verifying || result?.success} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50">
             {verifying ? "Verifying..." : "Verify OTP"}
             {!verifying && <KeyRound className="w-4 h-4" />}
           </button>

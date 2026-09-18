@@ -16,7 +16,7 @@ import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 import { useLogoutConfirm } from "../../../context/LogoutContext";
 
-const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
 const ShopkeeperProfile = () => {
   const { requestLogout } = useLogoutConfirm();
@@ -77,10 +77,10 @@ const ShopkeeperProfile = () => {
         <div className="grid lg:grid-cols-[260px_1fr] gap-6">
           {/* Sidebar */}
           <div className="lg:sticky lg:top-4 lg:self-start">
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-4">
+            <div className="bg-white rounded-lg border border-gray-100 overflow-hidden shadow-sm mb-4">
               <div className="h-28 bg-gradient-to-r from-emerald-600 to-teal-600 relative">
                 <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
-                  <div className="relative w-24 h-24 rounded-2xl bg-white border-4 border-white shadow-lg overflow-hidden">
+                  <div className="relative w-24 h-24 rounded-lg bg-white border-4 border-white shadow-lg overflow-hidden">
                     {form.image ? (
                       <img src={form.image} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
@@ -105,7 +105,7 @@ const ShopkeeperProfile = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm hidden lg:block">
+            <div className="bg-white rounded-lg border border-gray-100 p-2 shadow-sm hidden lg:block">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
@@ -113,7 +113,7 @@ const ShopkeeperProfile = () => {
                   <button
                     key={item.id}
                     onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-semibold transition-all ${
                       isActive ? "bg-emerald-50 text-emerald-700" : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                     }`}
                   >
@@ -124,7 +124,7 @@ const ShopkeeperProfile = () => {
               <div className="border-t border-gray-100 mt-1 pt-1">
                 <button
                   onClick={requestLogout}
-                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" /> Logout
                 </button>
@@ -139,7 +139,7 @@ const ShopkeeperProfile = () => {
               <p className="text-sm text-gray-500 mb-6">Manage your personal details and preferences.</p>
 
               {activeSection === "personal" && (
-                <form onSubmit={handleSave} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+                <form onSubmit={handleSave} className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5">Personal Information</h3>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
@@ -156,7 +156,7 @@ const ShopkeeperProfile = () => {
                     </div>
                   </div>
                   <div className="mt-6 flex items-center gap-4">
-                    <motion.button whileTap={{ scale: 0.98 }} type="submit" className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all">
+                    <motion.button whileTap={{ scale: 0.98 }} type="submit" className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all">
                       {saved ? <><CheckCircle2 className="w-4 h-4" /> Saved</> : "Save Profile"}
                     </motion.button>
                     {saved && <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-sm text-emerald-600 font-medium">Changes saved!</motion.span>}
@@ -165,32 +165,32 @@ const ShopkeeperProfile = () => {
               )}
 
               {activeSection === "security" && (
-                <form onSubmit={handlePasswordUpdate} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+                <form onSubmit={handlePasswordUpdate} className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2"><Lock className="w-4 h-4 text-gray-400" /> Change Password</h3>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="sm:col-span-2">
                       <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Current Password</label>
-                      <input type="password" value={passwords.current} onChange={(e) => setPasswords({ ...passwords, current: e.target.value })} placeholder="Enter current password" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+                      <input type="password" value={passwords.current} onChange={(e) => setPasswords({ ...passwords, current: e.target.value })} placeholder="Enter current password" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                     </div>
                     <div>
                       <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">New Password</label>
-                      <input type="password" value={passwords.new} onChange={(e) => setPasswords({ ...passwords, new: e.target.value })} placeholder="Enter new password" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+                      <input type="password" value={passwords.new} onChange={(e) => setPasswords({ ...passwords, new: e.target.value })} placeholder="Enter new password" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                     </div>
                     <div>
                       <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Confirm New Password</label>
-                      <input type="password" value={passwords.confirm} onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })} placeholder="Confirm new password" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+                      <input type="password" value={passwords.confirm} onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })} placeholder="Confirm new password" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                     </div>
                   </div>
                   {passwordError && <p className="mt-3 text-sm text-rose-600">{passwordError}</p>}
                   {passwordMessage && <p className="mt-3 text-sm text-emerald-600">{passwordMessage}</p>}
-                  <motion.button whileTap={{ scale: 0.98 }} type="submit" className="mt-5 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all">
+                  <motion.button whileTap={{ scale: 0.98 }} type="submit" className="mt-5 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all">
                     Update Password
                   </motion.button>
                 </form>
               )}
 
               {activeSection === "notifications" && (
-                <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2"><Bell className="w-4 h-4 text-gray-400" /> Notification Preferences</h3>
                   <div className="space-y-3">
                     {[
@@ -199,7 +199,7 @@ const ShopkeeperProfile = () => {
                       { key: "reviewAlerts", label: "Review Notifications", desc: "Get notified when customers leave reviews" },
                       { key: "promoUpdates", label: "Promotional Updates", desc: "Marketing and promotional notifications" },
                     ].map((item) => (
-                      <div key={item.key} className="flex items-center justify-between rounded-xl bg-gray-50 p-3">
+                      <div key={item.key} className="flex items-center justify-between rounded-md bg-gray-50 p-3">
                         <div>
                           <p className="text-sm font-semibold text-gray-900">{item.label}</p>
                           <p className="text-xs text-gray-500">{item.desc}</p>
@@ -222,16 +222,16 @@ const ShopkeeperProfile = () => {
               )}
 
               {/* Mobile Menu */}
-              <div className="lg:hidden mt-4 bg-white rounded-2xl border border-gray-100 p-3 shadow-sm">
+              <div className="lg:hidden mt-4 bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <button key={item.id} onClick={() => setActiveSection(item.id)} className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold transition-colors ${activeSection === item.id ? "bg-emerald-50 text-emerald-700" : "text-gray-600 hover:bg-gray-50"}`}>
+                    <button key={item.id} onClick={() => setActiveSection(item.id)} className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-md text-sm font-semibold transition-colors ${activeSection === item.id ? "bg-emerald-50 text-emerald-700" : "text-gray-600 hover:bg-gray-50"}`}>
                       <Icon className="w-4 h-4 text-gray-400" /> {item.label}
                     </button>
                   );
                 })}
-                <button onClick={requestLogout} className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors">
+                <button onClick={requestLogout} className="w-full flex items-center gap-3 px-3.5 py-3 rounded-md text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors">
                   <LogOut className="w-4 h-4" /> Logout
                 </button>
               </div>

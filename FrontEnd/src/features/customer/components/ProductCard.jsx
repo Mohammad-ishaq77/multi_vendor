@@ -41,12 +41,12 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ type: "spring", stiffness: 250, damping: 20 }}
-      className="group bg-white rounded-2xl border border-gray-100 p-3.5 hover:shadow-xl hover:shadow-[#155c43]/5 hover:border-[#155c43]/10 transition-all duration-300"
+      className="group bg-white rounded-md border border-gray-100 p-2 hover:shadow-xl hover:shadow-[#155c43]/5 hover:border-[#155c43]/10 transition-all duration-300 sm:rounded-lg sm:p-3.5"
     >
       {/* Image Container — Clickable */}
       <div
         onClick={goToDetail}
-        className="relative h-44 bg-[#f5f7f6] rounded-xl overflow-hidden cursor-pointer"
+        className="relative h-28 bg-[#f5f7f6] rounded-lg overflow-hidden cursor-pointer sm:h-44 sm:rounded-md"
       >
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -64,7 +64,7 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.85 }}
           onClick={toggleWishlist}
-          className={`absolute top-2.5 right-2.5 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 ${
+          className={`absolute top-1.5 right-1.5 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 sm:top-2.5 sm:right-2.5 sm:w-9 sm:h-9 ${
             saved
               ? "bg-[var(--color-green-bg)] border-[var(--color-green-soft)] text-[var(--color-primary)]"
               : "bg-white/80 border-white/50 text-gray-400 hover:text-[var(--color-primary)]"
@@ -96,47 +96,47 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
       </div>
 
       {/* Details — Clickable */}
-      <div onClick={goToDetail} className="mt-3.5 px-0.5 cursor-pointer">
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <span className="text-[0.65rem] font-medium text-[#155c43] bg-[#155c43]/8 px-2 py-0.5 rounded-md uppercase tracking-wide">
+      <div onClick={goToDetail} className="mt-2 px-0.5 cursor-pointer sm:mt-3.5">
+        <div className="flex items-center gap-1 mb-1 sm:gap-1.5 sm:mb-1.5">
+          <span className="text-[0.55rem] font-medium text-[#155c43] bg-[#155c43]/8 px-1.5 py-0.5 rounded uppercase tracking-wide sm:text-[0.65rem] sm:px-2 sm:rounded-md">
             {product.category}
           </span>
           {product.rating && (
-            <span className="flex items-center gap-0.5 text-[0.65rem] text-[var(--color-primary)] font-medium">
-              <Star className="w-3 h-3 fill-[var(--color-green-light)] text-[var(--color-green-light)]" />
+            <span className="flex items-center gap-0.5 text-[0.55rem] text-[var(--color-primary)] font-medium sm:text-[0.65rem]">
+              <Star className="w-2.5 h-2.5 fill-[var(--color-green-light)] text-[var(--color-green-light)] sm:w-3 sm:h-3" />
               {product.rating}
             </span>
           )}
         </div>
 
-        <h3 className="font-semibold text-sm text-[#14261f] leading-snug line-clamp-1 group-hover:text-[#155c43] transition-colors">
+        <h3 className="font-semibold text-xs text-[#14261f] leading-snug line-clamp-1 group-hover:text-[#155c43] transition-colors sm:text-sm">
           {product.name}
         </h3>
 
-        <p className="text-xs text-gray-400 mt-0.5">{product.unit}</p>
+        <p className="text-[10px] text-gray-400 mt-0.5 sm:text-xs">{product.unit}</p>
 
         {/* Shop Name — Prominent Display */}
-        <div className="mt-2 mb-3 inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-[#155c43]/8 to-[#155c43]/5 rounded-lg border border-[#155c43]/10">
-          <span className="text-[11px] font-bold text-[#155c43] uppercase tracking-wide">{product.shop}</span>
+        <div className="mt-1.5 mb-1.5 inline-flex items-center gap-1 px-1.5 py-1 bg-gradient-to-r from-[#155c43]/8 to-[#155c43]/5 rounded-md border border-[#155c43]/10 sm:mt-2 sm:mb-3 sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:rounded-lg">
+          <span className="text-[9px] font-bold text-[#155c43] uppercase tracking-wide sm:text-[11px]">{product.shop}</span>
         </div>
 
-        <div className="flex items-end justify-between mt-3 gap-2">
+        <div className="flex items-end justify-between mt-1.5 gap-1 sm:mt-3 sm:gap-2">
           <div>
-            <p className="font-bold text-[#155c43] text-lg">₹{product.price}</p>
+            <p className="font-bold text-[#155c43] text-sm sm:text-lg">₹{product.price}</p>
             {product.originalPrice && (
-              <p className="text-xs text-gray-400 line-through">₹{product.originalPrice}</p>
+              <p className="text-[10px] text-gray-400 line-through sm:text-xs">₹{product.originalPrice}</p>
             )}
           </div>
         </div>
       </div>
 
       {/* Action Button */}
-      <div className="mt-3.5 px-0.5">
+      <div className="mt-2 px-0.5 sm:mt-3.5">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleAddToCart}
-          className={`w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-semibold text-xs transition-all duration-300 overflow-hidden ${
+          className={`w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg font-semibold text-[10px] transition-all duration-300 overflow-hidden sm:gap-1.5 sm:px-3 sm:py-2.5 sm:rounded-md sm:text-xs ${
             added
               ? "bg-green-100 text-green-700 border border-green-200"
               : "bg-[#155c43] text-white shadow-lg shadow-[#155c43]/25 hover:bg-[#104b36] hover:shadow-xl hover:shadow-[#155c43]/30"

@@ -32,13 +32,13 @@ export default function OrderStatusCard({ orders = [] }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+      className="bg-white rounded-md border border-gray-100 shadow-sm p-2.5 sm:rounded-lg sm:p-5"
     >
-      <h3 className="text-lg font-bold mb-5" style={{ color: "#14261f" }}>
+      <h3 className="text-sm font-bold mb-2 sm:text-lg sm:mb-5" style={{ color: "#14261f" }}>
         Order Status Breakdown
       </h3>
 
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {sortedStatuses.map((status, idx) => {
           const config = statusConfig[status];
           const count = counts[status] || 0;
@@ -51,12 +51,12 @@ export default function OrderStatusCard({ orders = [] }) {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: idx * 0.04 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-2 sm:gap-3"
             >
-              <span className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold w-[120px] text-center ${config.textColor} ${config.bgColor}`}>
+              <span className={`inline-block px-1.5 py-0.5 rounded-md text-[9px] font-semibold w-[72px] text-center sm:px-2 sm:text-[11px] sm:w-[120px] ${config.textColor} ${config.bgColor}`}>
                 {config.label}
               </span>
-              <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
+              <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden sm:h-6">
                 <motion.div
                   initial={{ width: 0 }}
                   whileInView={{ width: `${pct}%` }}
@@ -65,18 +65,18 @@ export default function OrderStatusCard({ orders = [] }) {
                   className={`h-full rounded-full ${config.color}`}
                 />
               </div>
-              <span className="text-sm font-bold w-10 text-right" style={{ color: "#14261f" }}>
+              <span className="text-xs font-bold w-7 text-right sm:text-sm sm:w-10" style={{ color: "#14261f" }}>
                 {count}
               </span>
-              <span className="text-xs text-gray-400 w-10 text-right">{pct}%</span>
+              <span className="text-[10px] text-gray-400 w-8 text-right sm:text-xs sm:w-10">{pct}%</span>
             </motion.div>
           );
         })}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-sm text-gray-500">Total Orders</span>
-        <span className="text-lg font-bold" style={{ color: "#14261f" }}>
+      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between sm:mt-4 sm:pt-4">
+        <span className="text-xs text-gray-500 sm:text-sm">Total Orders</span>
+        <span className="text-base font-bold sm:text-lg" style={{ color: "#14261f" }}>
           {orders.length}
         </span>
       </div>

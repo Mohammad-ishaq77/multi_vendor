@@ -45,9 +45,9 @@ export default function Reports() {
             { label: "Under Review", value: stats.under_review, color: "from-amber-500 to-orange-500", icon: Clock },
             { label: "Resolved", value: stats.resolved, color: "from-emerald-500 to-teal-500", icon: CheckCircle },
           ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
                 <div><p className="text-xl font-bold text-gray-900">{s.value}</p><p className="text-xs text-gray-500">{s.label}</p></div>
               </div>
             </motion.div>
@@ -55,15 +55,15 @@ export default function Reports() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" /><input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search reports..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#155c43] outline-none" /></div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white"><option value="all">All Status</option><option value="open">Open</option><option value="under_review">Under Review</option><option value="resolved">Resolved</option><option value="rejected">Rejected</option></select>
-          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white"><option value="all">All Categories</option><option value="Late Delivery">Late Delivery</option><option value="Wrong Item">Wrong Item</option><option value="Quality Issue">Quality Issue</option><option value="Complaint">Complaint</option><option value="Payment Issue">Payment Issue</option></select>
-          <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white"><option value="all">All Priority</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
+          <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" /><input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search reports..." className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 text-sm focus:border-[#155c43] outline-none" /></div>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-md border border-gray-200 text-sm bg-white"><option value="all">All Status</option><option value="open">Open</option><option value="under_review">Under Review</option><option value="resolved">Resolved</option><option value="rejected">Rejected</option></select>
+          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="px-4 py-2.5 rounded-md border border-gray-200 text-sm bg-white"><option value="all">All Categories</option><option value="Late Delivery">Late Delivery</option><option value="Wrong Item">Wrong Item</option><option value="Quality Issue">Quality Issue</option><option value="Complaint">Complaint</option><option value="Payment Issue">Payment Issue</option></select>
+          <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="px-4 py-2.5 rounded-md border border-gray-200 text-sm bg-white"><option value="all">All Priority</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
         </div>
 
         <div className="space-y-3">
           {filtered.map((report) => (
-            <motion.div key={report.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div key={report.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600"><AlertTriangle className="w-4 h-4" /></div>

@@ -129,7 +129,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                   <motion.div
                     whileHover={{ x: isCollapsed ? 0 : 3 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 ${
                       isActive ? "bg-emerald-50/80" : "hover:bg-gray-50/80"
                     } ${isCollapsed ? "justify-center" : ""}`}
                   >
@@ -147,7 +147,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                     </AnimatePresence>
                     <motion.div
                       animate={{ scale: isActive ? 1.05 : 1 }}
-                      className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center transition-all duration-300 ${
+                      className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
                         isActive ? `bg-gradient-to-br ${item.accent} text-white shadow-md` : isHovered ? `${item.accentBg} ${item.accentText}` : "bg-gray-50 text-gray-400"
                       }`}
                     >
@@ -221,7 +221,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                 <button
                   type="button"
                   onClick={onMobileClose}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 transition-colors"
                   aria-label="Close navigation"
                 >
                   <ChevronLeft className="h-5 w-5 rotate-180" />
@@ -236,14 +236,14 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                       to={item.path}
                       onClick={onMobileClose}
                       className={({ isActive }) =>
-                        `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${
+                        `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold transition-all ${
                           isActive ? "bg-emerald-50 text-emerald-700" : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                         }`
                       }
                     >
                       {({ isActive }) => (
                         <>
-                          <div className={`w-9 h-9 rounded-[11px] flex items-center justify-center transition-all ${
+                          <div className={`w-9 h-9 rounded-md flex items-center justify-center transition-all ${
                             isActive ? `bg-gradient-to-br ${item.accent} text-white shadow-md` : "bg-gray-50 text-gray-400"
                           }`}>
                             <Icon className="w-[18px] h-[18px]" strokeWidth={isActive ? 2.2 : 2} />
@@ -267,33 +267,33 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
       </AnimatePresence>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/80 z-50 px-2 pb-safe">
-        <div className="flex items-center justify-around py-2">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/80 z-50 px-1 pb-safe">
+        <div className="flex items-center justify-around py-0.5">
           {menuItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
             const isActive = isNavActive(location.pathname, item.path);
             return (
-              <NavLink key={item.name} to={item.path} className="relative flex flex-col items-center gap-1 p-2">
+              <NavLink key={item.name} to={item.path} className="relative flex flex-col items-center gap-0 px-1 py-0.5 min-w-0">
                 {isActive && (
                   <motion.div
                     layoutId="skMobileNav"
-                    className="absolute -top-2 w-8 h-[3px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
+                    className="absolute -top-1 w-5 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
                 <motion.div
-                  animate={{ scale: isActive ? 1.1 : 1 }}
-                  className={`w-10 h-10 rounded-[11px] flex items-center justify-center transition-all ${
-                    isActive ? `bg-gradient-to-br ${item.accent} text-white shadow-md` : "bg-gray-50 text-gray-400"
+                  animate={{ scale: isActive ? 1.05 : 1 }}
+                  className={`w-6 h-6 rounded-md flex items-center justify-center transition-all ${
+                    isActive ? `bg-gradient-to-br ${item.accent} text-white shadow-sm` : "bg-gray-50 text-gray-400"
                   }`}
                 >
-                  <Icon className="w-[18px] h-[18px]" strokeWidth={isActive ? 2.2 : 2} />
+                  <Icon className="w-3 h-3" strokeWidth={isActive ? 2.2 : 2} />
                 </motion.div>
-                <span className={`text-[0.65rem] font-semibold ${isActive ? "text-emerald-600" : "text-gray-400"}`}>
+                <span className={`text-[0.5rem] font-semibold leading-none truncate max-w-[52px] ${isActive ? "text-emerald-600" : "text-gray-400"}`}>
                   {item.name}
                 </span>
                 {item.badge && pendingOrders > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-amber-500 text-white text-[0.55rem] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  <span className="absolute top-0 right-0.5 w-3.5 h-3.5 bg-amber-500 text-white text-[0.5rem] font-bold rounded-full flex items-center justify-center shadow-sm">
                     {pendingOrders}
                   </span>
                 )}

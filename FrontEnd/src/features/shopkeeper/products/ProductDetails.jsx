@@ -34,7 +34,7 @@ const ProductDetails = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate(`/shopkeeper/products/${id}/edit`)}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
           >
             <Edit3 className="w-4 h-4" /> Edit
           </motion.button>
@@ -42,7 +42,7 @@ const ProductDetails = () => {
 
         <div className="grid sm:grid-cols-2 gap-6">
           {/* Image */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 overflow-hidden shadow-sm">
             {product.image ? (
               <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
             ) : (
@@ -54,7 +54,7 @@ const ProductDetails = () => {
 
           {/* Info */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-4">
-            <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`px-2 py-0.5 rounded-full text-[0.6rem] font-bold ${product.available ? "bg-emerald-50 text-emerald-600" : "bg-gray-50 text-gray-500"}`}>
                   {product.available ? "In Stock" : "Out of Stock"}
@@ -65,7 +65,7 @@ const ProductDetails = () => {
               <p className="text-sm text-gray-500 mt-1">{product.description}</p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500 flex items-center gap-1.5"><IndianRupee className="w-3.5 h-3.5" /> Price</span>

@@ -45,7 +45,7 @@ export default function DeliveryGuidelines() {
       <div className="p-5 sm:p-6 space-y-5">
         {/* Title */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-lg bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
             <ClipboardCheck className="w-6 h-6 text-[#1B4332]" />
           </div>
           <h1 className="font-serif text-xl font-bold text-[#0F172A]">
@@ -69,7 +69,7 @@ export default function DeliveryGuidelines() {
                 variants={item}
                 initial="hidden"
                 animate="visible"
-                className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] border border-gray-100"
+                className="flex items-start gap-3 p-3 rounded-md bg-[#F8FAFC] border border-gray-100"
               >
                 <div className="w-8 h-8 rounded-lg bg-[#1B4332]/10 flex items-center justify-center text-[#1B4332] shrink-0">
                   <g.icon className="w-4 h-4" />
@@ -106,7 +106,7 @@ export default function DeliveryGuidelines() {
         </div>
 
         {/* Warning */}
-        <div className="flex items-start gap-3 p-3.5 bg-amber-50/80 border border-amber-100 rounded-xl">
+        <div className="flex items-start gap-3 p-3.5 bg-amber-50/80 border border-amber-100 rounded-md">
           <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
           <div>
             <p className="text-xs font-semibold text-amber-800">Important</p>
@@ -117,7 +117,7 @@ export default function DeliveryGuidelines() {
         </div>
 
         {/* Agreement */}
-        <label className="flex items-start gap-3 cursor-pointer p-3.5 bg-[#F8FAFC] rounded-xl border border-gray-100 hover:border-[#1B4332]/20 transition-colors">
+        <label className="flex items-start gap-3 cursor-pointer p-3.5 bg-[#F8FAFC] rounded-md border border-gray-100 hover:border-[#1B4332]/20 transition-colors">
           <input
             type="checkbox"
             checked={agreed}
@@ -135,7 +135,7 @@ export default function DeliveryGuidelines() {
           whileTap={agreed ? { scale: 0.98 } : {}}
           onClick={handleContinue}
           disabled={!agreed}
-          className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
+          className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold transition-all ${
             agreed
               ? "bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20"
               : "bg-gray-100 text-gray-400 cursor-not-allowed"

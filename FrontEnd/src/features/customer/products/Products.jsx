@@ -223,7 +223,7 @@ const ProductCard = ({ product, index }) => {
       className="group"
     >
       <Link to={`/customer/product/${product.id}`} className="block">
-        <div className="relative flex flex-col overflow-hidden rounded-2xl bg-white border border-gray-100 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-200 h-full">
+        <div className="relative flex flex-col overflow-hidden rounded-lg bg-white border border-gray-100 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-200 h-full">
           {/* Image */}
           <div className="relative overflow-hidden bg-gray-50 aspect-[4/3]">
             <img
@@ -358,7 +358,7 @@ const EmptyState = ({ onClear }) => (
     </p>
     <button
       onClick={onClear}
-      className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+      className="mt-5 inline-flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
     >
       <X className="w-4 h-4" />
       Clear filters
@@ -433,7 +433,7 @@ const Products = () => {
                     value={search}
                     onChange={(e) => updateParam("search", e.target.value)}
                     placeholder="Search products, shops..."
-                    className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-9 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50"
+                    className="w-full rounded-md border border-gray-200 bg-white py-2.5 pl-10 pr-9 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50"
                   />
                   {search && (
                     <button
@@ -448,7 +448,7 @@ const Products = () => {
 
               <button
                 onClick={() => setShowMobileFilters(!showMobileFilters)}
-                className="lg:hidden flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shrink-0"
+                className="lg:hidden flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors shrink-0"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span className="hidden sm:inline">Filters</span>
@@ -467,7 +467,7 @@ const Products = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden overflow-hidden bg-white border border-gray-100 rounded-2xl mb-4"
+              className="lg:hidden overflow-hidden bg-white border border-gray-100 rounded-lg mb-4"
             >
               <div className="px-4 py-4 space-y-4">
                 {/* Sort */}
@@ -478,7 +478,7 @@ const Products = () => {
                   <select
                     value={sort}
                     onChange={(e) => updateParam("sort", e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 outline-none focus:border-emerald-400"
+                    className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 outline-none focus:border-emerald-400"
                   >
                     <option value="">Featured</option>
                     <option value="price-asc">Price: Low to High</option>
@@ -538,7 +538,7 @@ const Products = () => {
               <div className="sticky top-4 space-y-2">
                 {/* Sort */}
                 <SidebarSection title="Sort By">
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="bg-white rounded-md border border-gray-100 overflow-hidden">
                     {[
                       { value: "", label: "Featured", icon: Star },
                       { value: "price-asc", label: "Price: Low to High", icon: IndianRupee },
@@ -567,7 +567,7 @@ const Products = () => {
 
                 {/* Categories */}
                 <SidebarSection title="Categories">
-                  <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="bg-white rounded-md border border-gray-100 overflow-hidden">
                     <button
                       onClick={() => updateParam("category", "")}
                       className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors border-b border-gray-50 ${
@@ -604,7 +604,7 @@ const Products = () => {
 
                 {/* Price Range Info */}
                 <SidebarSection title="Price Range">
-                  <div className="bg-white rounded-xl border border-gray-100 p-4">
+                  <div className="bg-white rounded-md border border-gray-100 p-4">
                     <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                       <span>Min: ₹{Math.min(...featuredProducts.map(p => p.price))}</span>
                       <span>Max: ₹{Math.max(...featuredProducts.map(p => p.price))}</span>
@@ -618,7 +618,7 @@ const Products = () => {
 
                 {/* Delivery Info */}
                 {savedAddress && (
-                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
+                  <div className="rounded-md bg-emerald-50 border border-emerald-100 p-4">
                     <div className="flex items-center gap-2 text-emerald-700 mb-1">
                       <MapPin className="w-4 h-4" />
                       <span className="text-xs font-bold uppercase tracking-wider">Delivering to</span>

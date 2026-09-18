@@ -59,9 +59,9 @@ export default function DeliveryMonitoring() {
             { label: "Completed", value: stats.completed, color: "from-emerald-500 to-teal-500", icon: CheckCircle },
             { label: "Cancelled", value: stats.cancelled, color: "from-rose-500 to-pink-500", icon: XCircle },
           ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
                 <div><p className="text-xl font-bold text-gray-900">{s.value}</p><p className="text-xs text-gray-500">{s.label}</p></div>
               </div>
             </motion.div>
@@ -71,9 +71,9 @@ export default function DeliveryMonitoring() {
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by order, customer, partner..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by order, customer, partner..." className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 text-sm focus:border-[#155c43] focus:ring-2 focus:ring-[#155c43]/10 outline-none transition-all" />
           </div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:border-[#155c43] outline-none">
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-md border border-gray-200 text-sm bg-white focus:border-[#155c43] outline-none">
             <option value="all">All Status</option>
             <option value="ready_for_pickup">Ready for Pickup</option>
             <option value="out_for_delivery">Out for Delivery</option>
@@ -83,7 +83,7 @@ export default function DeliveryMonitoring() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden md:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="hidden md:block bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-gray-100 bg-gray-50/50">
@@ -116,7 +116,7 @@ export default function DeliveryMonitoring() {
         {/* Mobile Cards */}
         <div className="md:hidden space-y-3">
           {deliveries.map((d) => (
-            <motion.div key={d.id} whileHover={{ y: -2 }} onClick={() => navigate(`/admin/deliveries/${d.id}`)} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm cursor-pointer">
+            <motion.div key={d.id} whileHover={{ y: -2 }} onClick={() => navigate(`/admin/deliveries/${d.id}`)} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm cursor-pointer">
               <div className="flex items-start justify-between mb-2">
                 <div><p className="text-sm font-bold text-gray-900">{d.id}</p><p className="text-xs text-gray-500">{d.shopName}</p></div>
                 <span className={`px-2 py-0.5 rounded-full text-[0.65rem] font-semibold border ${statusColors[d.status] || ""}`}>{d.status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</span>

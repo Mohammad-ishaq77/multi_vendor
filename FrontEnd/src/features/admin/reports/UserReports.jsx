@@ -29,9 +29,9 @@ export default function UserReports() {
             { label: "Total Shopkeepers", value: stats.totalShopkeepers, color: "from-blue-500 to-indigo-500", icon: Store },
             { label: "Total Partners", value: stats.totalPartners, color: "from-amber-500 to-orange-500", icon: Truck },
           ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
                 <div><p className="text-xs text-gray-500">{s.label}</p><p className="text-xl font-bold text-gray-900">{s.value}</p></div>
               </div>
             </motion.div>
@@ -45,9 +45,9 @@ export default function UserReports() {
             { title: "Shopkeepers", total: stats.totalShopkeepers, active: stats.activeShopkeepers, suspended: stats.totalShopkeepers - stats.activeShopkeepers, color: "from-blue-500 to-indigo-500" },
             { title: "Delivery Partners", total: stats.totalPartners, active: stats.activePartners, suspended: stats.totalPartners - stats.activePartners, color: "from-amber-500 to-orange-500" },
           ].map((group) => (
-            <motion.div key={group.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div key={group.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${group.color} flex items-center justify-center text-white`}><Users className="w-5 h-5" /></div>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${group.color} flex items-center justify-center text-white`}><Users className="w-5 h-5" /></div>
                 <div><p className="text-sm font-bold text-gray-900">{group.title}</p><p className="text-xs text-gray-500">{group.total} total</p></div>
               </div>
               <div className="space-y-3">
@@ -65,14 +65,14 @@ export default function UserReports() {
         </div>
 
         {/* Recent Users */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Recent Registrations</h3>
           <div className="space-y-3">
             {[
               ...(customers || []).slice(-5).map((c) => ({ ...c, type: "Customer" })),
               ...(shopkeepers || []).slice(-3).map((s) => ({ ...s, type: "Shopkeeper" })),
             ].sort((a, b) => new Date(b.joinDate || b.registeredAt || 0) - new Date(a.joinDate || a.registeredAt || 0)).slice(0, 8).map((user) => (
-              <div key={user.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+              <div key={user.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-md">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white text-xs font-bold">{user.name?.charAt(0)}</div>
                 <div className="flex-1"><p className="text-sm font-medium text-gray-900">{user.name}</p><p className="text-xs text-gray-500">{user.email}</p></div>
                 <span className="px-2 py-0.5 rounded-full text-[0.6rem] font-semibold bg-gray-200 text-gray-600">{user.type}</span>

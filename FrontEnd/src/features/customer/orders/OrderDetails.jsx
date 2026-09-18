@@ -85,7 +85,7 @@ const OrderDetails = () => {
           </p>
           <Link
             to="/customer/orders"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-md hover:bg-[#143728] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Orders
@@ -119,7 +119,7 @@ const OrderDetails = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6"
+          className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-6"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
@@ -141,12 +141,12 @@ const OrderDetails = () => {
           <div className="flex items-center gap-3 pt-4 border-t border-gray-50">
             <Link
               to={`/customer/orders/${order.id}/track`}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-md hover:bg-[#143728] transition-colors"
             >
               <Truck className="w-4 h-4" />
               Track Order
             </Link>
-              <button onClick={downloadInvoice} className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-sm font-semibold text-[#0F172A] rounded-xl hover:bg-gray-50 transition-colors">
+              <button onClick={downloadInvoice} className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-sm font-semibold text-[#0F172A] rounded-md hover:bg-gray-50 transition-colors">
               <Download className="w-4 h-4" />
               Invoice
             </button>
@@ -158,7 +158,7 @@ const OrderDetails = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-6"
+          className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm mb-6"
         >
           <h3 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider mb-4">
             Order Items
@@ -169,7 +169,7 @@ const OrderDetails = () => {
                 key={item.id}
                 className="flex items-center gap-4 pb-4 border-b border-gray-50 last:border-0 last:pb-0"
               >
-                <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-16 h-16 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
                   <Package className="w-6 h-6 text-gray-300" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -200,7 +200,7 @@ const OrderDetails = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm"
+            className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm"
           >
             <div className="flex items-center gap-2 mb-4">
               <Receipt className="w-4 h-4 text-[#1B4332]" />
@@ -234,7 +234,7 @@ const OrderDetails = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm"
+            className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm"
           >
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="w-4 h-4 text-[#1B4332]" />

@@ -15,24 +15,24 @@ export default function RevenueCard({ revenue = {} }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+      className="bg-white rounded-md border border-gray-100 shadow-sm p-2.5 sm:rounded-lg sm:p-5"
     >
-      <h3 className="text-lg font-bold mb-5" style={{ color: "#14261f" }}>
+      <h3 className="text-sm font-bold mb-2 sm:text-lg sm:mb-5" style={{ color: "#14261f" }}>
         Revenue Overview
       </h3>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="text-center p-3 rounded-xl bg-emerald-50">
-          <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">Today</p>
-          <p className="mt-1 text-xl font-bold text-[#155c43]">{formatCurrency(today)}</p>
+      <div className="grid grid-cols-3 gap-1.5 mb-3 sm:gap-4 sm:mb-6">
+        <div className="text-center p-1.5 rounded-md bg-emerald-50 sm:p-3 sm:rounded-md">
+          <p className="text-[8px] font-medium text-gray-500 uppercase tracking-wider sm:text-[11px]">Today</p>
+          <p className="mt-0.5 text-xs font-bold text-[#155c43] sm:mt-1 sm:text-xl">{formatCurrency(today)}</p>
         </div>
-        <div className="text-center p-3 rounded-xl bg-blue-50">
-          <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">This Week</p>
-          <p className="mt-1 text-xl font-bold text-blue-700">{formatCurrency(thisWeek)}</p>
+        <div className="text-center p-1.5 rounded-md bg-blue-50 sm:p-3 sm:rounded-md">
+          <p className="text-[8px] font-medium text-gray-500 uppercase tracking-wider sm:text-[11px]">This Week</p>
+          <p className="mt-0.5 text-xs font-bold text-blue-700 sm:mt-1 sm:text-xl">{formatCurrency(thisWeek)}</p>
         </div>
-        <div className="text-center p-3 rounded-xl bg-violet-50">
-          <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">This Month</p>
-          <p className="mt-1 text-xl font-bold text-violet-700">{formatCurrency(thisMonth)}</p>
+        <div className="text-center p-1.5 rounded-md bg-violet-50 sm:p-3 sm:rounded-md">
+          <p className="text-[8px] font-medium text-gray-500 uppercase tracking-wider sm:text-[11px]">This Month</p>
+          <p className="mt-0.5 text-xs font-bold text-violet-700 sm:mt-1 sm:text-xl">{formatCurrency(thisMonth)}</p>
         </div>
       </div>
 

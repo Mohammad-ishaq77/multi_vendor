@@ -226,24 +226,24 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-      <div className="space-y-10 sm:space-y-12">
+      <div className="space-y-3 sm:space-y-10 lg:space-y-12">
         {/* ── Greeting Header ─────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: "#14261f" }}>
+          <h1 className="text-base font-bold sm:text-2xl lg:text-3xl" style={{ color: "#14261f" }}>
             {getGreeting()}, Admin
           </h1>
-          <p className="mt-1.5 text-sm text-gray-500">
+          <p className="mt-0.5 text-[10px] text-gray-500 sm:mt-1.5 sm:text-sm">
             Here's what's happening across your marketplace today.
           </p>
         </motion.div>
 
         {/* ── Primary Statistics Row ──────────────────────────────────────── */}
         <section>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 sm:gap-4">
             <StatCard
               icon={<Users size={22} />}
               label="Total Customers"
@@ -321,13 +321,13 @@ export default function AdminDashboard() {
         </section>
 
         {/* ── Revenue + Order Status ──────────────────────────────────────── */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-5">
           <RevenueCard revenue={revenueData} />
           <OrderStatusCard orders={orders} />
         </section>
 
         {/* ── Approval Queue ──────────────────────────────────────────────── */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-5">
           <ApprovalCard
             title="Shopkeeper Approvals"
             count={pendingShopApprovals.length}
@@ -349,40 +349,40 @@ export default function AdminDashboard() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            className="bg-white rounded-md border border-gray-100 shadow-sm overflow-hidden sm:rounded-lg"
           >
-            <div className="flex items-center justify-between p-5 pb-0">
-              <h3 className="text-lg font-bold" style={{ color: "#14261f" }}>
+            <div className="flex items-center justify-between p-2.5 pb-0 sm:p-5">
+              <h3 className="text-sm font-bold sm:text-lg" style={{ color: "#14261f" }}>
                 Recent Orders
               </h3>
               <button
                 onClick={() => navigate("/admin/orders")}
-                className="text-xs font-semibold text-[#155c43] hover:underline flex items-center gap-1"
+                className="text-[9px] font-semibold text-[#155c43] hover:underline flex items-center gap-1 sm:text-xs"
               >
                 View All <ArrowUpRight size={12} />
               </button>
             </div>
 
-            <div className="overflow-x-auto mt-3">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto mt-2 sm:mt-3">
+              <table className="w-full text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="text-left px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider sm:px-5 sm:py-3 sm:text-xs">
                       Order ID
                     </th>
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="text-left px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider sm:px-5 sm:py-3 sm:text-xs">
                       Customer
                     </th>
-                    <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                    <th className="text-left px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell sm:px-5 sm:py-3 sm:text-xs">
                       Shop
                     </th>
-                    <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider sm:px-5 sm:py-3 sm:text-xs">
                       Amount
                     </th>
-                    <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th className="text-center px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider sm:px-5 sm:py-3 sm:text-xs">
                       Status
                     </th>
-                    <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                    <th className="text-right px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell sm:px-5 sm:py-3 sm:text-xs">
                       Date
                     </th>
                   </tr>
@@ -390,7 +390,7 @@ export default function AdminDashboard() {
                 <tbody>
                   {recentOrders.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="text-center py-10 text-gray-400">
+                      <td colSpan={6} className="text-center py-6 text-gray-400 sm:py-10">
                         No orders found
                       </td>
                     </tr>
@@ -405,34 +405,34 @@ export default function AdminDashboard() {
                       onClick={() => navigate(`/admin/orders/${order.id}`)}
                       className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 cursor-pointer transition-colors"
                     >
-                      <td className="px-5 py-3.5">
-                        <span className="font-mono text-xs font-semibold text-[#155c43]">
+                      <td className="px-3 py-2.5 sm:px-5 sm:py-3.5">
+                        <span className="font-mono text-[10px] font-semibold text-[#155c43] sm:text-xs">
                           {order.id}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5">
-                        <span className="font-medium" style={{ color: "#14261f" }}>
+                      <td className="px-3 py-2.5 sm:px-5 sm:py-3.5">
+                        <span className="font-medium text-xs sm:text-sm" style={{ color: "#14261f" }}>
                           {order.customerName}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 hidden md:table-cell">
+                      <td className="px-3 py-2.5 hidden md:table-cell sm:px-5 sm:py-3.5">
                         <span className="text-gray-500">{order.shopName}</span>
                       </td>
-                      <td className="px-5 py-3.5 text-right">
-                        <span className="font-semibold" style={{ color: "#14261f" }}>
+                      <td className="px-3 py-2.5 text-right sm:px-5 sm:py-3.5">
+                        <span className="font-semibold text-xs sm:text-sm" style={{ color: "#14261f" }}>
                           {formatCurrency(order.totalAmount)}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-center">
+                      <td className="px-3 py-2.5 text-center sm:px-5 sm:py-3.5">
                         <span
-                          className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-semibold capitalize ${
+                          className={`inline-block px-1.5 py-0.5 rounded-md text-[9px] font-semibold capitalize sm:px-2.5 sm:py-1 sm:rounded-lg sm:text-[11px] ${
                             statusBadge[order.status] || "bg-gray-50 text-gray-600 border border-gray-200"
                           }`}
                         >
                           {order.status?.replace(/_/g, " ")}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-right hidden sm:table-cell">
+                      <td className="px-3 py-2.5 text-right hidden sm:table-cell sm:px-5 sm:py-3.5">
                         <span className="text-xs text-gray-400">
                           {formatDate(order.createdAt)}
                         </span>
@@ -446,7 +446,7 @@ export default function AdminDashboard() {
         </section>
 
         {/* ── Recent Activity + Quick Actions ─────────────────────────────── */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-5">
           <ActivityCard activities={formattedActivities} />
 
           <motion.div
@@ -454,12 +454,12 @@ export default function AdminDashboard() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+            className="bg-white rounded-md border border-gray-100 shadow-sm p-2.5 sm:rounded-lg sm:p-5"
           >
-            <h3 className="text-lg font-bold mb-5" style={{ color: "#14261f" }}>
+            <h3 className="text-sm font-bold mb-2 sm:text-lg sm:mb-5" style={{ color: "#14261f" }}>
               Quick Actions
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-3">
               {quickActions.map((action, idx) => {
                 const Icon = action.icon;
                 return (
@@ -472,10 +472,10 @@ export default function AdminDashboard() {
                     whileHover={{ scale: 1.03, transition: { duration: 0.15 } }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => navigate(action.route)}
-                    className={`flex flex-col items-center gap-2.5 p-4 rounded-xl transition-colors ${action.color}`}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-md transition-colors sm:gap-2.5 sm:p-4 sm:rounded-md ${action.color}`}
                   >
-                    <Icon size={22} />
-                    <span className="text-xs font-semibold text-center leading-tight">
+                    <Icon size={16} className="sm:w-[22px] sm:h-[22px]" />
+                    <span className="text-[9px] font-semibold text-center leading-tight sm:text-xs">
                       {action.label}
                     </span>
                   </motion.button>

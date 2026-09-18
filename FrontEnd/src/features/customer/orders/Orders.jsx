@@ -106,7 +106,7 @@ const Orders = () => {
               <p className="text-sm text-gray-500">Track and manage your purchases</p>
               <Link
                 to="/customer/products"
-                className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
               >
                 <ShoppingBag className="w-4 h-4" />
                 Shop Again
@@ -133,7 +133,7 @@ const Orders = () => {
               </p>
               <Link
                 to="/customer/products"
-                className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+                className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
               >
                 <ShoppingBag className="w-4 h-4" />
                 Start Shopping
@@ -150,7 +150,7 @@ const Orders = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search orders..."
-                    className="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
+                    className="w-full bg-white border border-gray-200 rounded-md py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
                   />
                 </div>
               </div>
@@ -161,7 +161,7 @@ const Orders = () => {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`flex items-center gap-1.5 shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 shrink-0 px-4 py-2 rounded-md text-sm font-semibold transition-all ${
                       activeTab === tab
                         ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
                         : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:text-gray-700"
@@ -196,12 +196,12 @@ const Orders = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ delay: Math.min(index * 0.05, 0.2) }}
-                        className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300"
+                        className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300"
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           {/* Left */}
                           <div className="flex items-start gap-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${config.bg} border ${config.border}`}>
+                            <div className={`w-12 h-12 rounded-md flex items-center justify-center shrink-0 ${config.bg} border ${config.border}`}>
                               <StatusIcon className={`w-5 h-5 ${config.color}`} />
                             </div>
                             <div>
@@ -230,13 +230,13 @@ const Orders = () => {
                           <div className="flex items-center gap-2 sm:pl-4">
                             <Link
                               to={`/customer/orders/${order.id}`}
-                              className="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
+                              className="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-all"
                             >
                               Details
                             </Link>
                             <Link
                               to={`/customer/orders/${order.id}/track`}
-                              className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20"
+                              className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20"
                             >
                               Track
                             </Link>

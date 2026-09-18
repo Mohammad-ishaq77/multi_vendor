@@ -38,31 +38,31 @@ export default function StatCard({ icon, label, value, accent = "emerald", trend
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: delay * 0.1, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-shadow duration-300 p-6"
+      className="bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-xl transition-shadow duration-300 p-2 sm:rounded-lg sm:p-6"
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</p>
-          <p className="mt-2 text-2xl font-bold" style={{ color: "#14261f" }}>
+      <div className="flex items-start justify-between gap-1">
+        <div className="min-w-0 flex-1">
+          <p className="text-[8px] font-medium text-gray-500 uppercase tracking-wider leading-tight sm:text-xs">{label}</p>
+          <p className="mt-0.5 text-sm font-bold leading-tight sm:mt-2 sm:text-2xl" style={{ color: "#14261f" }}>
             {value}
           </p>
           {trend && (
-            <div className="mt-2 flex items-center gap-1">
+            <div className="mt-0.5 flex items-center gap-0.5 sm:mt-2 sm:gap-1">
               <span
-                className={`text-xs font-semibold ${
+                className={`text-[8px] font-semibold sm:text-xs ${
                   trend.startsWith("+") ? "text-emerald-600" : "text-rose-600"
                 }`}
               >
                 {trend}
               </span>
-              <span className="text-xs text-gray-400">vs last week</span>
+              <span className="text-[8px] text-gray-400 hidden sm:inline sm:text-xs">vs last week</span>
             </div>
           )}
         </div>
         <div
-          className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0`}
+          className={`h-6 w-6 rounded-md bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0 sm:h-12 sm:w-12 sm:rounded-md`}
         >
-          <span className="text-white text-xl">{icon}</span>
+          <span className="text-white text-xs sm:text-xl [&_svg]:w-3 [&_svg]:h-3 sm:[&_svg]:w-5 sm:[&_svg]:h-5">{icon}</span>
         </div>
       </div>
     </motion.div>

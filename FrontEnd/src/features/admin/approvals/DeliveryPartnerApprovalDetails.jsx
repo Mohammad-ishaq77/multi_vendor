@@ -71,7 +71,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmLabel
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-3 mb-4">
@@ -82,11 +82,11 @@ function ConfirmModal({ isOpen, onClose, onConfirm, title, message, confirmLabel
           </div>
           <p className="text-sm text-gray-600 mb-6">{message}</p>
           <div className="flex justify-end gap-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
             <button
               onClick={onConfirm}
               disabled={loading}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors flex items-center gap-2 ${
+              className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors flex items-center gap-2 ${
                 confirmColor === "red" ? "bg-rose-600 hover:bg-rose-700" : "bg-emerald-600 hover:bg-emerald-700"
               }`}
             >
@@ -108,18 +108,18 @@ function RejectModal({ isOpen, onClose, onConfirm, loading }) {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center"><XCircle className="w-5 h-5 text-rose-600" /></div>
             <h3 className="text-lg font-semibold text-gray-900">Reject Application</h3>
           </div>
           <p className="text-sm text-gray-600 mb-4">Provide a reason for rejection.</p>
           <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Rejection reason..." rows={3}
-            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none" />
+            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none" />
           <div className="flex justify-end gap-3 mt-4">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
             <button onClick={() => { if (reason.trim()) { onConfirm(reason.trim()); setReason(""); } }} disabled={!reason.trim() || loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-colors flex items-center gap-2 disabled:opacity-50">
+              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700 transition-colors flex items-center gap-2 disabled:opacity-50">
               {loading && <Loader2 className="w-4 h-4 animate-spin" />} Reject
             </button>
           </div>
@@ -137,18 +137,18 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center"><MessageSquare className="w-5 h-5 text-blue-600" /></div>
             <h3 className="text-lg font-semibold text-gray-900">Request Changes</h3>
           </div>
           <p className="text-sm text-gray-600 mb-4">Describe what changes are needed.</p>
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Describe required changes..." rows={3}
-            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none" />
+            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none" />
           <div className="flex justify-end gap-3 mt-4">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
             <button onClick={() => { if (message.trim()) { onConfirm(message.trim()); setMessage(""); } }} disabled={!message.trim() || loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50">
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50">
               {loading && <Loader2 className="w-4 h-4 animate-spin" />} Send
             </button>
           </div>
@@ -216,7 +216,7 @@ function DocumentViewerModal({ isOpen, onClose, docType, applicantName }) {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+          className="bg-white rounded-lg shadow-2xl w-full max-w-lg overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between p-4 border-b border-gray-100">
@@ -234,7 +234,7 @@ function DocumentViewerModal({ isOpen, onClose, docType, applicantName }) {
             </button>
           </div>
           <div className="p-5">
-            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+            <div className="bg-gray-50 rounded-md p-4 space-y-3">
               {doc.fields.map((field, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{field.label}</span>
@@ -317,7 +317,7 @@ export default function DeliveryPartnerApprovalDetails() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <button onClick={() => navigate("/admin/approvals")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">
+        <button onClick={() => navigate("/admin/approvals")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
@@ -331,7 +331,7 @@ export default function DeliveryPartnerApprovalDetails() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <User className="w-4 h-4 text-[#155c43]" /> Personal Information
           </h3>
@@ -344,7 +344,7 @@ export default function DeliveryPartnerApprovalDetails() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Car className="w-4 h-4 text-[#155c43]" /> Vehicle Information
           </h3>
@@ -356,12 +356,12 @@ export default function DeliveryPartnerApprovalDetails() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#155c43]" /> DigiLocker Verification
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl">
+            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
               <BadgeCheck className="w-4 h-4 text-emerald-600 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">Identity</p>
@@ -375,7 +375,7 @@ export default function DeliveryPartnerApprovalDetails() {
               </button>
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
             </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl">
+            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
               <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">Address</p>
@@ -389,7 +389,7 @@ export default function DeliveryPartnerApprovalDetails() {
               </button>
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
             </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-xl">
+            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
               <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">Documents</p>
@@ -408,19 +408,19 @@ export default function DeliveryPartnerApprovalDetails() {
             <p className="text-xs text-emerald-700 text-center font-medium">DigiLocker Verification: Completed</p>
           </div>
           {approval.notes && (
-            <div className="mt-4 p-3 bg-gray-50 rounded-xl">
+            <div className="mt-4 p-3 bg-gray-50 rounded-md">
               <p className="text-xs font-medium text-gray-500 mb-1">Applicant Notes</p>
               <p className="text-sm text-gray-600">{approval.notes}</p>
             </div>
           )}
           {approval.changesMessage && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-xl">
+            <div className="mt-4 p-3 bg-blue-50 rounded-md">
               <p className="text-xs font-medium text-blue-700 mb-1">Changes Requested</p>
               <p className="text-sm text-blue-600">{approval.changesMessage}</p>
             </div>
           )}
           {approval.rejectionReason && (
-            <div className="mt-4 p-3 bg-rose-50 rounded-xl">
+            <div className="mt-4 p-3 bg-rose-50 rounded-md">
               <p className="text-xs font-medium text-rose-700 mb-1">Rejection Reason</p>
               <p className="text-sm text-rose-600">{approval.rejectionReason}</p>
             </div>
@@ -428,7 +428,7 @@ export default function DeliveryPartnerApprovalDetails() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Clock className="w-4 h-4 text-[#155c43]" /> Application Timeline
           </h3>
@@ -448,16 +448,16 @@ export default function DeliveryPartnerApprovalDetails() {
 
       {approval.status === "pending" && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">Actions</h3>
           <div className="flex flex-wrap gap-3">
-            <button onClick={handleApprove} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors">
+            <button onClick={handleApprove} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-colors">
               <CheckCircle2 className="w-4 h-4" /> Approve Application
             </button>
-            <button onClick={handleReject} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-colors">
+            <button onClick={handleReject} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700 transition-colors">
               <XCircle className="w-4 h-4" /> Reject
             </button>
-            <button onClick={handleChanges} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors">
+            <button onClick={handleChanges} className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors">
               <MessageSquare className="w-4 h-4" /> Request Changes
             </button>
           </div>

@@ -117,7 +117,7 @@ export default function ShopTypeRequests() {
             { label: "Approved", value: shopTypeRequests.filter((r) => r.status === "approved").length, color: "bg-emerald-50 text-emerald-700" },
             { label: "Rejected", value: shopTypeRequests.filter((r) => r.status === "rejected").length, color: "bg-rose-50 text-rose-700" },
           ].map((stat) => (
-            <div key={stat.label} className={`p-4 rounded-xl ${stat.color}`}>
+            <div key={stat.label} className={`p-4 rounded-md ${stat.color}`}>
               <p className="text-xs font-medium opacity-70">{stat.label}</p>
               <p className="text-2xl font-bold mt-1">{stat.value}</p>
             </div>
@@ -129,7 +129,7 @@ export default function ShopTypeRequests() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4"
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-4"
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -139,7 +139,7 @@ export default function ShopTypeRequests() {
                 placeholder="Search by type, shopkeeper, description..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-all"
               />
             </div>
             <div className="flex gap-2">
@@ -147,7 +147,7 @@ export default function ShopTypeRequests() {
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className={`px-3 py-2 text-xs font-semibold rounded-xl transition-colors whitespace-nowrap ${
+                  className={`px-3 py-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${
                     statusFilter === s
                       ? "bg-[#155c43] text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -166,7 +166,7 @@ export default function ShopTypeRequests() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-12 text-center"
             >
               <Tag className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-400 font-medium">No shop type requests found</p>
@@ -180,10 +180,10 @@ export default function ShopTypeRequests() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.04 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center text-white flex-shrink-0">
+                <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center text-white flex-shrink-0">
                   <Tag size={20} />
                 </div>
 
@@ -232,14 +232,14 @@ export default function ShopTypeRequests() {
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleAction(request, "reject")}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-xl text-xs font-semibold hover:bg-rose-100 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-md text-xs font-semibold hover:bg-rose-100 transition-colors"
                     >
                       <XCircle size={14} />
                       Reject
                     </button>
                     <button
                       onClick={() => handleAction(request, "approve")}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-semibold hover:bg-emerald-100 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 rounded-md text-xs font-semibold hover:bg-emerald-100 transition-colors"
                     >
                       <CheckCircle size={14} />
                       Approve
@@ -266,12 +266,12 @@ export default function ShopTypeRequests() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full"
+                className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    className={`w-12 h-12 rounded-md flex items-center justify-center ${
                       confirmModal.action === "approve"
                         ? "bg-emerald-100 text-emerald-600"
                         : "bg-rose-100 text-rose-600"
@@ -302,13 +302,13 @@ export default function ShopTypeRequests() {
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setConfirmModal(null)}
-                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmAction}
-                    className={`px-4 py-2 text-sm font-semibold text-white rounded-xl transition-colors ${
+                    className={`px-4 py-2 text-sm font-semibold text-white rounded-md transition-colors ${
                       confirmModal.action === "approve"
                         ? "bg-emerald-600 hover:bg-emerald-700"
                         : "bg-rose-600 hover:bg-rose-700"

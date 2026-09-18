@@ -348,7 +348,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
         {/* Online Status (Admin is always online) */}
         {!isCollapsed && (
           <div className="px-5 pb-3">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Online
             </div>
@@ -391,7 +391,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                         <motion.div
                           whileHover={{ x: isCollapsed ? 0 : 3 }}
                           whileTap={{ scale: 0.98 }}
-                          className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
+                          className={`relative flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 ${
                             active
                               ? "bg-emerald-50/80"
                               : "hover:bg-gray-50/80"
@@ -418,7 +418,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                           {/* Icon Container */}
                           <motion.div
                             animate={{ scale: active ? 1.05 : 1 }}
-                            className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-[11px] flex items-center justify-center transition-all duration-300 ${
+                            className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
                               active
                                 ? `bg-gradient-to-br ${item.accent} text-white shadow-md`
                                 : isHovered
@@ -512,7 +512,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                 <button
                   type="button"
                   onClick={onMobileClose}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 hover:bg-gray-100 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 transition-colors"
                   aria-label="Close navigation"
                 >
                   <ChevronLeft className="h-5 w-5 rotate-180" />
@@ -520,7 +520,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
               </div>
 
               <div className="px-5 py-3 border-b border-gray-100">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Online — Admin
                 </div>
@@ -546,7 +546,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                             to={item.path}
                             onClick={onMobileClose}
                             className={({ isActive: navActive }) =>
-                              `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${
+                              `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold transition-all ${
                                 active
                                   ? "bg-emerald-50 text-emerald-700"
                                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
@@ -554,7 +554,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                             }
                           >
                             <div
-                              className={`w-9 h-9 rounded-[11px] flex items-center justify-center transition-all ${
+                              className={`w-9 h-9 rounded-md flex items-center justify-center transition-all ${
                                 active
                                   ? `bg-gradient-to-br ${item.accent} text-white shadow-md`
                                   : "bg-gray-50 text-gray-400"
@@ -586,8 +586,8 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
       </AnimatePresence>
 
       {/* ─── Mobile Bottom Navigation ─── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/80 z-50 px-2 pb-safe">
-        <div className="flex items-center justify-around py-2">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/80 z-50 px-1 pb-safe">
+        <div className="flex items-center justify-around py-0.5">
           {flatItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -595,30 +595,30 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
               <NavLink
                 key={item.name}
                 to={item.path}
-                className="relative flex flex-col items-center gap-1 p-2"
+                className="relative flex flex-col items-center gap-0 px-1 py-0.5 min-w-0"
               >
                 {active && (
                   <motion.div
                     layoutId="adminMobileNav"
-                    className="absolute -top-2 w-8 h-[3px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
+                    className="absolute -top-1 w-6 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
                 <motion.div
-                  animate={{ scale: active ? 1.1 : 1 }}
-                  className={`w-10 h-10 rounded-[11px] flex items-center justify-center transition-all ${
+                  animate={{ scale: active ? 1.05 : 1 }}
+                  className={`w-6 h-6 rounded-md flex items-center justify-center transition-all ${
                     active
-                      ? `bg-gradient-to-br ${item.accent} text-white shadow-md`
+                      ? `bg-gradient-to-br ${item.accent} text-white shadow-sm`
                       : "bg-gray-50 text-gray-400"
                   }`}
                 >
                   <Icon
-                    className="w-[18px] h-[18px]"
+                    className="w-3 h-3"
                     strokeWidth={active ? 2.2 : 2}
                   />
                 </motion.div>
                 <span
-                  className={`text-[0.65rem] font-semibold ${
+                  className={`text-[0.5rem] font-semibold leading-none truncate max-w-[52px] ${
                     active ? "text-emerald-600" : "text-gray-400"
                   }`}
                 >

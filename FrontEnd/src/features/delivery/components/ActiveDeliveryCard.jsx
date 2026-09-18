@@ -21,15 +21,15 @@ export default function ActiveDeliveryCard({ delivery }) {
   const action = actionLabels[delivery.status];
 
   return (
-    <motion.div whileHover={{ y: -2 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all">
-      <div className="flex items-center justify-between mb-3">
+    <motion.div whileHover={{ y: -2 }} className="bg-white rounded-md border border-gray-100 p-3.5 shadow-sm hover:shadow-md transition-all sm:rounded-lg sm:p-5">
+      <div className="flex items-center justify-between mb-2.5 sm:mb-3">
         <div>
-          <p className="text-sm font-bold text-gray-900">{delivery.id}</p>
+          <p className="text-xs font-bold text-gray-900 sm:text-sm">{delivery.id}</p>
           <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[0.65rem] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
             Active Delivery
           </span>
         </div>
-        <p className="text-lg font-bold text-emerald-600">₹{delivery.partnerEarning}</p>
+        <p className="text-base font-bold text-emerald-600 sm:text-lg">₹{delivery.partnerEarning}</p>
       </div>
 
       {/* Progress Bar */}
@@ -67,7 +67,7 @@ export default function ActiveDeliveryCard({ delivery }) {
       {action && (
         <button
           onClick={() => navigate(action.path)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
         >
           {action.label}
           <ArrowRight className="w-4 h-4" />

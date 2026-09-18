@@ -26,7 +26,7 @@ export default function EarningsDetails() {
         <ArrowLeft className="w-4 h-4" /> Back to Earnings
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-6 text-center border-b border-gray-100">
           <p className="text-xs text-gray-400">You earned</p>
           <p className="text-3xl font-bold text-emerald-600 mt-1">₹{txn.partnerEarning}</p>

@@ -42,7 +42,7 @@ const Orders = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by order ID or customer..."
-              className="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
+              className="w-full bg-white border border-gray-200 rounded-md py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
             />
           </div>
         </div>
@@ -53,7 +53,7 @@ const Orders = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+              className={`shrink-0 px-4 py-2 rounded-md text-sm font-semibold transition-all ${
                 activeTab === tab
                   ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
                   : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:text-gray-700"

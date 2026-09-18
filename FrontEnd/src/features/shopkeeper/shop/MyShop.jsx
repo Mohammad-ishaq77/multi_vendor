@@ -37,7 +37,7 @@ const MyShop = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/shopkeeper/shop/edit")}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
           >
             <Edit3 className="w-4 h-4" /> Edit Shop
           </motion.button>
@@ -47,10 +47,10 @@ const MyShop = () => {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-600/20 mb-6"
+          className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg p-6 sm:p-8 text-white shadow-xl shadow-emerald-600/20 mb-6"
         >
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
               {shop.shopImage ? (
                 <img src={shop.shopImage} alt={shop.name} className="w-full h-full object-cover" />
               ) : (
@@ -76,7 +76,7 @@ const MyShop = () => {
 
         <div className="grid sm:grid-cols-2 gap-6">
           {/* Contact Info */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
             <h3 className="font-bold text-gray-900 text-sm mb-4">Contact Information</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3"><Phone className="w-4 h-4 text-gray-400" /><span className="text-sm text-gray-700">{shop.phone}</span></div>
@@ -86,7 +86,7 @@ const MyShop = () => {
           </motion.div>
 
           {/* Business Hours */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
             <h3 className="font-bold text-gray-900 text-sm mb-4">Business Hours</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3"><Clock className="w-4 h-4 text-gray-400" /><span className="text-sm text-gray-700">{shop.openingTime} – {shop.closingTime}</span></div>
@@ -96,17 +96,17 @@ const MyShop = () => {
           </motion.div>
 
           {/* Description */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
             <h3 className="font-bold text-gray-900 text-sm mb-4">About Shop</h3>
             <p className="text-sm text-gray-600 leading-relaxed">{shop.description}</p>
           </motion.div>
 
           {/* Shop Location Map */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm sm:col-span-2">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm sm:col-span-2">
             <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-600" /> Shop Location
             </h3>
-            <div className="rounded-xl overflow-hidden border border-gray-200" style={{ height: "300px" }}>
+            <div className="rounded-md overflow-hidden border border-gray-200" style={{ height: "300px" }}>
               <MapContainer
                 center={[lat, lng]}
                 zoom={14}

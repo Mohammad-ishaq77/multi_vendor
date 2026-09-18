@@ -62,7 +62,7 @@ export default function ShopkeeperDetails() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <button onClick={() => navigate("/admin/users")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">
+        <button onClick={() => navigate("/admin/users")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
@@ -74,7 +74,7 @@ export default function ShopkeeperDetails() {
         </span>
       </div>
 
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-16 h-16 rounded-full bg-[#155c43]/10 flex items-center justify-center text-xl font-bold text-[#155c43]">{shopkeeper.name.charAt(0)}</div>
           <div>
@@ -93,9 +93,9 @@ export default function ShopkeeperDetails() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 + 0.1 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            className="bg-white rounded-lg border border-gray-100 shadow-sm p-5">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
+              <div className={`w-10 h-10 rounded-md ${stat.bg} flex items-center justify-center`}>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
               <div>
@@ -109,7 +109,7 @@ export default function ShopkeeperDetails() {
 
       {shop && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Store className="w-4 h-4 text-[#155c43]" /> Shop Details
           </h3>
@@ -127,7 +127,7 @@ export default function ShopkeeperDetails() {
       )}
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
         <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <ShoppingBag className="w-4 h-4 text-[#155c43]" /> Recent Orders
         </h3>
@@ -136,7 +136,7 @@ export default function ShopkeeperDetails() {
         ) : (
           <div className="space-y-3">
             {shopOrders.slice(0, 5).map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                 <div>
                   <p className="text-sm font-medium text-gray-900">{order.id}</p>
                   <p className="text-xs text-gray-500">{order.customerName} &middot; {formatDate(order.createdAt)}</p>
@@ -149,16 +149,16 @@ export default function ShopkeeperDetails() {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
         <h3 className="text-sm font-semibold text-gray-900 mb-4">Account Actions</h3>
         {shopkeeper.status === "active" ? (
           <button onClick={() => { setConfirmAction("suspend"); handleAction(); }}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-colors">
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700 transition-colors">
             <UserX className="w-4 h-4" /> Suspend Account
           </button>
         ) : (
           <button onClick={() => { setConfirmAction("activate"); handleAction(); }}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors">
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-colors">
             <UserCheck className="w-4 h-4" /> Activate Account
           </button>
         )}
@@ -168,15 +168,15 @@ export default function ShopkeeperDetails() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowConfirm(false)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+            className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">{confirmAction === "suspend" ? "Suspend Shopkeeper" : "Activate Shopkeeper"}</h3>
             <p className="text-sm text-gray-600 mb-6">
               {confirmAction === "suspend" ? "This shopkeeper will be suspended and their shop deactivated. Are you sure?" : "This shopkeeper will be reactivated and their shop will be available again."}
             </p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowConfirm(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+              <button onClick={() => setShowConfirm(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
               <button onClick={executeAction} disabled={loading}
-                className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors flex items-center gap-2 ${confirmAction === "suspend" ? "bg-rose-600 hover:bg-rose-700" : "bg-emerald-600 hover:bg-emerald-700"}`}>
+                className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors flex items-center gap-2 ${confirmAction === "suspend" ? "bg-rose-600 hover:bg-rose-700" : "bg-emerald-600 hover:bg-emerald-700"}`}>
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {confirmAction === "suspend" ? "Suspend" : "Activate"}
               </button>

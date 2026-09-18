@@ -48,7 +48,7 @@ const Products = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/shopkeeper/products/add")}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
           >
             <Plus className="w-4 h-4" /> Add Product
           </motion.button>
@@ -63,7 +63,7 @@ const Products = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search products..."
-              className="w-full bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
+              className="w-full bg-white border border-gray-200 rounded-md py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
             />
           </div>
         </div>
@@ -74,7 +74,7 @@ const Products = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+              className={`shrink-0 px-4 py-2 rounded-md text-sm font-semibold transition-all ${
                 selectedCategory === cat
                   ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
                   : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:text-gray-700"
@@ -99,7 +99,7 @@ const Products = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate("/shopkeeper/products/add")}
-                className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+                className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
               >
                 <Plus className="w-4 h-4" /> Add First Product
               </motion.button>
@@ -126,8 +126,8 @@ const Products = () => {
         <AnimatePresence>
           {deleteConfirm && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-              <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-                <div className="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center mx-auto mb-4">
+              <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-lg p-6 max-w-sm w-full shadow-2xl">
+                <div className="w-12 h-12 rounded-md bg-rose-50 flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-6 h-6 text-rose-500" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 text-center">Delete Product?</h3>
@@ -135,8 +135,8 @@ const Products = () => {
                   Are you sure you want to delete <span className="font-semibold">{deleteConfirm.name}</span>? This action cannot be undone.
                 </p>
                 <div className="flex gap-3 mt-6">
-                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">Cancel</button>
-                  <button onClick={confirmDelete} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all">Delete</button>
+                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">Cancel</button>
+                  <button onClick={confirmDelete} className="flex-1 py-2.5 rounded-md text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all">Delete</button>
                 </div>
               </motion.div>
             </motion.div>

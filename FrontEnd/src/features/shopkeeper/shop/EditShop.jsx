@@ -17,7 +17,7 @@ import {
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 
-const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
 const getTimePeriod = (time) => Number(time?.split(":")[0]) >= 12 ? "PM" : "AM";
 
@@ -68,7 +68,7 @@ const EditShop = () => {
 
         <form onSubmit={handleSave} className="space-y-6">
           {/* Basic Info */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Basic Information</h3>
             <div className="space-y-4">
               <div>
@@ -95,7 +95,7 @@ const EditShop = () => {
                     <img
                       src={form.shopImage}
                       alt="Shop preview"
-                      className="w-32 h-32 rounded-2xl object-cover border-2 border-gray-200"
+                      className="w-32 h-32 rounded-lg object-cover border-2 border-gray-200"
                     />
                     <button
                       type="button"
@@ -109,7 +109,7 @@ const EditShop = () => {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center gap-2 text-gray-400 hover:border-emerald-300 hover:text-emerald-500 transition-colors"
+                    className="w-full border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-2 text-gray-400 hover:border-emerald-300 hover:text-emerald-500 transition-colors"
                   >
                     <Camera className="w-8 h-8" />
                     <span className="text-sm font-medium">Upload shop image</span>
@@ -132,7 +132,7 @@ const EditShop = () => {
           </div>
 
           {/* Address & Location */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Address & Location</h3>
             <div className="space-y-4">
               <div>
@@ -142,29 +142,29 @@ const EditShop = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">City</label>
-                  <input value={form.city} onChange={(e) => update("city", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+                  <input value={form.city} onChange={(e) => update("city", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                 </div>
                 <div>
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">State</label>
-                  <input value={form.state} onChange={(e) => update("state", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+                  <input value={form.state} onChange={(e) => update("state", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                 </div>
                 <div>
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pincode</label>
-                  <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+                  <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                 </div>
               </div>
             </div>
           </div>
 
           {/* Business Hours */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Business Hours</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Opening Time</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1"><Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" /><input type="time" value={form.openingTime} onChange={(e) => update("openingTime", e.target.value)} className={inputClass} /></div>
-                  <select value={getTimePeriod(form.openingTime)} onChange={(e) => update("openingTime", updateTimePeriod(form.openingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-xl px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
+                  <select value={getTimePeriod(form.openingTime)} onChange={(e) => update("openingTime", updateTimePeriod(form.openingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-md px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
                     <option>AM</option>
                     <option>PM</option>
                   </select>
@@ -174,7 +174,7 @@ const EditShop = () => {
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Closing Time</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1"><Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" /><input type="time" value={form.closingTime} onChange={(e) => update("closingTime", e.target.value)} className={inputClass} /></div>
-                  <select value={getTimePeriod(form.closingTime)} onChange={(e) => update("closingTime", updateTimePeriod(form.closingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-xl px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
+                  <select value={getTimePeriod(form.closingTime)} onChange={(e) => update("closingTime", updateTimePeriod(form.closingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-md px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
                     <option>AM</option>
                     <option>PM</option>
                   </select>
@@ -187,7 +187,7 @@ const EditShop = () => {
             <motion.button
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+              className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
             >
               {saved ? <><CheckCircle2 className="w-4 h-4" /> Saved Successfully</> : <><Save className="w-4 h-4" /> Save Changes</>}
             </motion.button>

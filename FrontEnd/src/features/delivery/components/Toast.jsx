@@ -36,7 +36,7 @@ export function ToastProvider({ children }) {
               exit={{ opacity: 0, x: 50, scale: 0.95 }}
               className="pointer-events-auto"
             >
-              <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border backdrop-blur-sm max-w-sm ${
+              <div className={`flex items-center gap-3 px-4 py-3 rounded-md shadow-lg border backdrop-blur-sm max-w-sm ${
                 toast.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-800" :
                 toast.type === "error" ? "bg-rose-50 border-rose-200 text-rose-800" :
                 "bg-amber-50 border-amber-200 text-amber-800"

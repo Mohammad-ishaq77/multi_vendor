@@ -54,7 +54,7 @@ const ShopTypeSelection = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-xl shadow-emerald-600/25 mx-auto mb-4"
+            className="w-16 h-16 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-xl shadow-emerald-600/25 mx-auto mb-4"
           >
             <ShoppingBasket className="w-8 h-8" />
           </motion.div>
@@ -72,7 +72,7 @@ const ShopTypeSelection = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search shop types..."
-            className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all shadow-sm"
+            className="w-full bg-white border border-gray-200 rounded-md py-3 pl-10 pr-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all shadow-sm"
           />
         </div>
 
@@ -86,7 +86,7 @@ const ShopTypeSelection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
                 onClick={() => handleSelect(type)}
-                className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 ${
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all duration-200 ${
                   selected?.id === type.id
                     ? "border-emerald-500 bg-emerald-50/50 shadow-md shadow-emerald-600/10"
                     : "border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm"
@@ -113,13 +113,13 @@ const ShopTypeSelection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: filtered.length * 0.03 }}
             onClick={handleCustom}
-            className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-dashed transition-all duration-200 ${
+            className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 border-dashed transition-all duration-200 ${
               isCustom
                 ? "border-emerald-500 bg-emerald-50/50 shadow-md shadow-emerald-600/10"
                 : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/30"
             }`}
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className={`w-10 h-10 rounded-md flex items-center justify-center ${
               isCustom ? "bg-emerald-500 text-white" : "bg-gray-100 text-gray-400"
             }`}>
               <Plus className="w-5 h-5" />
@@ -137,7 +137,7 @@ const ShopTypeSelection = () => {
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden mb-5"
             >
-              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+              <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-2">
                   Custom Shop Type
                 </label>
@@ -146,7 +146,7 @@ const ShopTypeSelection = () => {
                   value={customType}
                   onChange={(e) => setCustomType(e.target.value)}
                   placeholder="e.g. Sports Equipment, Pet Store..."
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all"
                   autoFocus
                 />
                 <p className="text-xs text-gray-400 mt-2">Your custom type will be submitted for admin approval.</p>
@@ -160,7 +160,7 @@ const ShopTypeSelection = () => {
           whileTap={{ scale: 0.98 }}
           onClick={handleProceed}
           disabled={(!selected && !isCustom) || (isCustom && !customType.trim()) || submitting}
-          className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3.5 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

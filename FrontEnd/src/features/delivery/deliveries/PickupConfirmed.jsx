@@ -23,7 +23,7 @@ export default function PickupConfirmed() {
 
   return (
     <div className="w-full">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-8 text-center">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20 }} className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-emerald-500" />
@@ -34,7 +34,7 @@ export default function PickupConfirmed() {
 
         <div className="px-8 pb-8 space-y-4">
           {/* Package Status */}
-          <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-gray-50 rounded-md p-4 flex items-center gap-3">
             <Package className="w-5 h-5 text-gray-400" />
             <div>
               <p className="text-sm font-semibold text-gray-900">Package Status: <span className="text-emerald-600">SEALED</span></p>
@@ -43,7 +43,7 @@ export default function PickupConfirmed() {
           </div>
 
           {/* Important Message */}
-          <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-md">
             <Lock className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-amber-800">Important</p>
@@ -51,7 +51,7 @@ export default function PickupConfirmed() {
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl">
+          <div className="flex items-start gap-3 p-4 bg-rose-50 border border-rose-200 rounded-md">
             <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-rose-800">NearMart Rule</p>
@@ -60,13 +60,13 @@ export default function PickupConfirmed() {
           </div>
 
           {/* Delivery Summary */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+          <div className="bg-gray-50 rounded-md p-4 space-y-2">
             <div className="flex justify-between text-sm"><span className="text-gray-500">Order ID</span><span className="font-medium text-gray-700">{activeDelivery.id}</span></div>
             <div className="flex justify-between text-sm"><span className="text-gray-500">To</span><span className="font-medium text-gray-700">{activeDelivery.customerName}</span></div>
             <div className="flex justify-between text-sm"><span className="text-gray-500">Distance</span><span className="font-medium text-gray-700">{activeDelivery.distance} km</span></div>
           </div>
 
-          <button onClick={handleStartDelivery} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all">
+          <button onClick={handleStartDelivery} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all">
             Start Delivery <ArrowRight className="w-4 h-4" />
           </button>
         </div>

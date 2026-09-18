@@ -41,7 +41,7 @@ const ShopkeeperShell = ({ children }) => {
           onMenuToggle={() => setMobileMenuOpen((isOpen) => !isOpen)}
         />
 
-        <main className={`${DASHBOARD_INSET} flex-1 overflow-x-hidden overflow-y-auto scroll-smooth py-5 pb-24 lg:py-6 lg:pb-8`}>
+        <main className={`${DASHBOARD_INSET} flex-1 overflow-x-hidden overflow-y-auto scroll-smooth py-2 pb-12 sm:py-5 sm:pb-24 lg:py-6 lg:pb-8`}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={location.pathname}

@@ -13,7 +13,7 @@ const ProductCard = ({ product, index = 0, onEdit, onDelete, onToggleAvailabilit
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: Math.min(index * 0.04, 0.15) }}
-      className={`bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg hover:border-gray-200/80 transition-all duration-300 ${
+      className={`bg-white rounded-lg border border-gray-100 overflow-hidden shadow-sm hover:shadow-lg hover:border-gray-200/80 transition-all duration-300 ${
         !product.available ? "opacity-60" : ""
       }`}
     >
@@ -68,21 +68,21 @@ const ProductCard = ({ product, index = 0, onEdit, onDelete, onToggleAvailabilit
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate(`/shopkeeper/products/${product.id}`)}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all border border-gray-100"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 rounded-md hover:bg-gray-100 transition-all border border-gray-100"
           >
             View
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => onEdit?.(product)}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-all border border-emerald-100"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-600 bg-emerald-50 rounded-md hover:bg-emerald-100 transition-all border border-emerald-100"
           >
             <Edit3 className="w-3 h-3" /> Edit
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => onToggleAvailability?.(product.id)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all border border-gray-100"
+            className="w-9 h-9 flex items-center justify-center rounded-md bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all border border-gray-100"
             title={product.available ? "Mark unavailable" : "Mark available"}
           >
             {product.available ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -90,7 +90,7 @@ const ProductCard = ({ product, index = 0, onEdit, onDelete, onToggleAvailabilit
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => onDelete?.(product)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-all border border-gray-100"
+            className="w-9 h-9 flex items-center justify-center rounded-md bg-gray-50 text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-all border border-gray-100"
             title="Delete product"
           >
             <Trash2 className="w-3.5 h-3.5" />

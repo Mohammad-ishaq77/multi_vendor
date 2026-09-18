@@ -17,36 +17,36 @@ export default function Earnings() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
               <IndianRupee className="w-5 h-5" />
             </div>
             <p className="text-xs text-gray-400">Today</p>
           </div>
           <p className="text-2xl font-bold text-gray-900">₹{earnings.today}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-200">
               <TrendingUp className="w-5 h-5" />
             </div>
             <p className="text-xs text-gray-400">This Week</p>
           </div>
           <p className="text-2xl font-bold text-gray-900">₹{earnings.thisWeek}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-violet-200">
+            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-violet-200">
               <IndianRupee className="w-5 h-5" />
             </div>
             <p className="text-xs text-gray-400">This Month</p>
           </div>
           <p className="text-2xl font-bold text-gray-900">₹{earnings.thisMonth}</p>
         </div>
-        <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-5 text-white shadow-lg">
+        <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg p-5 text-white shadow-lg">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md bg-white/20 flex items-center justify-center">
               <IndianRupee className="w-5 h-5" />
             </div>
             <p className="text-xs text-emerald-100">Total Earnings</p>
@@ -57,9 +57,9 @@ export default function Earnings() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+            <div className="w-10 h-10 rounded-md bg-blue-100 flex items-center justify-center text-blue-600">
               <Truck className="w-5 h-5" />
             </div>
             <div>
@@ -68,9 +68,9 @@ export default function Earnings() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+            <div className="w-10 h-10 rounded-md bg-amber-100 flex items-center justify-center text-amber-600">
               <IndianRupee className="w-5 h-5" />
             </div>
             <div>
@@ -82,7 +82,7 @@ export default function Earnings() {
       </div>
 
       {/* Weekly Chart */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+      <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
         <h2 className="text-sm font-bold text-gray-900 mb-4">This Week</h2>
         <div className="flex items-end justify-between gap-2 h-40">
           {earnings.weeklyBreakdown.map((day) => (
@@ -98,7 +98,7 @@ export default function Earnings() {
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-sm font-bold text-gray-900">Recent Transactions</h2>
           <button onClick={() => navigate("/delivery/earnings/recent")} className="text-xs text-emerald-600 font-semibold hover:underline flex items-center gap-1">

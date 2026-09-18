@@ -42,10 +42,10 @@ const Earnings = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
+                className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm"
               >
                 <div className="flex items-start justify-between">
-                  <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-md`}>
+                  <div className={`w-11 h-11 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-md`}>
                     <Icon className="w-5 h-5" />
                   </div>
                   {stat.trend && (
@@ -63,22 +63,22 @@ const Earnings = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
             <p className="text-xs text-gray-500">Completed Orders</p>
             <p className="text-xl font-bold text-gray-900 mt-1">{earnings.completedOrders}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
             <p className="text-xs text-gray-500">Avg. Order Value</p>
             <p className="text-xl font-bold text-gray-900 mt-1">₹{earnings.averageOrderValue}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
             <p className="text-xs text-gray-500">Last Month</p>
             <p className="text-xl font-bold text-gray-900 mt-1">₹{earnings.lastMonth.toLocaleString()}</p>
           </div>
         </div>
 
         {/* Transactions */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
           <div className="p-5 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-gray-900 text-sm">Transaction History</h3>
@@ -107,7 +107,7 @@ const Earnings = () => {
                 className="flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  <div className={`w-10 h-10 rounded-md flex items-center justify-center ${
                     txn.status === "Settled" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                   }`}>
                     {txn.status === "Settled" ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}

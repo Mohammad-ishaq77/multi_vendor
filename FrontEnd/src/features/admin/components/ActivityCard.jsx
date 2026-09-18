@@ -59,23 +59,23 @@ export default function ActivityCard({ activities = [] }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm"
+      className="bg-white rounded-md border border-gray-100 shadow-sm sm:rounded-lg"
     >
-      <div className="flex items-center justify-between p-5 pb-3">
-        <h3 className="text-lg font-bold" style={{ color: "#14261f" }}>
+      <div className="flex items-center justify-between p-2.5 pb-1.5 sm:p-5 sm:pb-3">
+        <h3 className="text-sm font-bold sm:text-lg" style={{ color: "#14261f" }}>
           Recent Activity
         </h3>
         <Link
           to="/admin/reports"
-          className="text-xs font-semibold text-[#155c43] hover:underline"
+          className="text-[9px] font-semibold text-[#155c43] hover:underline sm:text-xs"
         >
           View All
         </Link>
       </div>
 
-      <div className="px-5 pb-5 space-y-1">
+      <div className="px-2.5 pb-2.5 space-y-0.5 sm:px-5 sm:pb-5">
         {displayed.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-8">No recent activity</p>
+          <p className="text-xs text-gray-400 text-center py-5 sm:text-sm sm:py-8">No recent activity</p>
         )}
         {displayed.map((activity, idx) => {
           const config = activityConfig[activity.type] || activityConfig.shop_registered;
@@ -86,7 +86,7 @@ export default function ActivityCard({ activities = [] }) {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: idx * 0.04 }}
-              className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 py-2.5 px-3 rounded-md hover:bg-gray-50 transition-colors"
             >
               <div
                 className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm flex-shrink-0 ${config.color}`}

@@ -41,7 +41,7 @@ export default function AddressVerification() {
   };
 
   const inputClass = (field) =>
-    `w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all duration-200 ${
+    `w-full px-3.5 py-2.5 rounded-md border text-sm outline-none transition-all duration-200 ${
       errors[field]
         ? "border-rose-300 bg-rose-50/50 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
         : "border-gray-200 bg-[#F8FAFC] focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10 focus:bg-white"
@@ -52,7 +52,7 @@ export default function AddressVerification() {
       <div className="p-5 sm:p-6 space-y-5">
         {/* Title */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-lg bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
             <MapPin className="w-6 h-6 text-[#1B4332]" />
           </div>
           <h1 className="font-serif text-xl font-bold text-[#0F172A]">
@@ -142,7 +142,7 @@ export default function AddressVerification() {
         </div>
 
         {/* Aadhaar confirmation */}
-        <label className="flex items-start gap-3 p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-xl cursor-pointer hover:border-[#1B4332]/20 transition-colors">
+        <label className="flex items-start gap-3 p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-md cursor-pointer hover:border-[#1B4332]/20 transition-colors">
           <input
             type="checkbox"
             checked={form.aadhaarAddressMatch}
@@ -162,7 +162,7 @@ export default function AddressVerification() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleSave}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
         >
           Continue
           <ChevronRight className="w-4 h-4" />

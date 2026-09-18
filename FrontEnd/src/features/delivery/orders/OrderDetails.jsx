@@ -26,7 +26,7 @@ export default function OrderDetails() {
         <ArrowLeft className="w-4 h-4" /> Back to History
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-gray-900">{order.id}</h1>
@@ -39,7 +39,7 @@ export default function OrderDetails() {
 
         <div className="p-5 space-y-5">
           {/* Route */}
-          <div className="bg-gray-50 rounded-xl p-4">
+          <div className="bg-gray-50 rounded-md p-4">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-emerald-500" />
               <div className="flex-1 border-l-2 border-dashed border-gray-300 ml-1">
@@ -56,7 +56,7 @@ export default function OrderDetails() {
           {/* Shop */}
           <div>
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Shop</h2>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="bg-gray-50 rounded-md p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-700"><Store className="w-4 h-4 text-gray-400" /><span className="font-medium">{order.shopName}</span></div>
               <div className="flex items-center gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 text-gray-400" /><span>{order.shopAddress}</span></div>
             </div>
@@ -65,7 +65,7 @@ export default function OrderDetails() {
           {/* Customer */}
           <div>
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Customer</h2>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="bg-gray-50 rounded-md p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-700"><User className="w-4 h-4 text-gray-400" /><span className="font-medium">{order.customerName}</span></div>
               <div className="flex items-center gap-2 text-sm text-gray-600"><MapPin className="w-4 h-4 text-gray-400" /><span>{order.customerAddress}</span></div>
             </div>
@@ -74,7 +74,7 @@ export default function OrderDetails() {
           {/* Items */}
           <div>
             <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Items</h2>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+            <div className="bg-gray-50 rounded-md p-4 space-y-2">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="text-gray-700">{item.name} × {item.quantity}</span>
@@ -91,17 +91,17 @@ export default function OrderDetails() {
 
           {/* Summary */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
+            <div className="bg-gray-50 rounded-md p-3 text-center">
               <MapPin className="w-4 h-4 text-gray-400 mx-auto mb-1" />
               <p className="text-sm font-bold text-gray-900">{order.distance} km</p>
               <p className="text-[0.6rem] text-gray-400">Distance</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
+            <div className="bg-gray-50 rounded-md p-3 text-center">
               <Clock className="w-4 h-4 text-gray-400 mx-auto mb-1" />
               <p className="text-sm font-bold text-gray-900">{order.estimatedTime}</p>
               <p className="text-[0.6rem] text-gray-400">Est. Time</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 text-center">
+            <div className="bg-gray-50 rounded-md p-3 text-center">
               <IndianRupee className="w-4 h-4 text-gray-400 mx-auto mb-1" />
               <p className="text-sm font-bold text-gray-900">₹{order.deliveryFee}</p>
               <p className="text-[0.6rem] text-gray-400">Fee</p>

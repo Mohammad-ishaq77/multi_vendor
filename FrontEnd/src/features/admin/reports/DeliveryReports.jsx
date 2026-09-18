@@ -41,9 +41,9 @@ export default function DeliveryReports() {
             { label: "Cancelled", value: stats.cancelled, color: "from-rose-500 to-pink-500", icon: XCircle },
             { label: "Avg Distance", value: `${stats.avgDistance} km`, color: "from-blue-500 to-indigo-500", icon: MapPin },
           ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
                 <div><p className="text-xs text-gray-500">{s.label}</p><p className="text-lg font-bold text-gray-900">{s.value}</p></div>
               </div>
             </motion.div>
@@ -51,7 +51,7 @@ export default function DeliveryReports() {
         </div>
 
         {/* Status Breakdown */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Delivery Status Breakdown</h3>
           <div className="grid grid-cols-4 gap-4">
             {[
@@ -61,7 +61,7 @@ export default function DeliveryReports() {
               { label: "Other", value: stats.total - stats.completed - stats.active - stats.cancelled, color: "bg-gray-400" },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <div className="h-24 bg-gray-50 rounded-xl relative overflow-hidden mb-2">
+                <div className="h-24 bg-gray-50 rounded-md relative overflow-hidden mb-2">
                   <div className={`${s.color} absolute bottom-0 left-0 right-0 rounded-b-xl transition-all duration-1000`} style={{ height: `${stats.total > 0 ? (s.value / stats.total) * 100 : 0}%` }} />
                 </div>
                 <p className="text-sm font-bold text-gray-900">{s.value}</p>
@@ -72,7 +72,7 @@ export default function DeliveryReports() {
         </motion.div>
 
         {/* Partner Performance */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100"><h3 className="text-sm font-bold text-gray-900">Partner Performance</h3></div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

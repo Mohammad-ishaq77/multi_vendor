@@ -45,16 +45,16 @@ export default function ApprovalCard({ title, count, items = [], onViewAll, type
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm"
+      className="bg-white rounded-md border border-gray-100 shadow-sm sm:rounded-lg"
     >
-      <div className="flex items-center justify-between p-5 pb-3">
-        <div className="flex items-center gap-3">
-          <h3 className="text-lg font-bold" style={{ color: "#14261f" }}>
+      <div className="flex items-center justify-between p-2.5 pb-1.5 sm:p-5 sm:pb-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <h3 className="text-sm font-bold sm:text-lg" style={{ color: "#14261f" }}>
             {title}
           </h3>
           {count > 0 && (
             <span
-              className={`inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full text-xs font-bold ${style.badge}`}
+              className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold sm:min-w-[24px] sm:h-6 sm:px-2 sm:text-xs ${style.badge}`}
             >
               {count}
             </span>
@@ -62,9 +62,9 @@ export default function ApprovalCard({ title, count, items = [], onViewAll, type
         </div>
       </div>
 
-      <div className="px-5 pb-3 space-y-2">
+      <div className="px-2.5 pb-1.5 space-y-1.5 sm:px-5 sm:pb-3">
         {displayed.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-6">No pending approvals</p>
+          <p className="text-[10px] text-gray-400 text-center py-3 sm:text-sm sm:py-6">No pending approvals</p>
         )}
         {displayed.map((item, idx) => (
           <motion.div
@@ -73,15 +73,15 @@ export default function ApprovalCard({ title, count, items = [], onViewAll, type
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.3, delay: idx * 0.05 }}
-            className={`flex items-center justify-between py-3 px-3 rounded-xl border ${style.border} bg-gray-50/50`}
+            className={`flex items-center justify-between py-2 px-2.5 rounded-lg border ${style.border} bg-gray-50/50 sm:py-3 sm:px-3 sm:rounded-md`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className={`w-2 h-2 rounded-full ${style.dot}`} />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#14261f" }}>
+                <p className="text-xs font-semibold sm:text-sm" style={{ color: "#14261f" }}>
                   {item.name}
                 </p>
-                <p className="text-xs text-gray-400">{item.email || item.phone}</p>
+                <p className="text-[10px] text-gray-400 sm:text-xs">{item.email || item.phone}</p>
               </div>
             </div>
             <div className="text-right">
@@ -97,10 +97,10 @@ export default function ApprovalCard({ title, count, items = [], onViewAll, type
       </div>
 
       {count > 0 && (
-        <div className="px-5 pb-5">
+        <div className="px-3.5 pb-3.5 sm:px-5 sm:pb-5">
           <button
             onClick={handleViewAll}
-            className="w-full py-2.5 rounded-xl bg-[#155c43] text-white text-sm font-semibold hover:bg-[#114a36] transition-colors"
+            className="w-full py-2 rounded-lg bg-[#155c43] text-white text-xs font-semibold hover:bg-[#114a36] transition-colors sm:py-2.5 sm:rounded-md sm:text-sm"
           >
             View All ({count})
           </button>

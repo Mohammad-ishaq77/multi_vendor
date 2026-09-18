@@ -26,7 +26,7 @@ const Reviews = () => {
 
         {/* Rating Overview */}
         <div className="grid sm:grid-cols-[280px_1fr] gap-6 mb-6">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm text-center">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm text-center">
             <div className="text-5xl font-bold text-gray-900 tracking-tight">{avgRating}</div>
             <div className="flex items-center justify-center gap-1 mt-2">
               {[...Array(5)].map((_, i) => (
@@ -39,7 +39,7 @@ const Reviews = () => {
             <p className="text-sm text-gray-500 mt-2">{reviews.length} reviews</p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 mb-4">Rating Breakdown</h3>
             <div className="space-y-3">
               {ratingBreakdown.map((item) => (
@@ -71,11 +71,11 @@ const Reviews = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
+              className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm">
                     {review.customer.charAt(0)}
                   </div>
                   <div>

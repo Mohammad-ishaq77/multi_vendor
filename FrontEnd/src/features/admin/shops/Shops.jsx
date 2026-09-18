@@ -187,7 +187,7 @@ export default function Shops() {
             { label: "Suspended", value: shops.filter((s) => s.status === "suspended").length, color: "bg-rose-50 text-rose-700" },
             { label: "Pending", value: shops.filter((s) => s.status === "pending").length, color: "bg-amber-50 text-amber-700" },
           ].map((stat, i) => (
-            <div key={stat.label} className={`p-4 rounded-xl ${stat.color}`}>
+            <div key={stat.label} className={`p-4 rounded-md ${stat.color}`}>
               <p className="text-xs font-medium opacity-70">{stat.label}</p>
               <p className="text-2xl font-bold mt-1">{stat.value}</p>
             </div>
@@ -199,7 +199,7 @@ export default function Shops() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4"
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-4"
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -209,12 +209,12 @@ export default function Shops() {
                 placeholder="Search shops by name, owner, location..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-all"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-md border transition-colors ${
                 showFilters
                   ? "bg-[#155c43] text-white border-[#155c43]"
                   : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
@@ -265,7 +265,7 @@ export default function Shops() {
                     <select
                       value={typeFilter}
                       onChange={(e) => setTypeFilter(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43]"
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43]"
                     >
                       {shopTypes.map((t) => (
                         <option key={t} value={t}>
@@ -282,7 +282,7 @@ export default function Shops() {
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43]"
+                        className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43]"
                       >
                         {sortOptions.map((o) => (
                           <option key={o.value} value={o.value}>
@@ -292,7 +292,7 @@ export default function Shops() {
                       </select>
                       <button
                         onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-                        className="p-2 border border-gray-200 rounded-xl hover:bg-gray-50"
+                        className="p-2 border border-gray-200 rounded-md hover:bg-gray-50"
                       >
                         <ArrowUpDown size={16} className="text-gray-500" />
                       </button>
@@ -310,7 +310,7 @@ export default function Shops() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
           >
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -365,7 +365,7 @@ export default function Shops() {
                     >
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          <div className="w-9 h-9 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             {shop.name?.charAt(0)}
                           </div>
                           <div>
@@ -468,12 +468,12 @@ export default function Shops() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: idx * 0.04 }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 cursor-pointer hover:shadow-lg transition-shadow"
+                className="bg-white rounded-lg border border-gray-100 shadow-sm p-5 cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => navigate(`/admin/shops/${shop.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
+                    <div className="w-11 h-11 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
                       {shop.name?.charAt(0)}
                     </div>
                     <div>
@@ -551,12 +551,12 @@ export default function Shops() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full"
+                className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    className={`w-12 h-12 rounded-md flex items-center justify-center ${
                       confirmModal.action === "suspend"
                         ? "bg-rose-100 text-rose-600"
                         : "bg-emerald-100 text-emerald-600"
@@ -585,13 +585,13 @@ export default function Shops() {
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setConfirmModal(null)}
-                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmAction}
-                    className={`px-4 py-2 text-sm font-semibold text-white rounded-xl transition-colors ${
+                    className={`px-4 py-2 text-sm font-semibold text-white rounded-md transition-colors ${
                       confirmModal.action === "suspend"
                         ? "bg-rose-600 hover:bg-rose-700"
                         : "bg-emerald-600 hover:bg-emerald-700"

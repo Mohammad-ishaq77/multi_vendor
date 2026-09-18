@@ -62,7 +62,7 @@ function ConfirmationModal({ isOpen, onClose, onConfirm, title, message, confirm
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-3 mb-4">
@@ -79,14 +79,14 @@ function ConfirmationModal({ isOpen, onClose, onConfirm, title, message, confirm
           <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
               disabled={loading}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors flex items-center gap-2 ${
+              className={`px-4 py-2 text-sm font-medium text-white rounded-md transition-colors flex items-center gap-2 ${
                 confirmColor === "red"
                   ? "bg-rose-600 hover:bg-rose-700"
                   : "bg-emerald-600 hover:bg-emerald-700"
@@ -126,7 +126,7 @@ function RejectModal({ isOpen, onClose, onConfirm, loading }) {
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-3 mb-4">
@@ -141,19 +141,19 @@ function RejectModal({ isOpen, onClose, onConfirm, loading }) {
             onChange={(e) => setReason(e.target.value)}
             placeholder="Enter rejection reason..."
             rows={3}
-            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none"
+            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none"
           />
           <div className="flex justify-end gap-3 mt-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!reason.trim() || loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700 transition-colors flex items-center gap-2 disabled:opacity-50"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               Reject
@@ -189,7 +189,7 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-3 mb-4">
@@ -204,19 +204,19 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Describe the required changes..."
             rows={3}
-            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
+            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
           />
           <div className="flex justify-end gap-3 mt-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!message.trim() || loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               Send Request
@@ -324,7 +324,7 @@ export default function ShopkeeperApprovals() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
         <div className="p-4 border-b border-gray-100">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -334,7 +334,7 @@ export default function ShopkeeperApprovals() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name, email, or shop..."
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-colors"
               />
               {search && (
                 <button
@@ -348,7 +348,7 @@ export default function ShopkeeperApprovals() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-xl transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-md transition-colors ${
                   showFilters
                     ? "bg-[#155c43] text-white border-[#155c43]"
                     : "text-gray-700 bg-white border-gray-200 hover:bg-gray-50"
@@ -359,7 +359,7 @@ export default function ShopkeeperApprovals() {
               </button>
               <button
                 onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
               >
                 <ArrowUpDown className="w-4 h-4" />
                 {sortOrder === "newest" ? "Newest" : "Oldest"}

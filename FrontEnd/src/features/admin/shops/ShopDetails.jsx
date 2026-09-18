@@ -105,7 +105,7 @@ export default function ShopDetails() {
           <p className="text-gray-500 mt-2">The shop you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate("/admin/shops")}
-            className="mt-6 px-4 py-2 bg-[#155c43] text-white rounded-xl text-sm font-semibold hover:bg-[#114a36] transition-colors"
+            className="mt-6 px-4 py-2 bg-[#155c43] text-white rounded-md text-sm font-semibold hover:bg-[#114a36] transition-colors"
           >
             Back to Shops
           </button>
@@ -126,7 +126,7 @@ export default function ShopDetails() {
         >
           <button
             onClick={() => navigate("/admin/shops")}
-            className="p-2 rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors self-start"
+            className="p-2 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors self-start"
           >
             <ArrowLeft size={20} />
           </button>
@@ -149,7 +149,7 @@ export default function ShopDetails() {
             {shop.status === "active" ? (
               <button
                 onClick={handleAction}
-                className="flex items-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-600 rounded-xl text-sm font-semibold hover:bg-rose-100 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-600 rounded-md text-sm font-semibold hover:bg-rose-100 transition-colors"
               >
                 <Ban size={16} />
                 Suspend Shop
@@ -157,7 +157,7 @@ export default function ShopDetails() {
             ) : (
               <button
                 onClick={handleAction}
-                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 rounded-md text-sm font-semibold hover:bg-emerald-100 transition-colors"
               >
                 <CheckCircle size={16} />
                 Activate Shop
@@ -184,14 +184,14 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-5"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
                   <p className="mt-2 text-2xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
                 </div>
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <div className={`w-12 h-12 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
                   <stat.icon className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-5" style={{ color: "#14261f" }}>
                 Shop Information
@@ -225,7 +225,7 @@ export default function ShopDetails() {
                   { icon: Truck, label: "Delivery Radius", value: shop.deliveryRadius ? `${shop.deliveryRadius} km` : "—" },
                   { icon: Calendar, label: "Joined", value: formatDate(shop.joinedDate || shop.createdAt) },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
+                  <div key={item.label} className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
                     <item.icon size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-gray-400 font-medium">{item.label}</p>
@@ -235,7 +235,7 @@ export default function ShopDetails() {
                 ))}
               </div>
               {shop.description && (
-                <div className="mt-4 p-4 rounded-xl bg-gray-50">
+                <div className="mt-4 p-4 rounded-md bg-gray-50">
                   <p className="text-xs text-gray-400 font-medium mb-1">Description</p>
                   <p className="text-sm text-gray-600">{shop.description}</p>
                 </div>
@@ -256,7 +256,7 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
             >
               <div className="p-6 pb-0">
                 <div className="flex items-center justify-between">
@@ -334,7 +334,7 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
             >
               <div className="p-6 pb-0">
                 <div className="flex items-center justify-between">
@@ -401,17 +401,17 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Shop Owner
               </h3>
               {shopkeeper ? (
                 <div
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => navigate(`/admin/shopkeepers/${shopkeeper.id}`)}
                 >
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                  <div className="w-11 h-11 rounded-md bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white font-bold">
                     {shopkeeper.name?.charAt(0)}
                   </div>
                   <div className="flex-1">
@@ -421,7 +421,7 @@ export default function ShopDetails() {
                   <ExternalLink size={14} className="text-gray-400" />
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-gray-50">
+                <div className="p-3 rounded-md bg-gray-50">
                   <p className="text-sm text-gray-500">{shop.ownerName || "—"}</p>
                   <p className="text-xs text-gray-400">{shop.email || "—"}</p>
                 </div>
@@ -433,37 +433,37 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Delivery Settings
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Delivery Radius</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {shop.deliveryRadius ? `${shop.deliveryRadius} km` : "—"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Minimum Order</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {shop.minimumOrder ? formatCurrency(shop.minimumOrder) : "—"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Avg Delivery Time</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {shop.averageDeliveryTime ? `${shop.averageDeliveryTime} min` : "—"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Delivery Fee</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {shop.deliveryFee || "—"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Open Now</span>
                   <span className={`text-sm font-semibold ${shop.isOpenNow ? "text-emerald-600" : "text-rose-600"}`}>
                     {shop.isOpenNow ? "Yes" : "No"}
@@ -477,34 +477,34 @@ export default function ShopDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Performance
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Delivered Orders</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>{deliveredOrders}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Total Revenue</span>
                   <span className="text-sm font-semibold text-[#155c43]">{formatCurrency(revenue)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Avg Rating</span>
                   <div className="flex items-center gap-1">
                     <Star size={14} className="text-amber-400 fill-amber-400" />
                     <span className="text-sm font-semibold" style={{ color: "#14261f" }}>{avgRating}</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Total Ratings</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {shop.totalRatings ?? shopOrders.filter((o) => o.rating).length}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Commission</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {shop.commission ?? 5}%
@@ -530,12 +530,12 @@ export default function ShopDetails() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full"
+                className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    className={`w-12 h-12 rounded-md flex items-center justify-center ${
                       shop.status === "active"
                         ? "bg-rose-100 text-rose-600"
                         : "bg-emerald-100 text-emerald-600"
@@ -557,13 +557,13 @@ export default function ShopDetails() {
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setConfirmModal(null)}
-                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmAction}
-                    className={`px-4 py-2 text-sm font-semibold text-white rounded-xl transition-colors ${
+                    className={`px-4 py-2 text-sm font-semibold text-white rounded-md transition-colors ${
                       shop.status === "active"
                         ? "bg-rose-600 hover:bg-rose-700"
                         : "bg-emerald-600 hover:bg-emerald-700"

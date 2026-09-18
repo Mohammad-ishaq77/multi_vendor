@@ -247,7 +247,7 @@ const Checkout = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/customer/products")}
-            className="bg-[#155c43] text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-[#155c43]/20 hover:bg-[#104b36] transition-colors"
+            className="bg-[#155c43] text-white px-8 py-3 rounded-md font-semibold shadow-lg shadow-[#155c43]/20 hover:bg-[#104b36] transition-colors"
           >
             Continue Shopping
           </motion.button>
@@ -283,11 +283,11 @@ const Checkout = () => {
             {/* Delivery Address */}
             <motion.section
               variants={itemVariants}
-              className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white border border-gray-100 rounded-lg p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between gap-3 mb-6">
                 <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
+                <div className="w-10 h-10 rounded-md bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
@@ -313,7 +313,7 @@ const Checkout = () => {
                       key={`${saved.email || saved.phone}-${index}`}
                       type="button"
                       onClick={() => selectSavedAddress(index)}
-                      className={`w-full text-left border rounded-xl p-4 transition-all ${
+                      className={`w-full text-left border rounded-md p-4 transition-all ${
                         selectedAddressIndex === index
                           ? "border-[#155c43] bg-[#f0f8f3] ring-2 ring-[#155c43]/10"
                           : "border-gray-200 hover:border-[#155c43]/50"
@@ -347,7 +347,7 @@ const Checkout = () => {
                     value={address.fullName}
                     onChange={handleChange}
                     placeholder="Full Name"
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="relative group">
@@ -358,7 +358,7 @@ const Checkout = () => {
                     value={address.phone}
                     onChange={handleChange}
                     placeholder="Phone Number"
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="relative group">
@@ -369,7 +369,7 @@ const Checkout = () => {
                     value={address.email}
                     onChange={handleChange}
                     placeholder="Email Address"
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="relative md:col-span-2 group">
@@ -380,7 +380,7 @@ const Checkout = () => {
                     onChange={handleChange}
                     placeholder="Complete Address (House, Street, Area...)"
                     rows={3}
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none resize-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none resize-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="relative group">
@@ -391,7 +391,7 @@ const Checkout = () => {
                     value={address.city}
                     onChange={handleChange}
                     placeholder="City"
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="relative group">
@@ -402,7 +402,7 @@ const Checkout = () => {
                     value={address.state}
                     onChange={handleChange}
                     placeholder="State"
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="relative group">
@@ -413,7 +413,7 @@ const Checkout = () => {
                     value={address.pincode}
                     onChange={handleChange}
                     placeholder="Pincode"
-                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
                 <div className="md:col-span-2 flex items-center justify-between gap-3 pt-1">
@@ -431,7 +431,7 @@ const Checkout = () => {
                     <button
                       type="button"
                       onClick={saveNewAddress}
-                      className="bg-[#155c43] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#104b36] transition-colors"
+                      className="bg-[#155c43] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#104b36] transition-colors"
                     >
                       Save address
                     </button>
@@ -444,10 +444,10 @@ const Checkout = () => {
             {/* Payment Method */}
             <motion.section
               variants={itemVariants}
-              className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white border border-gray-100 rounded-lg p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
+                <div className="w-10 h-10 rounded-md bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <div>
@@ -460,7 +460,7 @@ const Checkout = () => {
                 <motion.label
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="flex items-center gap-4 border border-[#155c43] bg-[#f0f8f3] shadow-md shadow-[#155c43]/5 rounded-xl p-4 cursor-default"
+                  className="flex items-center gap-4 border border-[#155c43] bg-[#f0f8f3] shadow-md shadow-[#155c43]/5 rounded-md p-4 cursor-default"
                 >
                   <div className="w-5 h-5 rounded-full border-2 border-[#155c43] flex items-center justify-center flex-shrink-0">
                     <motion.div
@@ -488,19 +488,19 @@ const Checkout = () => {
 
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {RAZORPAY_CONFIG.methods.map((method) => (
-                  <div key={method.id} className="rounded-xl border border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/60 px-4 py-3">
+                  <div key={method.id} className="rounded-md border border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/60 px-4 py-3">
                     <p className="text-sm font-semibold text-[#14261f]">{method.label}</p>
                     <p className="text-xs text-gray-500">{method.detail}</p>
                   </div>
                 ))}
               </div>
               {!isRazorpayConfigured() && (
-                <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
                   Razorpay key is not configured yet. Add `VITE_RAZORPAY_KEY_ID` and start the payment API to collect live payments. Your order will still be saved so dashboards keep working.
                 </p>
               )}
               {paymentError && (
-                <p className="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
+                <p className="mt-3 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
                   {paymentError}
                 </p>
               )}
@@ -509,10 +509,10 @@ const Checkout = () => {
             {/* Order Items */}
             <motion.section
               variants={itemVariants}
-              className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white border border-gray-100 rounded-lg p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
+                <div className="w-10 h-10 rounded-md bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
                   <Package className="w-5 h-5" />
                 </div>
                 <div>
@@ -530,9 +530,9 @@ const Checkout = () => {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-[#f8faf9] transition-colors"
+                      className="flex items-center gap-4 p-3 rounded-md hover:bg-[#f8faf9] transition-colors"
                     >
-                      <div className="w-16 h-16 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
+                      <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -552,7 +552,7 @@ const Checkout = () => {
             variants={slideInRight}
             className="lg:sticky lg:top-6 h-fit"
           >
-            <div className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-lg shadow-[#155c43]/5">
+            <div className="bg-white border border-gray-100 rounded-lg p-6 md:p-8 shadow-lg shadow-[#155c43]/5">
               <h2 className="text-lg font-bold text-[#14261f] mb-6 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-[#155c43]" /> Order Summary
               </h2>
@@ -586,7 +586,7 @@ const Checkout = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isPlacing}
-                className="w-full mt-6 bg-gradient-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-xl font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"
+                className="w-full mt-6 bg-gradient-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-md font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"
               >
                 {isPlacing ? (
                   <motion.div

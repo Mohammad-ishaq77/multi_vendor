@@ -78,7 +78,7 @@ export default function OnboardingLayout({ children }) {
           initial={{ opacity: 0, y: 24, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] overflow-hidden"
+          className="bg-white rounded-lg border border-gray-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] overflow-hidden"
         >
           {children}
         </motion.div>

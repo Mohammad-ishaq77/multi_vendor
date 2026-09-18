@@ -45,13 +45,13 @@ function ConfirmActionModal({ isOpen, onClose, onConfirm, title, message, confir
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+          className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
           <p className="text-sm text-gray-600 mb-6">{message}</p>
           <div className="flex justify-end gap-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors">Cancel</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
             <button onClick={onConfirm} disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-colors flex items-center gap-2 disabled:opacity-50">
+              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-md hover:bg-rose-700 transition-colors flex items-center gap-2 disabled:opacity-50">
               {loading && <Loader2 className="w-4 h-4 animate-spin" />} {confirmLabel}
             </button>
           </div>
@@ -110,24 +110,24 @@ export default function Customers() {
         <span className="text-sm text-gray-500">{filtered.length} customer{filtered.length !== 1 ? "s" : ""}</span>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
         <div className="p-4 border-b border-gray-100">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, or phone..."
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-colors" />
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-colors" />
               {search && (
                 <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
               )}
             </div>
             <div className="flex gap-2">
               <button onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-xl transition-colors ${showFilters ? "bg-[#155c43] text-white border-[#155c43]" : "text-gray-700 bg-white border-gray-200 hover:bg-gray-50"}`}>
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border rounded-md transition-colors ${showFilters ? "bg-[#155c43] text-white border-[#155c43]" : "text-gray-700 bg-white border-gray-200 hover:bg-gray-50"}`}>
                 <Filter className="w-4 h-4" /> Filters
               </button>
               <button onClick={() => setSortOrder(sortOrder === "newest" ? "oldest" : "newest")}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
                 <ArrowUpDown className="w-4 h-4" /> {sortOrder === "newest" ? "Newest" : "Oldest"}
               </button>
             </div>
@@ -231,17 +231,17 @@ export default function Customers() {
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center mt-3">
-                    <div className="bg-gray-50 rounded-xl p-2">
+                    <div className="bg-gray-50 rounded-md p-2">
                       <ShoppingBag className="w-3.5 h-3.5 text-gray-400 mx-auto mb-0.5" />
                       <p className="text-xs font-medium text-gray-900">{user.totalOrders}</p>
                       <p className="text-[10px] text-gray-500">Orders</p>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-2">
+                    <div className="bg-gray-50 rounded-md p-2">
                       <IndianRupee className="w-3.5 h-3.5 text-gray-400 mx-auto mb-0.5" />
                       <p className="text-xs font-medium text-gray-900">₹{user.totalSpent?.toLocaleString()}</p>
                       <p className="text-[10px] text-gray-500">Spent</p>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-2">
+                    <div className="bg-gray-50 rounded-md p-2">
                       <p className="text-xs font-medium text-gray-900">{formatDate(user.joinedDate)}</p>
                       <p className="text-[10px] text-gray-500">Joined</p>
                     </div>

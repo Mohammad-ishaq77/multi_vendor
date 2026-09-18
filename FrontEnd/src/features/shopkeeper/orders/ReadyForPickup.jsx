@@ -37,11 +37,11 @@ const ReadyForPickup = () => {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
+                  className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center shrink-0">
+                      <div className="w-14 h-14 rounded-md bg-violet-50 border border-violet-200 flex items-center justify-center shrink-0">
                         <Truck className="w-6 h-6 text-violet-600" />
                       </div>
                       <div>
@@ -60,13 +60,13 @@ const ReadyForPickup = () => {
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => updateOrderStatus(order.id, "Picked Up")}
-                        className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+                        className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
                       >
                         <CheckCircle2 className="w-4 h-4" /> Mark Picked Up
                       </motion.button>
                       <button
                         onClick={() => navigate(`/shopkeeper/orders/${order.id}`)}
-                        className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all border border-gray-200"
+                        className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all border border-gray-200"
                       >
                         <ArrowRight className="w-4 h-4" />
                       </button>
@@ -75,7 +75,7 @@ const ReadyForPickup = () => {
 
                   {/* QR Code placeholder */}
                   <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-3">
-                    <div className="w-16 h-16 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gray-50 border border-gray-200 rounded-md flex items-center justify-center">
                       <QrCode className="w-8 h-8 text-gray-300" />
                     </div>
                     <div>

@@ -127,7 +127,7 @@ export default function OrderDetails() {
           <p className="text-gray-500 mt-2">The order you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate("/admin/orders")}
-            className="mt-6 px-4 py-2 bg-[#155c43] text-white rounded-xl text-sm font-semibold hover:bg-[#114a36] transition-colors"
+            className="mt-6 px-4 py-2 bg-[#155c43] text-white rounded-md text-sm font-semibold hover:bg-[#114a36] transition-colors"
           >
             Back to Orders
           </button>
@@ -151,7 +151,7 @@ export default function OrderDetails() {
         >
           <button
             onClick={() => navigate("/admin/orders")}
-            className="p-2 rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors self-start"
+            className="p-2 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors self-start"
           >
             <ArrowLeft size={20} />
           </button>
@@ -172,7 +172,7 @@ export default function OrderDetails() {
           {nextStatusMap[order.status] && (
             <button
               onClick={() => handleStatusUpdate(nextStatusMap[order.status])}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#155c43] text-white rounded-xl text-sm font-semibold hover:bg-[#114a36] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#155c43] text-white rounded-md text-sm font-semibold hover:bg-[#114a36] transition-colors"
             >
               <ArrowRight size={16} />
               Mark as {statusConfig[nextStatusMap[order.status]]?.label}
@@ -198,14 +198,14 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-5"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
                   <p className="mt-2 text-xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
                 </div>
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
                   <stat.icon className="w-4 h-4 text-white" />
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-6" style={{ color: "#14261f" }}>
                 Order Timeline
@@ -293,7 +293,7 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
             >
               <div className="p-6 pb-0">
                 <h3 className="text-lg font-bold" style={{ color: "#14261f" }}>
@@ -315,7 +315,7 @@ export default function OrderDetails() {
                       <tr key={idx} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors">
                         <td className="px-6 py-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                               <Package size={14} />
                             </div>
                             <div>
@@ -348,13 +348,13 @@ export default function OrderDetails() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.25 }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
               >
                 <h3 className="text-lg font-bold mb-5" style={{ color: "#14261f" }}>
                   Payment Breakdown
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                  <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                     <div className="flex items-center gap-2">
                       <Package size={14} className="text-gray-400" />
                       <span className="text-sm text-gray-600">Product Amount → Shopkeeper</span>
@@ -362,7 +362,7 @@ export default function OrderDetails() {
                     <span className="text-sm font-bold text-[#155c43]">{formatCurrency(revenue.productAmount)}</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                  <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                     <div className="flex items-center gap-2">
                       <Truck size={14} className="text-gray-400" />
                       <span className="text-sm text-gray-600">Delivery Fee</span>
@@ -380,7 +380,7 @@ export default function OrderDetails() {
                   </div>
 
                   {revenue.platformFee > 0 && (
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                       <div className="flex items-center gap-2">
                         <CreditCard size={14} className="text-gray-400" />
                         <span className="text-sm text-gray-600">Platform Fee</span>
@@ -390,7 +390,7 @@ export default function OrderDetails() {
                   )}
 
                   <div className="border-t border-gray-200 pt-3 mt-3">
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-[#155c43]/5">
+                    <div className="flex items-center justify-between p-3 rounded-md bg-[#155c43]/5">
                       <span className="text-sm font-bold" style={{ color: "#14261f" }}>Total Customer Payment</span>
                       <span className="text-lg font-bold text-[#155c43]">{formatCurrency(revenue.totalCustomerPayment)}</span>
                     </div>
@@ -405,14 +405,14 @@ export default function OrderDetails() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
               >
                 <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                   Delivery Information
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {order.deliveryAddress && (
-                    <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
                       <MapPin size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Delivery Address</p>
@@ -421,7 +421,7 @@ export default function OrderDetails() {
                     </div>
                   )}
                   {order.shopAddress && (
-                    <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
                       <Store size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Pickup Address</p>
@@ -430,7 +430,7 @@ export default function OrderDetails() {
                     </div>
                   )}
                   {order.deliveryDistance && (
-                    <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
                       <Navigation size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Distance</p>
@@ -439,7 +439,7 @@ export default function OrderDetails() {
                     </div>
                   )}
                   {order.deliveryTime && (
-                    <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
+                    <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
                       <Timer size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Delivery Time</p>
@@ -459,16 +459,16 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Customer
               </h3>
               <div
-                className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => customer && navigate(`/admin/customers/${customer.id}`)}
               >
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold">
+                <div className="w-11 h-11 rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold">
                   {order.customerName?.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -484,16 +484,16 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Shop
               </h3>
               <div
-                className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
                 onClick={() => shop && navigate(`/admin/shops/${shop.id}`)}
               >
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
+                <div className="w-11 h-11 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
                   {shop?.name?.charAt(0) || order.shopDisplayName?.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -511,17 +511,17 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Delivery Partner
               </h3>
               {order.deliveryPartnerName ? (
                 <div
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => deliveryPartner && navigate(`/admin/delivery-partners/${deliveryPartner.id}`)}
                 >
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                  <div className="w-11 h-11 rounded-md bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
                     {order.deliveryPartnerName?.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -531,7 +531,7 @@ export default function OrderDetails() {
                   <ExternalLink size={14} className="text-gray-400 flex-shrink-0" />
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-gray-50 text-center">
+                <div className="p-3 rounded-md bg-gray-50 text-center">
                   <Truck size={20} className="text-gray-300 mx-auto mb-1" />
                   <p className="text-xs text-gray-400">Not assigned yet</p>
                 </div>
@@ -543,19 +543,19 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Payment
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Method</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {order.paymentMethod || "—"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Status</span>
                   <span
                     className={`text-xs font-semibold px-2 py-0.5 rounded-md ${
@@ -569,20 +569,20 @@ export default function OrderDetails() {
                     {order.paymentStatus || "—"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Product Amount</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {formatCurrency(revenue?.productAmount)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Delivery Fee</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
                     {formatCurrency(revenue?.deliveryFee)}
                   </span>
                 </div>
                 <div className="border-t border-gray-200 pt-3">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#155c43]/5">
+                  <div className="flex items-center justify-between p-3 rounded-md bg-[#155c43]/5">
                     <span className="text-sm font-bold" style={{ color: "#14261f" }}>Total</span>
                     <span className="text-lg font-bold text-[#155c43]">
                       {formatCurrency(order.totalAmount + (order.deliveryFee || 0))}
@@ -598,12 +598,12 @@ export default function OrderDetails() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.35 }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
               >
                 <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                   Customer Review
                 </h3>
-                <div className="p-4 rounded-xl bg-amber-50">
+                <div className="p-4 rounded-md bg-amber-50">
                   <div className="flex items-center gap-1 mb-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
@@ -627,7 +627,7 @@ export default function OrderDetails() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.35 }}
-                className="bg-rose-50 rounded-2xl border border-rose-200 p-6"
+                className="bg-rose-50 rounded-lg border border-rose-200 p-6"
               >
                 <h3 className="text-lg font-bold mb-3 text-rose-700">
                   Cancellation Details
@@ -672,11 +672,11 @@ export default function OrderDetails() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full"
+                className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#155c43]/10 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-md bg-[#155c43]/10 flex items-center justify-center">
                     <ArrowRight size={24} className="text-[#155c43]" />
                   </div>
                   <div>
@@ -694,13 +694,13 @@ export default function OrderDetails() {
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setConfirmStatus(null)}
-                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmStatusUpdate}
-                    className="px-4 py-2 text-sm font-semibold text-white bg-[#155c43] rounded-xl hover:bg-[#114a36] transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-white bg-[#155c43] rounded-md hover:bg-[#114a36] transition-colors"
                   >
                     Confirm
                   </button>

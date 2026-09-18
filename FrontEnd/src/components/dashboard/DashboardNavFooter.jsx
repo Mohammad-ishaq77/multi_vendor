@@ -35,11 +35,11 @@ const DashboardNavFooter = ({ isCollapsed = false, compact = false }) => {
             whileHover={{ x: isCollapsed ? 0 : 3 }}
             whileTap={{ scale: 0.98 }}
             onClick={action.onClick}
-            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-gray-400 transition-all duration-200 ${action.hover} ${
+            className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-gray-400 transition-all duration-200 ${action.hover} ${
               isCollapsed ? "justify-center" : ""
             }`}
           >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] bg-gray-50 text-gray-400">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-gray-50 text-gray-400">
               <Icon className="h-[18px] w-[18px]" />
             </div>
             <AnimatePresence>
@@ -70,9 +70,9 @@ export const DashboardMobileFooter = () => {
       <button
         type="button"
         onClick={() => navigate("/")}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-primary-dark)] hover:bg-[var(--color-green-bg)]"
+        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-[var(--color-primary-dark)] hover:bg-[var(--color-green-bg)]"
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)]">
           <ExternalLink className="h-[18px] w-[18px]" />
         </div>
         View to Site
@@ -80,9 +80,9 @@ export const DashboardMobileFooter = () => {
       <button
         type="button"
         onClick={requestLogout}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
+        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-emerald-50 text-emerald-700">
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-emerald-50 text-emerald-700">
           <LogOut className="h-[18px] w-[18px]" />
         </div>
         Logout

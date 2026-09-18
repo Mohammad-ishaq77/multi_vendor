@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 
-const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
 const getTimePeriod = (time) => Number(time?.split(":")[0]) >= 12 ? "PM" : "AM";
 
@@ -96,14 +96,14 @@ const CreateShop = () => {
         className="w-full max-w-xl"
       >
         <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-xl shadow-emerald-600/25 mx-auto mb-3">
+          <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-xl shadow-emerald-600/25 mx-auto mb-3">
             <Store className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Create Your Shop</h1>
           <p className="text-sm text-gray-500 mt-1">Fill in your shop details to get started.</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm space-y-4">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm space-y-4">
           {/* Shop Name */}
           <div>
             <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Shop Name *</label>
@@ -144,7 +144,7 @@ const CreateShop = () => {
                 <img
                   src={form.shopImage}
                   alt="Shop preview"
-                  className="w-32 h-32 rounded-2xl object-cover border-2 border-gray-200"
+                  className="w-32 h-32 rounded-lg object-cover border-2 border-gray-200"
                 />
                 <button
                   type="button"
@@ -158,7 +158,7 @@ const CreateShop = () => {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center gap-2 text-gray-400 hover:border-emerald-300 hover:text-emerald-500 transition-colors"
+                className="w-full border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-2 text-gray-400 hover:border-emerald-300 hover:text-emerald-500 transition-colors"
               >
                 <Camera className="w-8 h-8" />
                 <span className="text-sm font-medium">Upload shop image</span>
@@ -207,16 +207,16 @@ const CreateShop = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">City *</label>
-              <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="City" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+              <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="City" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
               {errors.city && <p className="text-xs text-rose-500 mt-1">{errors.city}</p>}
             </div>
             <div>
               <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">State</label>
-              <input value={form.state} onChange={(e) => update("state", e.target.value)} placeholder="State" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+              <input value={form.state} onChange={(e) => update("state", e.target.value)} placeholder="State" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
             </div>
             <div>
               <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pincode</label>
-              <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} placeholder="190001" className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
+              <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} placeholder="190001" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
             </div>
           </div>
 
@@ -228,7 +228,7 @@ const CreateShop = () => {
                 <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <div className="flex gap-2">
                   <input type="time" value={form.openingTime} onChange={(e) => update("openingTime", e.target.value)} className={inputClass + " flex-1"} />
-                  <select value={getTimePeriod(form.openingTime)} onChange={(e) => update("openingTime", updateTimePeriod(form.openingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-xl px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
+                  <select value={getTimePeriod(form.openingTime)} onChange={(e) => update("openingTime", updateTimePeriod(form.openingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-md px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
                     <option>AM</option>
                     <option>PM</option>
                   </select>
@@ -238,7 +238,7 @@ const CreateShop = () => {
                 <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <div className="flex gap-2">
                   <input type="time" value={form.closingTime} onChange={(e) => update("closingTime", e.target.value)} className={inputClass + " flex-1"} />
-                  <select value={getTimePeriod(form.closingTime)} onChange={(e) => update("closingTime", updateTimePeriod(form.closingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-xl px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
+                  <select value={getTimePeriod(form.closingTime)} onChange={(e) => update("closingTime", updateTimePeriod(form.closingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-md px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
                     <option>AM</option>
                     <option>PM</option>
                   </select>
@@ -253,7 +253,7 @@ const CreateShop = () => {
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={() => { setOnboardingStep("type_selection"); navigate("/shopkeeper/onboarding"); }}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all"
+            className="flex items-center gap-2 px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all"
           >
             <ChevronLeft className="w-4 h-4" /> Back
           </motion.button>
@@ -261,7 +261,7 @@ const CreateShop = () => {
             whileTap={{ scale: 0.98 }}
             onClick={handleProceed}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50"
           >
             {saving ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

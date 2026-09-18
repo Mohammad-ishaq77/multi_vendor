@@ -86,7 +86,7 @@ const ProductDetail = () => {
             <p className="text-gray-500 mt-2">The product you are looking for does not exist.</p>
             <button
               onClick={() => navigate("/customer/products")}
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors"
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Products
@@ -150,7 +150,7 @@ const ProductDetail = () => {
               transition={{ duration: 0.4 }}
             >
               {/* Main Image */}
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 border border-gray-100">
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 border border-gray-100">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -185,7 +185,7 @@ const ProductDetail = () => {
                   <button
                     key={i}
                     onClick={() => setActiveImage(i)}
-                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                    className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
                       activeImage === i
                         ? "border-emerald-500 ring-2 ring-emerald-100"
                         : "border-gray-200 hover:border-gray-300"
@@ -246,7 +246,7 @@ const ProductDetail = () => {
 
               {/* Delivery Info */}
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="flex items-center gap-2.5 rounded-xl bg-white border border-gray-100 p-3">
+                <div className="flex items-center gap-2.5 rounded-md bg-white border border-gray-100 p-3">
                   <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
                     <Truck className="w-4 h-4 text-emerald-600" />
                   </div>
@@ -255,7 +255,7 @@ const ProductDetail = () => {
                     <p className="text-[0.65rem] text-gray-400">{product.deliveryTime}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2.5 rounded-xl bg-white border border-gray-100 p-3">
+                <div className="flex items-center gap-2.5 rounded-md bg-white border border-gray-100 p-3">
                   <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
                   </div>
@@ -264,7 +264,7 @@ const ProductDetail = () => {
                     <p className="text-[0.65rem] text-gray-400">100% Fresh</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2.5 rounded-xl bg-white border border-gray-100 p-3">
+                <div className="flex items-center gap-2.5 rounded-md bg-white border border-gray-100 p-3">
                   <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4 text-amber-600" />
                   </div>
@@ -278,7 +278,7 @@ const ProductDetail = () => {
               {/* Quantity */}
               <div className="mt-6">
                 <label className="text-sm font-semibold text-gray-700 mb-2 block">Quantity</label>
-                <div className="inline-flex items-center rounded-xl border border-gray-200 bg-white p-1">
+                <div className="inline-flex items-center rounded-md border border-gray-200 bg-white p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
@@ -302,7 +302,7 @@ const ProductDetail = () => {
               <div className="mt-6 flex gap-3">
                 <button
                   onClick={handleAddToCart}
-                  className={`flex-1 flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold transition-all duration-200 border-2 ${
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-md px-6 py-3.5 text-sm font-bold transition-all duration-200 border-2 ${
                     addedToCart
                       ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                       : "bg-white border-gray-200 text-gray-700 hover:border-emerald-500 hover:text-emerald-700"
@@ -332,7 +332,7 @@ const ProductDetail = () => {
                 </button>
                 <button
                   onClick={handleOrderNow}
-                  className="flex-[1.5] flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-emerald-600/30 transition-all active:scale-[0.98]"
+                  className="flex-[1.5] flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-emerald-600/30 transition-all active:scale-[0.98]"
                 >
                   <IndianRupee className="w-4 h-4" />
                   Order Now
@@ -340,9 +340,9 @@ const ProductDetail = () => {
               </div>
 
               {/* Shop Info */}
-              <div className="mt-6 rounded-xl bg-white border border-gray-100 p-4">
+              <div className="mt-6 rounded-md bg-white border border-gray-100 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700 text-lg font-bold shrink-0">
+                  <div className="w-12 h-12 rounded-md bg-emerald-50 flex items-center justify-center text-emerald-700 text-lg font-bold shrink-0">
                     {product.shop.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -388,7 +388,7 @@ const ProductDetail = () => {
                   <Link
                     key={p.id}
                     to={`/customer/product/${p.id}`}
-                    className="group block rounded-2xl bg-white border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all"
+                    className="group block rounded-lg bg-white border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all"
                   >
                     <div className="aspect-[4/3] overflow-hidden bg-gray-50">
                       <img
@@ -431,7 +431,7 @@ const ProductDetail = () => {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl"
+                className="bg-white rounded-lg p-8 max-w-sm w-full text-center shadow-2xl"
               >
                 <motion.div
                   initial={{ scale: 0 }}

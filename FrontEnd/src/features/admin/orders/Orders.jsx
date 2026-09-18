@@ -191,7 +191,7 @@ export default function Orders() {
             { label: "Out for Delivery", value: orders.filter((o) => o.status === "out_for_delivery").length, color: "bg-indigo-50 text-indigo-700" },
             { label: "Delivered", value: orders.filter((o) => o.status === "delivered").length, color: "bg-emerald-50 text-emerald-700" },
           ].map((stat) => (
-            <div key={stat.label} className={`p-4 rounded-xl ${stat.color}`}>
+            <div key={stat.label} className={`p-4 rounded-md ${stat.color}`}>
               <p className="text-xs font-medium opacity-70">{stat.label}</p>
               <p className="text-2xl font-bold mt-1">{stat.value}</p>
             </div>
@@ -203,7 +203,7 @@ export default function Orders() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4"
+          className="bg-white rounded-lg border border-gray-100 shadow-sm p-4"
         >
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -213,12 +213,12 @@ export default function Orders() {
                 placeholder="Search by order ID, customer, shop, delivery partner..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-all"
+                className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43] transition-all"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-md border transition-colors ${
                 showFilters
                   ? "bg-[#155c43] text-white border-[#155c43]"
                   : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
@@ -269,7 +269,7 @@ export default function Orders() {
                         <select
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value)}
-                          className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43]"
+                          className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#155c43]/20 focus:border-[#155c43]"
                         >
                           {sortOptions.map((o) => (
                             <option key={o.value} value={o.value}>{o.label}</option>
@@ -277,7 +277,7 @@ export default function Orders() {
                         </select>
                         <button
                           onClick={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
-                          className="p-2 border border-gray-200 rounded-xl hover:bg-gray-50"
+                          className="p-2 border border-gray-200 rounded-md hover:bg-gray-50"
                         >
                           <ArrowUpDown size={16} className="text-gray-500" />
                         </button>
@@ -295,7 +295,7 @@ export default function Orders() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+          className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

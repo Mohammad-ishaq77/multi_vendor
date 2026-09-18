@@ -87,7 +87,7 @@ const Categories = () => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-md border border-white/10 rounded-xl px-5 py-3 flex items-center gap-2 cursor-pointer"
+              className="bg-white/10 backdrop-blur-md border border-white/10 rounded-md px-5 py-3 flex items-center gap-2 cursor-pointer"
             >
               <Search className="w-4 h-4" />
               <span className="text-sm font-medium">Search Categories</span>
@@ -116,14 +116,14 @@ const Categories = () => {
                 }
                 className="group cursor-pointer"
               >
-                <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center hover:shadow-xl hover:shadow-[#155c43]/5 hover:border-[#155c43]/10 transition-all duration-300 relative overflow-hidden">
+                <div className="bg-white border border-gray-100 rounded-lg p-6 text-center hover:shadow-xl hover:shadow-[#155c43]/5 hover:border-[#155c43]/10 transition-all duration-300 relative overflow-hidden">
                   {/* Background orb */}
                   <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#155c43]/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   <motion.div
                     whileHover={{ rotate: [0, -5, 5, 0] }}
                     transition={{ duration: 0.5 }}
-                    className="relative w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#edf7f1] to-[#dff1e7] flex items-center justify-center mb-4 group-hover:from-[#155c43] group-hover:to-[#1a6b4e] group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md"
+                    className="relative w-16 h-16 mx-auto rounded-lg bg-gradient-to-br from-[#edf7f1] to-[#dff1e7] flex items-center justify-center mb-4 group-hover:from-[#155c43] group-hover:to-[#1a6b4e] group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md"
                   >
                     <Icon className="w-7 h-7 text-[#155c43] group-hover:text-white transition-colors" />
                   </motion.div>

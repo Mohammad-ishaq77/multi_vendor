@@ -77,7 +77,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-11 z-50 w-80 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-black/10"
+              className="absolute right-0 top-11 z-50 w-80 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-2xl shadow-black/10"
             >
               <div className="flex items-center justify-between border-b border-gray-100 p-4">
                 <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
@@ -158,7 +158,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-black/10"
+              className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-2xl shadow-black/10"
             >
               <div className="p-3">
                 <button
@@ -167,7 +167,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
                     navigate("/shopkeeper/profile");
                     setProfileOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                  className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
                 >
                   <User className="h-4 w-4 text-gray-400" />
                   My Profile
@@ -178,7 +178,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
                     navigate("/shopkeeper/shop");
                     setProfileOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                  className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
                 >
                   <Store className="h-4 w-4 text-gray-400" />
                   My Shop
@@ -189,7 +189,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
                     navigate("/");
                     setProfileOpen(false);
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                  className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900"
                 >
                   <ExternalLink className="h-4 w-4 text-gray-400" />
                   View to Site
@@ -199,7 +199,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
                 <button
                   type="button"
                   onClick={requestLogout}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50"
+                  className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout

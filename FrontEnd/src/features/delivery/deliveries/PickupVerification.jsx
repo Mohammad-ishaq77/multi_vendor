@@ -69,7 +69,7 @@ export default function PickupVerification() {
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-100">
           <h1 className="text-lg font-bold text-gray-900">Pickup Verification</h1>
           <p className="text-sm text-gray-500 mt-1">Verify the package before pickup</p>
@@ -78,7 +78,7 @@ export default function PickupVerification() {
         {/* Shop Info */}
         <div className="p-5 border-b border-gray-100 bg-gray-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <div className="w-10 h-10 rounded-md bg-emerald-100 flex items-center justify-center text-emerald-600">
               <Store className="w-5 h-5" />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default function PickupVerification() {
 
         <div className="p-5 space-y-5">
           {/* Method Toggle */}
-          <div className="flex bg-gray-100 rounded-xl p-1">
+          <div className="flex bg-gray-100 rounded-md p-1">
             <button onClick={() => setMethod("code")} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${method === "code" ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>
               <Hash className="w-4 h-4" /> Pickup Code
             </button>
@@ -104,7 +104,7 @@ export default function PickupVerification() {
           </div>
 
           {result && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`flex items-center gap-3 p-4 rounded-xl border ${result.success ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200"}`}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`flex items-center gap-3 p-4 rounded-md border ${result.success ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200"}`}>
               {result.success ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-rose-500" />}
               <p className={`text-sm font-medium ${result.success ? "text-emerald-800" : "text-rose-800"}`}>{result.message}</p>
             </motion.div>
@@ -114,25 +114,25 @@ export default function PickupVerification() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Order ID</label>
-                <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder={activeDelivery.id} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
+                <input type="text" value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder={activeDelivery.id} className="w-full px-4 py-2.5 rounded-md border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pickup Code</label>
-                <input type="text" value={pickupCode} onChange={(e) => setPickupCode(e.target.value)} placeholder="Enter pickup code" className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
+                <input type="text" value={pickupCode} onChange={(e) => setPickupCode(e.target.value)} placeholder="Enter pickup code" className="w-full px-4 py-2.5 rounded-md border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
                 <p className="text-[0.65rem] text-gray-400 mt-1">Ask the shop for the pickup code</p>
               </div>
-              <button onClick={handleVerify} disabled={verifying || result?.success} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50">
+              <button onClick={handleVerify} disabled={verifying || result?.success} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50">
                 {verifying ? "Verifying..." : "Verify Pickup"}
               </button>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex flex-col items-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+              <div className="flex flex-col items-center py-8 bg-gray-50 rounded-md border-2 border-dashed border-gray-200">
                 <QrCode className="w-16 h-16 text-gray-300 mb-3" />
                 <p className="text-sm text-gray-500">QR Scanner (Simulated)</p>
                 <p className="text-xs text-gray-400 mt-1">Position camera to scan shop QR</p>
               </div>
-              <button onClick={handleSimulateQR} disabled={verifying || result?.success} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50">
+              <button onClick={handleSimulateQR} disabled={verifying || result?.success} className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50">
                 {verifying ? "Scanning..." : "Simulate QR Scan"}
               </button>
             </div>

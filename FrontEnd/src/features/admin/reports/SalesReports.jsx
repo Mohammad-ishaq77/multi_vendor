@@ -42,7 +42,7 @@ export default function SalesReports() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div><h1 className="text-2xl font-bold text-[#14261f]">Sales Reports</h1><p className="text-sm text-gray-500 mt-1">Revenue analytics and financial breakdown.</p></div>
-          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white font-semibold"><option value="all">All Time</option><option value="today">Today</option><option value="7days">Last 7 Days</option><option value="30days">Last 30 Days</option></select>
+          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="px-4 py-2.5 rounded-md border border-gray-200 text-sm bg-white font-semibold"><option value="all">All Time</option><option value="today">Today</option><option value="7days">Last 7 Days</option><option value="30days">Last 30 Days</option></select>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -52,9 +52,9 @@ export default function SalesReports() {
             { label: "Avg Order Value", value: `₹${stats.avgOrderValue.toLocaleString("en-IN")}`, color: "from-amber-500 to-orange-500", icon: TrendingUp },
             { label: "Delivery Fees", value: `₹${stats.deliveryFees.toLocaleString("en-IN")}`, color: "from-violet-500 to-purple-500", icon: Truck },
           ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-lg`}><s.icon className="w-5 h-5" /></div>
                 <div><p className="text-xs text-gray-500">{s.label}</p><p className="text-sm font-bold text-gray-900">{s.value}</p></div>
               </div>
             </motion.div>
@@ -62,7 +62,7 @@ export default function SalesReports() {
         </div>
 
         {/* Revenue Chart */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
           <h3 className="text-sm font-bold text-gray-900 mb-5">Revenue Breakdown</h3>
           <div className="space-y-4">
             {[
@@ -87,7 +87,7 @@ export default function SalesReports() {
             { label: "Delivery Partners", value: deliveryPartners?.length || 0, icon: Truck },
             { label: "Active Orders", value: orders.filter((o) => o.status === "out_for_delivery" || o.status === "ready_for_pickup").length, icon: Package },
           ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm text-center">
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05 }} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm text-center">
               <s.icon className="w-5 h-5 text-gray-400 mx-auto mb-2" />
               <p className="text-xl font-bold text-gray-900">{s.value}</p>
               <p className="text-xs text-gray-500">{s.label}</p>

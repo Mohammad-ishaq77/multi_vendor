@@ -5,7 +5,7 @@ import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 
-const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const AddProduct = () => {
         <p className="text-sm text-gray-500 mb-6">Add a new product to your shop inventory.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Product Information</h3>
             <div className="space-y-4">
               <div>
@@ -78,7 +78,7 @@ const AddProduct = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Pricing & Stock</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -96,17 +96,17 @@ const AddProduct = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Product Image</h3>
             {imagePreview ? (
-              <div className="relative w-full h-48 rounded-xl overflow-hidden border border-gray-200">
+              <div className="relative w-full h-48 rounded-md overflow-hidden border border-gray-200">
                 <img src={imagePreview} alt="" className="w-full h-full object-cover" />
                 <button type="button" onClick={() => { setImagePreview(null); update("image", ""); }} className="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center text-gray-500 hover:text-rose-500 shadow-sm">
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-xl p-8 cursor-pointer hover:border-emerald-300 hover:bg-emerald-50/20 transition-all">
+              <label className="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-md p-8 cursor-pointer hover:border-emerald-300 hover:bg-emerald-50/20 transition-all">
                 <Upload className="w-8 h-8 text-gray-400" />
                 <span className="text-sm font-medium text-gray-500">Click to upload image</span>
                 <span className="text-xs text-gray-400">JPG, PNG (max 5MB)</span>
@@ -116,10 +116,10 @@ const AddProduct = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/products")} className="px-5 py-3 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
+            <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/products")} className="px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
               Cancel
             </motion.button>
-            <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={saving || !form.name || !form.price} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50">
+            <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={saving || !form.name || !form.price} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50">
               {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Save className="w-4 h-4" /> Add Product</>}
             </motion.button>
           </div>

@@ -25,11 +25,11 @@ const OrderCard = ({ order, index = 0, onStatusUpdate, nextStatus }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: Math.min(index * 0.05, 0.2) }}
-      className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300"
+      className="bg-white rounded-lg border border-gray-100 p-5 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300"
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
             <User className="w-4 h-4 text-gray-400" />
           </div>
           <div>
@@ -56,14 +56,14 @@ const OrderCard = ({ order, index = 0, onStatusUpdate, nextStatus }) => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={(e) => { e.stopPropagation(); onStatusUpdate?.(order.id, nextStatus); }}
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20"
+              className="px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20"
             >
               Move to {nextStatus}
             </motion.button>
           )}
           <button
             onClick={() => navigate(`/shopkeeper/orders/${order.id}`)}
-            className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
+            className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

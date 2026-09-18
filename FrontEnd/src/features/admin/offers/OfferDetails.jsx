@@ -26,7 +26,7 @@ export default function OfferDetails() {
     <PageTransition>
       <div className="w-full space-y-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/admin/offers")} className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-[#155c43] hover:border-emerald-200 transition-all shadow-sm">
+          <button onClick={() => navigate("/admin/offers")} className="w-10 h-10 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-[#155c43] hover:border-emerald-200 transition-all shadow-sm">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">
@@ -38,7 +38,7 @@ export default function OfferDetails() {
           </span>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-gray-900">Offer Information</h3>
           <div className="grid grid-cols-2 gap-4">
             <div><p className="text-xs text-gray-500">Coupon Code</p><p className="text-sm font-bold text-[#155c43]">{offer.couponCode}</p></div>
@@ -52,13 +52,13 @@ export default function OfferDetails() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-gray-900">Actions</h3>
           <div className="flex gap-3">
-            <button onClick={() => offer.status === "active" ? deactivateOffer(offer.id) : activateOffer(offer.id)} className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-colors ${offer.status === "active" ? "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100" : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"}`}>
+            <button onClick={() => offer.status === "active" ? deactivateOffer(offer.id) : activateOffer(offer.id)} className={`flex-1 py-2.5 text-sm font-semibold rounded-md transition-colors ${offer.status === "active" ? "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100" : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"}`}>
               {offer.status === "active" ? "Deactivate Offer" : "Activate Offer"}
             </button>
-            <button onClick={() => { if (window.confirm("Are you sure you want to delete this offer?")) { deleteOffer(offer.id); navigate("/admin/offers"); } }} className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 text-sm font-semibold rounded-xl border border-rose-200 hover:bg-rose-100 transition-colors">
+            <button onClick={() => { if (window.confirm("Are you sure you want to delete this offer?")) { deleteOffer(offer.id); navigate("/admin/offers"); } }} className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 text-sm font-semibold rounded-md border border-rose-200 hover:bg-rose-100 transition-colors">
               <Trash2 className="w-4 h-4" /> Delete
             </button>
           </div>

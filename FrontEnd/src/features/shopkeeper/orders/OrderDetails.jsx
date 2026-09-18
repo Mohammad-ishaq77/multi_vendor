@@ -61,7 +61,7 @@ const OrderDetails = () => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => updateOrderStatus(order.id, nextStatus)}
-              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
             >
               <CheckCircle2 className="w-4 h-4" /> Mark as {nextStatus}
             </motion.button>
@@ -69,7 +69,7 @@ const OrderDetails = () => {
         </div>
 
         {/* Status Progress */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm mb-6">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Order Progress</h3>
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide pb-2">
             {orderStatusFlow.map((status, i) => {
@@ -96,7 +96,7 @@ const OrderDetails = () => {
 
         <div className="grid sm:grid-cols-2 gap-6">
           {/* Customer Info */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"><User className="w-4 h-4 text-gray-400" /> Customer</h3>
             <div className="space-y-2">
               <p className="text-sm font-semibold text-gray-900">{order.customer}</p>
@@ -106,7 +106,7 @@ const OrderDetails = () => {
           </motion.div>
 
           {/* Payment Info */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"><CreditCard className="w-4 h-4 text-gray-400" /> Payment</h3>
             <div className="space-y-2">
               <div className="flex justify-between text-sm"><span className="text-gray-500">Method</span><span className="font-semibold text-gray-900">{order.paymentMethod}</span></div>
@@ -119,11 +119,11 @@ const OrderDetails = () => {
         </div>
 
         {/* Order Items */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mt-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm mt-6">
           <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"><Package className="w-4 h-4 text-gray-400" /> Items ({order.items?.length || 0})</h3>
           <div className="space-y-3">
             {order.items?.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-md border border-gray-100">
                 <div className="w-12 h-12 rounded-lg bg-white border border-gray-100 overflow-hidden shrink-0">
                   {item.image ? <img src={item.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Package className="w-4 h-4 text-gray-300" /></div>}
                 </div>

@@ -21,7 +21,7 @@ const Offers = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/shopkeeper/offers/create")}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
           >
             <Plus className="w-4 h-4" /> Create Offer
           </motion.button>
@@ -37,7 +37,7 @@ const Offers = () => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("/shopkeeper/offers/create")}
-              className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+              className="mt-6 inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
             >
               <Plus className="w-4 h-4" /> Create First Offer
             </motion.button>
@@ -50,11 +50,11 @@ const Offers = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`bg-white rounded-2xl border p-5 shadow-sm transition-all ${offer.active ? "border-gray-100" : "border-gray-200 opacity-60"}`}
+                className={`bg-white rounded-lg border p-5 shadow-sm transition-all ${offer.active ? "border-gray-100" : "border-gray-200 opacity-60"}`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${offer.type === "percentage" ? "bg-blue-50 text-blue-600" : "bg-emerald-50 text-emerald-600"}`}>
+                    <div className={`w-12 h-12 rounded-md flex items-center justify-center shrink-0 ${offer.type === "percentage" ? "bg-blue-50 text-blue-600" : "bg-emerald-50 text-emerald-600"}`}>
                       {offer.type === "percentage" ? <Percent className="w-5 h-5" /> : <IndianRupee className="w-5 h-5" />}
                     </div>
                     <div>
@@ -78,7 +78,7 @@ const Offers = () => {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={() => toggleOfferActive(offer.id)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md border transition-all ${
                         offer.active ? "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100" : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                       }`}
                     >
@@ -87,7 +87,7 @@ const Offers = () => {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setDeleteConfirm(offer)}
-                      className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all border border-gray-200"
+                      className="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-md transition-all border border-gray-200"
                     >
                       <Trash2 className="w-4 h-4" />
                     </motion.button>
@@ -113,15 +113,15 @@ const Offers = () => {
         <AnimatePresence>
           {deleteConfirm && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-              <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-                <div className="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center mx-auto mb-4">
+              <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-lg p-6 max-w-sm w-full shadow-2xl">
+                <div className="w-12 h-12 rounded-md bg-rose-50 flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-6 h-6 text-rose-500" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 text-center">Delete Offer?</h3>
                 <p className="text-sm text-gray-500 text-center mt-2">Are you sure you want to delete <span className="font-semibold">{deleteConfirm.title}</span>?</p>
                 <div className="flex gap-3 mt-6">
-                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">Cancel</button>
-                  <button onClick={() => { deleteOffer(deleteConfirm.id); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all">Delete</button>
+                  <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">Cancel</button>
+                  <button onClick={() => { deleteOffer(deleteConfirm.id); setDeleteConfirm(null); }} className="flex-1 py-2.5 rounded-md text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all">Delete</button>
                 </div>
               </motion.div>
             </motion.div>

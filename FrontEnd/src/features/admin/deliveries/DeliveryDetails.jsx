@@ -47,7 +47,7 @@ export default function DeliveryDetails() {
     <PageTransition>
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/admin/deliveries")} className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-[#155c43] hover:border-emerald-200 transition-all shadow-sm">
+          <button onClick={() => navigate("/admin/deliveries")} className="w-10 h-10 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-[#155c43] hover:border-emerald-200 transition-all shadow-sm">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
@@ -59,7 +59,7 @@ export default function DeliveryDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2 space-y-5">
             {/* Status */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-bold text-gray-900">Delivery Status</h3>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusColors[order.status] || "bg-gray-50 text-gray-500 border-gray-200"}`}>
@@ -79,9 +79,9 @@ export default function DeliveryDetails() {
             </motion.div>
 
             {/* Package Status */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Package Status</h3>
-              <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+              <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-md">
                 <Shield className="w-5 h-5 text-emerald-600" />
                 <div>
                   <p className="text-sm font-semibold text-emerald-800">SEALED</p>
@@ -91,11 +91,11 @@ export default function DeliveryDetails() {
             </motion.div>
 
             {/* Order Items */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Order Items</h3>
               <div className="space-y-2">
                 {order.items?.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{item.name}</p>
                       <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
@@ -107,7 +107,7 @@ export default function DeliveryDetails() {
             </motion.div>
 
             {/* Fee Breakdown */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Fee Breakdown</h3>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm"><span className="text-gray-500">Product Amount</span><span className="font-semibold">₹{order.productAmount}</span></div>
@@ -126,7 +126,7 @@ export default function DeliveryDetails() {
           {/* Sidebar Info */}
           <div className="space-y-5">
             {/* Delivery Info */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-gray-900">Delivery Info</h3>
               <div className="flex items-center gap-3"><div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><MapPin className="w-4 h-4" /></div><div><p className="text-xs text-gray-500">Distance</p><p className="text-sm font-semibold">{order.deliveryDistance} km</p></div></div>
               <div className="flex items-center gap-3"><div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600"><Clock className="w-4 h-4" /></div><div><p className="text-xs text-gray-500">Delivery Time</p><p className="text-sm font-semibold">{order.deliveryTime || "—"} min</p></div></div>
@@ -134,9 +134,9 @@ export default function DeliveryDetails() {
             </motion.div>
 
             {/* Customer */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Customer</h3>
-              <Link to={`/admin/users/customers/${order.customerId}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-xl transition-colors">
+              <Link to={`/admin/users/customers/${order.customerId}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-md transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white"><User className="w-4 h-4" /></div>
                 <div><p className="text-sm font-semibold text-gray-900">{order.customerName}</p><p className="text-xs text-gray-500">{order.customerPhone}</p></div>
               </Link>
@@ -144,18 +144,18 @@ export default function DeliveryDetails() {
             </motion.div>
 
             {/* Shop */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Shop</h3>
-              <Link to={`/admin/shops/${order.shopId}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-xl transition-colors">
+              <Link to={`/admin/shops/${order.shopId}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-md transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white"><Store className="w-4 h-4" /></div>
                 <div><p className="text-sm font-semibold text-gray-900">{order.shopName}</p><p className="text-xs text-gray-500">{order.shopAddress}</p></div>
               </Link>
             </motion.div>
 
             {/* Delivery Partner */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Delivery Partner</h3>
-              <Link to={`/admin/users/delivery-partners/${order.deliveryPartnerId}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-xl transition-colors">
+              <Link to={`/admin/users/delivery-partners/${order.deliveryPartnerId}`} className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-md transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white"><Truck className="w-4 h-4" /></div>
                 <div><p className="text-sm font-semibold text-gray-900">{order.deliveryPartnerName}</p><p className="text-xs text-gray-500">Delivery Partner</p></div>
               </Link>

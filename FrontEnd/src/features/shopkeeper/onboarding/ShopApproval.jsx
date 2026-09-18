@@ -63,11 +63,11 @@ const ShopApproval = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm mt-6"
+          className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm mt-6"
         >
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-left">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+              <div className="w-10 h-10 rounded-md bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
@@ -77,7 +77,7 @@ const ShopApproval = () => {
             </div>
 
             <div className="flex items-center gap-3 text-left">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${digilockerVerified ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
+              <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${digilockerVerified ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
                 {digilockerVerified ? <BadgeCheck className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
               </div>
               <div>
@@ -107,7 +107,7 @@ const ShopApproval = () => {
             )}
 
             <div className="flex items-center gap-3 text-left">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+              <div className="w-10 h-10 rounded-md bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
@@ -117,7 +117,7 @@ const ShopApproval = () => {
             </div>
 
             <div className="flex items-center gap-3 text-left">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0">
+              <div className="w-10 h-10 rounded-md bg-amber-50 flex items-center justify-center text-amber-600 shrink-0">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
@@ -132,7 +132,7 @@ const ShopApproval = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-5 p-4 bg-blue-50/50 border border-blue-200 rounded-2xl"
+          className="mt-5 p-4 bg-blue-50/50 border border-blue-200 rounded-lg"
         >
           <div className="flex items-start gap-2">
             <AlertCircle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
@@ -154,7 +154,7 @@ const ShopApproval = () => {
           whileTap={{ scale: 0.98 }}
           onClick={handleCheckStatus}
           disabled={checking}
-          className="mt-6 w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50"
+          className="mt-6 w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3.5 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50"
         >
           {checking ? (
             <>

@@ -61,7 +61,7 @@ const Profile = () => {
     { id: "notifications", label: "Notifications", icon: Bell },
   ];
 
-  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+  const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
   return (
     <CustomerShell>
@@ -70,11 +70,11 @@ const Profile = () => {
             {/* Sidebar */}
             <div className="lg:sticky lg:top-4 lg:self-start">
               {/* Profile Card */}
-              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mb-4">
+              <div className="bg-white rounded-lg border border-gray-100 overflow-hidden shadow-sm mb-4">
                 {/* Banner */}
                 <div className="h-28 bg-gradient-to-r from-emerald-600 to-teal-600 relative">
                   <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
-                    <div className="relative w-24 h-24 rounded-2xl bg-white border-4 border-white shadow-lg overflow-hidden">
+                    <div className="relative w-24 h-24 rounded-lg bg-white border-4 border-white shadow-lg overflow-hidden">
                       {profile.image ? (
                         <img src={profile.image} alt="Profile" className="w-full h-full object-cover" />
                       ) : (
@@ -106,7 +106,7 @@ const Profile = () => {
               </div>
 
               {/* Nav Menu */}
-              <div className="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm hidden lg:block">
+              <div className="bg-white rounded-lg border border-gray-100 p-2 shadow-sm hidden lg:block">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeSection === item.id;
@@ -117,7 +117,7 @@ const Profile = () => {
                         setActiveSection(item.id);
                         item.action?.();
                       }}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-semibold transition-all ${
                         isActive
                           ? "bg-emerald-50 text-emerald-700"
                           : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
@@ -131,7 +131,7 @@ const Profile = () => {
                 <div className="border-t border-gray-100 mt-1 pt-1">
                   <button
                     onClick={requestLogout}
-                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     Logout
@@ -154,7 +154,7 @@ const Profile = () => {
                 </p>
 
                 {/* Form */}
-                <form onSubmit={save} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+                <form onSubmit={save} className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5">Personal Information</h3>
 
                   <div className="space-y-4">
@@ -223,7 +223,7 @@ const Profile = () => {
                     <motion.button
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+                      className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
                     >
                       {saved ? (
                         <>
@@ -247,14 +247,14 @@ const Profile = () => {
                 </form>
 
                 {/* Quick Links (Mobile) */}
-                <div className="lg:hidden mt-4 bg-white rounded-2xl border border-gray-100 p-3 shadow-sm">
+                <div className="lg:hidden mt-4 bg-white rounded-lg border border-gray-100 p-3 shadow-sm">
                   {menuItems.filter((m) => m.action).map((item) => {
                     const Icon = item.icon;
                     return (
                       <button
                         key={item.id}
                         onClick={item.action}
-                        className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                        className="w-full flex items-center gap-3 px-3.5 py-3 rounded-md text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                       >
                         <Icon className="w-4 h-4 text-gray-400" />
                         {item.label}

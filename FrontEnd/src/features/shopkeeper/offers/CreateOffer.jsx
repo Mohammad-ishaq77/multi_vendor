@@ -5,7 +5,7 @@ import { ArrowLeft, Save, Tag, Calendar, ShoppingBag } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 
-const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
 const CreateOffer = () => {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const CreateOffer = () => {
         <p className="text-sm text-gray-500 mb-6">Set up a new discount or promotional offer.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2"><Tag className="w-4 h-4 text-emerald-600" /> Offer Details</h3>
             <div className="space-y-4">
               <div>
@@ -81,7 +81,7 @@ const CreateOffer = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2"><ShoppingBag className="w-4 h-4 text-blue-600" /> Conditions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -99,7 +99,7 @@ const CreateOffer = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2"><Calendar className="w-4 h-4 text-violet-600" /> Validity</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -113,7 +113,7 @@ const CreateOffer = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Product Specific</h3>
               <button type="button" onClick={() => update("productSpecific", !form.productSpecific)} className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${form.productSpecific ? "bg-emerald-500" : "bg-gray-300"}`}>
@@ -127,7 +127,7 @@ const CreateOffer = () => {
                     key={p.id}
                     type="button"
                     onClick={() => toggleProduct(p.name)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all ${
                       form.selectedProducts.includes(p.name) ? "bg-emerald-50 border-emerald-300 text-emerald-700" : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
                     }`}
                   >
@@ -139,10 +139,10 @@ const CreateOffer = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/offers")} className="px-5 py-3 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
+            <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/offers")} className="px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
               Cancel
             </motion.button>
-            <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={saving || !form.title || !form.value} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50">
+            <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={saving || !form.title || !form.value} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50">
               {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Save className="w-4 h-4" /> Create Offer</>}
             </motion.button>
           </div>

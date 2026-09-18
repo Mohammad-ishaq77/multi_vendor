@@ -75,7 +75,7 @@ export default function ContactVerification() {
   };
 
   const inputClass = (field) =>
-    `w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all duration-200 ${
+    `w-full px-3.5 py-2.5 rounded-md border text-sm outline-none transition-all duration-200 ${
       errors[field]
         ? "border-rose-300 bg-rose-50/50 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
         : "border-gray-200 bg-[#F8FAFC] focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10 focus:bg-white"
@@ -100,7 +100,7 @@ export default function ContactVerification() {
           type="button"
           onClick={() => sendOtp(channel)}
           disabled={verified[channel]}
-          className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+          className={`px-3.5 py-2 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
             verified[channel]
               ? "bg-[#1B4332]/10 text-[#1B4332]"
               : "bg-[#0F172A] text-white hover:bg-[#1E293B]"
@@ -124,7 +124,7 @@ export default function ContactVerification() {
           <button
             type="button"
             onClick={() => verifyOtp(channel)}
-            className="px-3.5 py-2 rounded-xl bg-[#1B4332] text-white text-xs font-semibold hover:bg-[#143728] transition-colors"
+            className="px-3.5 py-2 rounded-md bg-[#1B4332] text-white text-xs font-semibold hover:bg-[#143728] transition-colors"
           >
             Verify
           </button>
@@ -150,7 +150,7 @@ export default function ContactVerification() {
       <div className="p-5 sm:p-6 space-y-5">
         {/* Title */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-lg bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
             <User className="w-6 h-6 text-[#1B4332]" />
           </div>
           <h1 className="font-serif text-xl font-bold text-[#0F172A]">
@@ -185,7 +185,7 @@ export default function ContactVerification() {
         {field("email", "Email address", Mail, "email")}
 
         {/* Demo hint */}
-        <div className="flex items-start gap-2.5 p-3 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-xl">
+        <div className="flex items-start gap-2.5 p-3 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-md">
           <ShieldCheck className="w-4 h-4 text-[#1B4332] shrink-0 mt-0.5" />
           <p className="text-[0.7rem] text-[#334155] leading-relaxed">
             Demo OTP for both fields: <span className="font-mono font-bold">123456</span>
@@ -201,7 +201,7 @@ export default function ContactVerification() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleContinue}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
         >
           Continue
           <ChevronRight className="w-4 h-4" />

@@ -74,9 +74,9 @@ const Payments = () => {
           ].map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.label} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+              <div key={item.label} className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)]">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -95,16 +95,16 @@ const Payments = () => {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by order, payment ID or method"
-            className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[var(--color-primary)]"
+            className="w-full rounded-md border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[var(--color-primary)]"
           />
         </div>
 
         {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-gray-100 bg-white px-6 py-16 text-center">
+          <div className="rounded-lg border border-gray-100 bg-white px-6 py-16 text-center">
             <CreditCard className="mx-auto mb-3 h-10 w-10 text-gray-300" />
             <h2 className="text-lg font-bold text-[#14261f]">No payments yet</h2>
             <p className="mt-1 text-sm text-gray-500">Pay for an order at checkout to see it here.</p>
-            <Link to="/customer/products" className="mt-5 inline-flex rounded-xl bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white">
+            <Link to="/customer/products" className="mt-5 inline-flex rounded-md bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white">
               Continue shopping
             </Link>
           </div>
@@ -117,7 +117,7 @@ const Payments = () => {
                   key={payment.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+                  className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>

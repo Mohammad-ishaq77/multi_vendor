@@ -63,7 +63,7 @@ const ShopSettings = () => {
   );
 
   const inputClass =
-    "w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-500";
+    "w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-emerald-500";
 
   return (
     <ShopkeeperShell>
@@ -76,7 +76,7 @@ const ShopSettings = () => {
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={handleSave}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700"
+            className="flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700"
           >
             {saved ? (
               <>
@@ -94,7 +94,7 @@ const ShopSettings = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700"
+            className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700"
           >
             <CheckCircle2 className="h-4 w-4" /> Settings saved successfully.
           </motion.div>
@@ -104,20 +104,20 @@ const ShopSettings = () => {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="h-full space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5"
+            className="h-full space-y-3 rounded-lg border border-gray-100 bg-white p-4 shadow-sm sm:p-5"
           >
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4 text-emerald-600" />
               <h3 className="text-sm font-bold text-gray-900">Order Settings</h3>
             </div>
-            <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 p-2.5">
+            <div className="flex items-center justify-between gap-3 rounded-md bg-gray-50 p-2.5">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Accept Orders</p>
                 <p className="text-xs text-gray-500">Allow customers to place orders</p>
               </div>
               <Toggle enabled={form.acceptOrders} onClick={() => toggle("acceptOrders")} />
             </div>
-            <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 p-2.5">
+            <div className="flex items-center justify-between gap-3 rounded-md bg-gray-50 p-2.5">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Auto-Accept Orders</p>
                 <p className="text-xs text-gray-500">Skip manual confirmation</p>
@@ -139,7 +139,7 @@ const ShopSettings = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.04 }}
-            className="h-full space-y-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5"
+            className="h-full space-y-3 rounded-lg border border-gray-100 bg-white p-4 shadow-sm sm:p-5"
           >
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-emerald-600" />
@@ -165,7 +165,7 @@ const ShopSettings = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 p-2.5">
+            <div className="flex items-center justify-between gap-3 rounded-md bg-gray-50 p-2.5">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Shop Open</p>
                 <p className="text-xs text-gray-500">{shop.isOpen ? "Visible to customers" : "Hidden from marketplace"}</p>
@@ -186,7 +186,7 @@ const ShopSettings = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="h-full space-y-2.5 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5"
+            className="h-full space-y-2.5 rounded-lg border border-gray-100 bg-white p-4 shadow-sm sm:p-5"
           >
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4 text-emerald-600" />
@@ -198,7 +198,7 @@ const ShopSettings = () => {
               { key: "orderAlerts", label: "Order Alerts", desc: "New order notifications" },
               { key: "lowStockAlerts", label: "Low Stock Alerts", desc: "When products run low" },
             ].map((item) => (
-              <div key={item.key} className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 p-2.5">
+              <div key={item.key} className="flex items-center justify-between gap-3 rounded-md bg-gray-50 p-2.5">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-gray-900">{item.label}</p>
                   <p className="truncate text-xs text-gray-500">{item.desc}</p>
@@ -212,13 +212,13 @@ const ShopSettings = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
-            className="h-full space-y-3 rounded-2xl border border-rose-200 bg-white p-4 shadow-sm sm:p-5"
+            className="h-full space-y-3 rounded-lg border border-rose-200 bg-white p-4 shadow-sm sm:p-5"
           >
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-rose-500" />
               <h3 className="text-sm font-bold text-rose-600">Shop Status</h3>
             </div>
-            <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 p-2.5">
+            <div className="flex items-center justify-between gap-3 rounded-md bg-gray-50 p-2.5">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Pause Shop</p>
                 <p className="text-xs text-gray-500">Temporarily hide your shop from customers</p>
@@ -226,7 +226,7 @@ const ShopSettings = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShop({ isOpen: !shop.isOpen })}
-                className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
+                className={`rounded-md border px-4 py-2 text-sm font-semibold transition-all ${
                   shop.isOpen
                     ? "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
                     : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
@@ -235,7 +235,7 @@ const ShopSettings = () => {
                 {shop.isOpen ? "Pause" : "Resume"}
               </motion.button>
             </div>
-            <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+            <div className="flex items-center gap-3 rounded-md bg-gray-50 p-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                 <Truck className="h-4 w-4" />
               </div>

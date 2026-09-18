@@ -125,7 +125,7 @@ const Addresses = () => {
   };
 
   const inputClass = (field) =>
-    `w-full bg-gray-50 border rounded-xl py-2.5 pl-10 pr-4 text-sm outline-none transition-all focus:bg-white focus:ring-2 ${
+    `w-full bg-gray-50 border rounded-md py-2.5 pl-10 pr-4 text-sm outline-none transition-all focus:bg-white focus:ring-2 ${
       errors[field]
         ? "border-rose-300 focus:border-rose-400 focus:ring-rose-50"
         : "border-gray-200 focus:border-emerald-400 focus:ring-emerald-50"
@@ -141,7 +141,7 @@ const Addresses = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setShowForm(true)}
-                  className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Add Address
@@ -154,7 +154,7 @@ const Addresses = () => {
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowForm(true)}
-              className="sm:hidden w-full mb-5 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20"
+              className="sm:hidden w-full mb-5 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20"
             >
               <Plus className="w-4 h-4" />
               Add New Address
@@ -170,7 +170,7 @@ const Addresses = () => {
                 exit={{ opacity: 0, y: -16 }}
                 transition={{ duration: 0.25 }}
                 onSubmit={handleSubmit}
-                className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-6 shadow-lg shadow-emerald-900/5 mb-6"
+                className="bg-white border border-gray-100 rounded-lg p-5 sm:p-6 shadow-lg shadow-emerald-900/5 mb-6"
               >
                 <div className="flex items-center justify-between mb-5">
                   <h2 className="text-base font-bold text-gray-900">
@@ -196,7 +196,7 @@ const Addresses = () => {
                         key={type}
                         type="button"
                         onClick={() => setForm((p) => ({ ...p, type }))}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-all border ${
                           active
                             ? `${cfg.activeBg} border-transparent shadow-sm`
                             : "border-gray-200 text-gray-500 bg-gray-50 hover:bg-gray-100"
@@ -280,7 +280,7 @@ const Addresses = () => {
                   <motion.button
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    className="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                    className="flex-1 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
                   >
                     <Check className="w-4 h-4" />
                     {editingIndex !== null ? "Update" : "Save Address"}
@@ -288,7 +288,7 @@ const Addresses = () => {
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="px-5 py-3 border border-gray-200 rounded-xl font-semibold text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                    className="px-5 py-3 border border-gray-200 rounded-md font-semibold text-sm text-gray-600 hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
@@ -316,7 +316,7 @@ const Addresses = () => {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowForm(true)}
-                className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+                className="bg-emerald-600 text-white px-5 py-2.5 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
               >
                 Add Address
               </motion.button>
@@ -336,7 +336,7 @@ const Addresses = () => {
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className={`relative bg-white rounded-2xl border p-5 transition-all duration-300 ${
+                      className={`relative bg-white rounded-lg border p-5 transition-all duration-300 ${
                         isDefault
                           ? "border-emerald-200 shadow-lg shadow-emerald-900/5"
                           : "border-gray-100 hover:border-gray-200 hover:shadow-md"
@@ -351,7 +351,7 @@ const Addresses = () => {
 
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-3.5">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${cfg.color}`}>
+                          <div className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 border ${cfg.color}`}>
                             <TypeIcon className="w-4.5 h-4.5" />
                           </div>
                           <div className="space-y-0.5">

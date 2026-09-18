@@ -26,9 +26,9 @@ export default function DeliveryHistory() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by order ID, shop, or customer..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by order ID, shop, or customer..." className="w-full pl-10 pr-4 py-2.5 rounded-md border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
         </div>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-4 py-2.5 rounded-md border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
           <option value="all">All Status</option>
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
@@ -36,17 +36,17 @@ export default function DeliveryHistory() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 bg-white rounded-2xl border border-gray-100">
+        <div className="flex flex-col items-center justify-center py-12 bg-white rounded-lg border border-gray-100">
           <Package className="w-12 h-12 text-gray-300 mb-3" />
           <p className="text-sm font-semibold text-gray-500">No deliveries found</p>
         </div>
       ) : (
         <div className="space-y-3">
           {filtered.map((d) => (
-            <motion.div key={d.id} whileHover={{ y: -1 }} className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm cursor-pointer" onClick={() => navigate(`/delivery/order/${d.id}`)}>
+            <motion.div key={d.id} whileHover={{ y: -1 }} className="bg-white rounded-md border border-gray-100 p-4 shadow-sm cursor-pointer" onClick={() => navigate(`/delivery/order/${d.id}`)}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                  <div className="w-10 h-10 rounded-md bg-emerald-100 flex items-center justify-center text-emerald-600">
                     <Package className="w-5 h-5" />
                   </div>
                   <div>

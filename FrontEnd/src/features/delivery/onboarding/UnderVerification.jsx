@@ -23,7 +23,7 @@ export default function UnderVerification() {
           transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.2 }}
           className="mx-auto"
         >
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] flex items-center justify-center mx-auto shadow-lg shadow-[#1B4332]/20">
+          <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] flex items-center justify-center mx-auto shadow-lg shadow-[#1B4332]/20">
             <Clock className="w-8 h-8 text-white" />
           </div>
         </motion.div>
@@ -43,7 +43,7 @@ export default function UnderVerification() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex items-start gap-3 text-left p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-xl"
+          className="flex items-start gap-3 text-left p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-md"
         >
           <CheckCircle className="w-4 h-4 text-[#1B4332] shrink-0 mt-0.5" />
           <p className="text-sm text-[#334155] leading-relaxed">
@@ -56,7 +56,7 @@ export default function UnderVerification() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleOpenDashboard}
-          className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
+          className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
         >
           <LayoutDashboard className="w-4 h-4" />
           Open Demo Dashboard

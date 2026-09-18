@@ -28,7 +28,7 @@ const CategoryCard = ({ category, onClick }) => {
         )}
       </div>
       <div className="flex items-center gap-3 p-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+        <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)]">
           <Icon className="h-5 w-5" />
         </span>
         <p className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">

@@ -86,7 +86,7 @@ export default function ProductDetails() {
           <p className="text-gray-500 mt-2">The product you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate("/admin/products")}
-            className="mt-6 px-4 py-2 bg-[#155c43] text-white rounded-xl text-sm font-semibold hover:bg-[#114a36] transition-colors"
+            className="mt-6 px-4 py-2 bg-[#155c43] text-white rounded-md text-sm font-semibold hover:bg-[#114a36] transition-colors"
           >
             Back to Products
           </button>
@@ -109,7 +109,7 @@ export default function ProductDetails() {
         >
           <button
             onClick={() => navigate("/admin/products")}
-            className="p-2 rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors self-start"
+            className="p-2 rounded-md bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors self-start"
           >
             <ArrowLeft size={20} />
           </button>
@@ -132,7 +132,7 @@ export default function ProductDetails() {
             {product.status === "active" ? (
               <button
                 onClick={handleAction}
-                className="flex items-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-600 rounded-xl text-sm font-semibold hover:bg-rose-100 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-600 rounded-md text-sm font-semibold hover:bg-rose-100 transition-colors"
               >
                 <Ban size={16} />
                 Disable Product
@@ -140,7 +140,7 @@ export default function ProductDetails() {
             ) : (
               <button
                 onClick={handleAction}
-                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-semibold hover:bg-emerald-100 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-600 rounded-md text-sm font-semibold hover:bg-emerald-100 transition-colors"
               >
                 <CheckCircle size={16} />
                 Enable Product
@@ -167,14 +167,14 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-5"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
                   <p className="mt-2 text-2xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
                 </div>
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <div className={`w-12 h-12 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
                   <stat.icon className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -190,9 +190,9 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
-              <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl flex items-center justify-center">
+              <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-gray-100 to-gray-50 rounded-md flex items-center justify-center">
                 <div className="text-center">
                   <Package className="w-16 h-16 text-gray-300 mx-auto mb-3" />
                   <p className="text-sm text-gray-400 font-medium">Product Image</p>
@@ -206,7 +206,7 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-5" style={{ color: "#14261f" }}>
                 Product Information
@@ -220,7 +220,7 @@ export default function ProductDetails() {
                   { icon: Box, label: "Stock", value: stock },
                   { icon: Hash, label: "Product ID", value: product.id },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
+                  <div key={item.label} className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
                     <item.icon size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-xs text-gray-400 font-medium">{item.label}</p>
@@ -230,7 +230,7 @@ export default function ProductDetails() {
                 ))}
               </div>
               {product.description && (
-                <div className="mt-4 p-4 rounded-xl bg-gray-50">
+                <div className="mt-4 p-4 rounded-md bg-gray-50">
                   <p className="text-xs text-gray-400 font-medium mb-1">Description</p>
                   <p className="text-sm text-gray-600">{product.description}</p>
                 </div>
@@ -242,7 +242,7 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
             >
               <div className="p-6 pb-0">
                 <h3 className="text-lg font-bold" style={{ color: "#14261f" }}>
@@ -308,17 +308,17 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Shop
               </h3>
               {shop ? (
                 <div
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => navigate(`/admin/shops/${shop.id}`)}
                 >
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
+                  <div className="w-11 h-11 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
                     {shop.name?.charAt(0)}
                   </div>
                   <div className="flex-1">
@@ -328,7 +328,7 @@ export default function ProductDetails() {
                   <ExternalLink size={14} className="text-gray-400" />
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-gray-50">
+                <div className="p-3 rounded-md bg-gray-50">
                   <p className="text-sm text-gray-500">{product.shopId || "—"}</p>
                 </div>
               )}
@@ -339,32 +339,32 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-6"
             >
               <h3 className="text-lg font-bold mb-4" style={{ color: "#14261f" }}>
                 Performance
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Total Orders</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>{productOrders.length}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Delivered</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>{deliveredOrders.length}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Revenue</span>
                   <span className="text-sm font-semibold text-[#155c43]">{formatCurrency(totalRevenue)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Avg Rating</span>
                   <div className="flex items-center gap-1">
                     {avgRating !== "—" && <Star size={14} className="text-amber-400 fill-amber-400" />}
                     <span className="text-sm font-semibold" style={{ color: "#14261f" }}>{avgRating}</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Current Stock</span>
                   <span className={`text-sm font-semibold ${stock > 0 ? "text-emerald-600" : "text-rose-600"}`}>
                     {stock} units
@@ -378,7 +378,7 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className={`rounded-2xl border p-6 ${
+              className={`rounded-lg border p-6 ${
                 stock > 0
                   ? "bg-emerald-50 border-emerald-200"
                   : "bg-rose-50 border-rose-200"
@@ -418,12 +418,12 @@ export default function ProductDetails() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full"
+                className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    className={`w-12 h-12 rounded-md flex items-center justify-center ${
                       product.status === "active"
                         ? "bg-rose-100 text-rose-600"
                         : "bg-emerald-100 text-emerald-600"
@@ -449,13 +449,13 @@ export default function ProductDetails() {
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setConfirmModal(null)}
-                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmAction}
-                    className={`px-4 py-2 text-sm font-semibold text-white rounded-xl transition-colors ${
+                    className={`px-4 py-2 text-sm font-semibold text-white rounded-md transition-colors ${
                       product.status === "active"
                         ? "bg-rose-600 hover:bg-rose-700"
                         : "bg-emerald-600 hover:bg-emerald-700"

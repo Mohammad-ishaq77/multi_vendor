@@ -34,7 +34,7 @@ const ShopDetails = () => {
           </h2>
           <Link
             to="/customer/shops"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors mt-4"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1B4332] text-white text-sm font-semibold rounded-md hover:bg-[#143728] transition-colors mt-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Browse Shops
@@ -69,7 +69,7 @@ const ShopDetails = () => {
         >
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Shop Image */}
-            <div className="w-full sm:w-40 h-40 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div className="w-full sm:w-40 h-40 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
               <Store className="w-14 h-14 text-[#1B4332]/30" />
             </div>
 
