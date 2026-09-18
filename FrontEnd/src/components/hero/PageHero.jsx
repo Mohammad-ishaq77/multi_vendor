@@ -17,7 +17,7 @@ const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => 
 
   if (variant === "split") {
     return (
-      <h1 className="hero-title-rise font-display text-4xl font-bold leading-[1.08] tracking-tight text-[var(--color-text)] sm:text-6xl lg:text-[4.5rem]">
+      <h1 className="hero-title-rise font-display text-4xl font-bold leading-[1.08] tracking-tight text-[var(--color-text)] sm:text-5xl lg:text-[3.6rem]">
         <span className="block">{title}</span>
         {titleMid && <span className="block">{titleMid}</span>}
         {highlight && (
@@ -31,7 +31,7 @@ const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => 
 
   if (variant === "mosaic") {
     return (
-      <h1 className="hero-title-rise font-display text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-5xl">
+      <h1 className="hero-title-rise font-display text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.25rem]">
         <span className="block">{title}</span>
         {highlight && <span className="mt-1 block text-[var(--color-green-soft)]">{highlight}</span>}
       </h1>
@@ -40,7 +40,7 @@ const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => 
 
   return (
     <h1
-      className={`hero-title-rise font-display text-[2.15rem] font-bold leading-[1.15] tracking-tight text-white sm:text-[2.75rem] lg:text-[3.25rem] ${
+      className={`hero-title-rise font-display text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl lg:text-[2.85rem] ${
         centered ? "mx-auto w-full text-center text-balance" : ""
       }`}
     >
@@ -84,7 +84,7 @@ const HoursBadge = () => {
 };
 
 const OverlaySearch = ({ placeholder }) => (
-  <div className="mt-4 w-full max-w-2xl">
+  <div className="mt-3 w-full max-w-2xl">
     <MarketplaceSearch variant="hero" placeholder={placeholder} />
   </div>
 );
@@ -93,7 +93,7 @@ const Actions = ({ primaryTo, primaryLabel, secondaryTo, secondaryLabel, onGreen
   if (!primaryTo && !secondaryTo) return null;
 
   return (
-    <div className={`mt-4 flex flex-wrap items-center gap-3 ${centered ? "justify-center" : ""}`}>
+    <div className={`mt-3 flex flex-wrap items-center gap-2.5 ${centered ? "justify-center" : ""}`}>
       {primaryTo && (
         <Link to={primaryTo} className={onGreen ? "btn-on-green" : "btn-primary"}>
           {primaryLabel}
@@ -118,34 +118,6 @@ const Actions = ({ primaryTo, primaryLabel, secondaryTo, secondaryLabel, onGreen
   );
 };
 
-const Stats = ({ stats, light, centered, plain }) => {
-  if (!stats?.length) return null;
-
-  return (
-    <div className={`mt-5 grid max-w-3xl grid-cols-3 gap-2 sm:gap-3 ${centered ? "mx-auto w-full" : ""}`}>
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className={`rounded-2xl px-3 py-2.5 text-center ${
-            light
-              ? "border border-[var(--color-green-soft)] bg-white"
-              : plain
-                ? "border border-white/40 bg-black/30"
-                : "border border-white/15 bg-white/10 backdrop-blur-md"
-          }`}
-        >
-          <p className={`font-display text-lg font-bold sm:text-xl ${light ? "text-[var(--color-primary-dark)]" : "text-white"}`}>
-            {stat.value}
-          </p>
-          <p className={`mt-0.5 text-[10px] font-semibold uppercase tracking-wide ${light ? "text-[var(--color-text-muted)]" : "text-white/75"}`}>
-            {stat.label}
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const PageHero = ({
   variant = "overlay",
   eyebrow,
@@ -156,7 +128,6 @@ const PageHero = ({
   rotating,
   image,
   mosaic = [],
-  stats,
   primaryTo,
   primaryLabel,
   secondaryTo,
@@ -187,7 +158,7 @@ const PageHero = ({
             <motion.h1
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-2 font-display text-2xl font-bold text-white sm:text-3xl"
+              className="mt-2 font-display text-3xl font-bold text-white sm:text-4xl"
             >
               {title} {highlight && <span className="text-[var(--color-green-soft)]">{highlight}</span>}
             </motion.h1>
@@ -207,15 +178,15 @@ const PageHero = ({
 
   if (variant === "split") {
     return (
-      <section className="overflow-hidden bg-[var(--color-surface-tint)]">
-        <div className="container-app grid items-center gap-8 py-10 lg:grid-cols-2 lg:gap-14 lg:py-14">
+      <section className="hero-shell flex items-center overflow-hidden bg-[var(--color-surface-tint)]">
+        <div className="container-app grid h-full items-center gap-6 py-5 lg:grid-cols-2 lg:gap-10">
           <div>
             {eyebrow && (
               <motion.span initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="badge-soft">
                 {eyebrow}
               </motion.span>
             )}
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-4">
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-3">
               {rotating?.length ? (
                 <RotatingHeroTitle titleLine={titleLine} rotating={rotating} />
               ) : (
@@ -228,16 +199,15 @@ const PageHero = ({
               secondaryTo={secondaryTo}
               secondaryLabel={secondaryLabel}
             />
-            <Stats stats={stats} light />
           </div>
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="relative"
+            className="relative hidden h-full max-h-[56vh] pt-10 lg:block"
           >
-            <div className="card-shine overflow-hidden rounded-[28px] shadow-[0_30px_60px_-28px_rgba(6,78,59,0.45)]">
-              <img src={image} alt="" className="hero-ken-burns h-[280px] w-full object-cover sm:h-[380px]" />
+            <div className="card-shine h-full overflow-hidden rounded-xl shadow-[0_30px_60px_-28px_rgba(6,78,59,0.45)]">
+              <img src={image} alt="" className="hero-ken-burns h-full min-h-[220px] w-full object-cover sm:min-h-[280px]" />
             </div>
             {mosaic[0] && (
               <motion.img
@@ -246,7 +216,7 @@ const PageHero = ({
                 transition={{ delay: 0.35 }}
                 src={mosaic[0]}
                 alt=""
-                className="absolute -bottom-6 -left-4 hidden h-28 w-36 rounded-2xl border-4 border-white object-cover shadow-xl sm:block"
+                className="absolute -bottom-5 -left-5 hidden h-24 w-32 rounded-lg border-4 border-white object-cover shadow-xl sm:block"
               />
             )}
           </motion.div>
@@ -259,13 +229,13 @@ const PageHero = ({
     const frames = mosaic.length ? mosaic : [image, image, image];
 
     return (
-      <section className="on-green relative overflow-hidden bg-[var(--color-primary-dark)]">
-        <div className="container-app grid items-center gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
+      <section className="hero-shell on-green relative flex items-center overflow-hidden bg-[var(--color-primary-dark)]">
+        <div className="container-app grid h-full items-center gap-6 py-5 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             {eyebrow && (
               <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">{eyebrow}</span>
             )}
-            <div className="mt-3">
+            <div className="mt-2">
               <TitleBlock title={title} titleMid={titleMid} highlight={highlight} variant="mosaic" />
             </div>
             <Actions
@@ -275,15 +245,14 @@ const PageHero = ({
               secondaryLabel={secondaryLabel}
               onGreen
             />
-            <Stats stats={stats} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="hidden h-full max-h-[56vh] grid-cols-2 gap-3 pt-10 lg:grid">
             <motion.img
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               src={frames[0]}
               alt=""
-              className="h-56 w-full rounded-[24px] object-cover sm:h-72"
+              className="h-full max-h-[52vh] w-full rounded-xl object-cover"
             />
             <div className="grid gap-3">
               <motion.img
@@ -292,7 +261,7 @@ const PageHero = ({
                 transition={{ delay: 0.12 }}
                 src={frames[1] || frames[0]}
                 alt=""
-                className="h-[7.25rem] w-full rounded-[20px] object-cover sm:h-32"
+                className="h-full max-h-[25vh] w-full rounded-lg object-cover"
               />
               <motion.img
                 initial={{ opacity: 0, y: 18 }}
@@ -300,7 +269,7 @@ const PageHero = ({
                 transition={{ delay: 0.2 }}
                 src={frames[2] || frames[0]}
                 alt=""
-                className="h-[7.25rem] w-full rounded-[20px] object-cover sm:h-36"
+                className="h-full max-h-[25vh] w-full rounded-lg object-cover"
               />
             </div>
           </div>
@@ -312,9 +281,7 @@ const PageHero = ({
   const rich = Boolean(searchPlaceholder || chips.length || quickActions.length || liveLabel || showHours);
 
   return (
-    <section className={`on-green relative isolate flex items-center justify-center overflow-hidden ${
-      rich ? "min-h-[320px] sm:min-h-[360px] lg:min-h-[380px]" : "min-h-[420px] sm:min-h-[500px] lg:min-h-[540px]"
-    }`}>
+    <section className="hero-shell on-green relative isolate flex items-center justify-center overflow-hidden">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute -inset-[12%] h-[124%] w-[124%]"
@@ -331,14 +298,14 @@ const PageHero = ({
       <div className="pointer-events-none absolute inset-0 bg-black/25" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.38)_100%)]" />
       <div className={`relative z-10 mx-auto flex w-full justify-center px-4 sm:px-6 ${
-        rich ? "max-w-6xl py-8 lg:py-10" : "max-w-[720px] py-16 lg:py-20"
+        rich ? "max-w-6xl py-5 lg:py-6" : "max-w-[720px] py-6 lg:py-8"
       }`}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className={`flex w-full flex-col items-center text-center [text-shadow:0_2px_18px_rgba(0,0,0,0.45)] ${
-            rich ? "px-1 py-4 sm:px-2" : "px-1 py-6"
+            rich ? "px-1 py-2 sm:px-2" : "px-1 py-3"
           }`}
         >
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -362,7 +329,7 @@ const PageHero = ({
             )}
           </div>
 
-          <h1 className="hero-title-rise mx-auto mt-3 w-full max-w-5xl text-balance text-center font-display text-[1.75rem] font-bold leading-[1.15] tracking-tight text-white sm:text-[2.15rem] lg:text-[2.55rem]">
+          <h1 className="hero-title-rise mx-auto mt-2.5 w-full max-w-5xl text-balance text-center font-display text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl lg:text-[2.75rem]">
             {title}
           {highlight && (
             <>
@@ -375,7 +342,7 @@ const PageHero = ({
           {searchPlaceholder && <OverlaySearch placeholder={searchPlaceholder} />}
 
           {chips.length > 0 && (
-            <div className="mt-4 flex w-full max-w-5xl flex-wrap items-center justify-center gap-2">
+            <div className="mt-3 flex w-full max-w-5xl flex-wrap items-center justify-center gap-2">
               {chips.map((chip) => {
                 const ChipIcon = ACTION_ICONS[chip.icon] || null;
                 const className =
@@ -408,11 +375,11 @@ const PageHero = ({
           )}
 
           {quickActions.length > 0 && (
-            <div className="mt-4 grid w-full max-w-5xl gap-2 sm:grid-cols-3">
+            <div className="mt-3 grid w-full max-w-5xl gap-2 sm:grid-cols-3">
               {quickActions.map((action) => {
                 const Icon = ACTION_ICONS[action.icon] || Mail;
                 const className =
-                  "group flex items-center gap-3 rounded-2xl border border-white/50 bg-black/35 px-4 py-3 text-left hover:bg-black/50";
+                  "group flex items-center gap-3 rounded-2xl border border-white/50 bg-black/35 px-4 py-2.5 text-left hover:bg-black/50";
                 const inner = (
                   <>
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/12 text-[var(--color-green-soft)] group-hover:bg-white/20">
@@ -450,7 +417,6 @@ const PageHero = ({
             onGreen
             centered
           />
-          <Stats stats={stats} centered plain />
         </motion.div>
       </div>
     </section>

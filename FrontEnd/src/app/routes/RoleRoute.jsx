@@ -1,13 +1,12 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { getDashboardPath } from "../../config/roles";
 
 const RoleRoute = ({ children, allowedRoles, allowedRole }) => {
-  const location = useLocation();
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated || !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" replace />;
   }
 
   const roles = allowedRoles || (allowedRole ? [allowedRole] : []);

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoutConfirmModal from "../components/common/LogoutConfirmModal";
-import { logoutAndRedirect } from "../services/authService";
+import authService from "../services/authService";
 
 const LogoutContext = createContext(null);
 
@@ -13,7 +13,8 @@ export const LogoutProvider = ({ children }) => {
   const cancelLogout = useCallback(() => setOpen(false), []);
   const confirmLogout = useCallback(() => {
     setOpen(false);
-    logoutAndRedirect(navigate);
+    navigate("/", { replace: true });
+    authService.logout();
   }, [navigate]);
 
   return (

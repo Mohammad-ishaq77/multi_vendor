@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -9,7 +9,6 @@ import {
   LogOut,
   Menu,
   Phone,
-  ShoppingCart,
   Store,
   X,
 } from "lucide-react";
@@ -17,7 +16,6 @@ import BrandLogo from "../components/common/BrandLogo";
 import MarketplaceSearch from "../components/common/MarketplaceSearch";
 import { publicNav } from "../config/navigation";
 import { useAuth } from "../hooks/useAuth";
-import { useCart } from "../features/customer/context/CartContext";
 import { getDashboardPath } from "../config/roles";
 import { useLogoutConfirm } from "../context/LogoutContext";
 
@@ -31,23 +29,37 @@ const NAV_ICONS = {
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const lastY = useRef(0);
   const location = useLocation();
   const { isAuthenticated, user, dashboardPath } = useAuth();
-  const { cartCount } = useCart();
   const { requestLogout } = useLogoutConfirm();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY.current;
+      setScrolled(y > 8);
+      if (mobileOpen || y < 16) {
+        setHidden(false);
+      } else if (delta > 6) {
+        setHidden(true);
+      } else if (delta < -6) {
+        setHidden(false);
+      }
+      lastY.current = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [mobileOpen]);
 
   useEffect(() => {
     setMobileOpen(false);
+    setHidden(false);
+    lastY.current = 0;
   }, [location.pathname, location.search]);
 
-  const cartPath = isAuthenticated && user?.role === "customer" ? "/customer/cart" : "/login";
   const accountPath = isAuthenticated ? dashboardPath || getDashboardPath(user?.role) : "/login";
 
   const isNavActive = (to) => {
@@ -57,7 +69,11 @@ const Navbar = () => {
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 ${scrolled ? "shadow-[var(--shadow-card)]" : ""}`}>
-      <div className="hidden bg-[var(--color-primary-dark)] md:block">
+      <div
+        className={`hidden overflow-hidden bg-[var(--color-primary-dark)] transition-[max-height] duration-300 ease-out md:block ${
+          hidden ? "max-h-0" : "max-h-9"
+        }`}
+      >
         <div className="container-app flex h-8 items-center justify-between gap-3 sm:h-9">
           <Link to="/" className="flex min-w-0 shrink-0 flex-col leading-none">
             <span className="text-[11px] font-bold tracking-tight text-white sm:text-xs">NearMart</span>
@@ -91,36 +107,23 @@ const Navbar = () => {
           </div>
 
           <div className="ml-auto hidden items-center gap-2 lg:flex">
-            <Link
-              to={cartPath}
-              aria-label="Open cart"
-              className="relative rounded-full p-2 text-[var(--color-text)] hover:bg-[var(--color-green-bg)]"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-[10px] font-bold text-white">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-
             {isAuthenticated ? (
               <>
-                <Link to={accountPath} className="btn-secondary !min-h-9 !rounded-full !px-4 !text-sm">
-                  <LayoutDashboard className="h-4 w-4" />
+                <Link to={accountPath} className="btn-secondary !min-h-7 !rounded-lg !px-4 !py-1 !text-sm">
+                  <LayoutDashboard className="h-3.5 w-3.5" />
                   View Dashboard
                 </Link>
-                <button type="button" className="btn-primary !min-h-9 !rounded-full !px-4 !text-sm" onClick={requestLogout}>
-                  <LogOut className="h-4 w-4" />
+                <button type="button" className="btn-primary !min-h-7 !rounded-lg !px-4 !py-1 !text-sm" onClick={requestLogout}>
+                  <LogOut className="h-3.5 w-3.5" />
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn-secondary !min-h-9 !rounded-full !px-4 !text-sm">
+                <Link to="/login" className="btn-secondary btn-green-border !min-h-7 !rounded-lg !px-4 !py-1 !text-sm">
                   Login
                 </Link>
-                <Link to="/register" className="btn-primary !min-h-9 !rounded-full !px-4 !text-sm">
+                <Link to="/register" className="btn-primary !min-h-7 !rounded-lg !px-4 !py-1 !text-sm">
                   Register
                 </Link>
               </>
@@ -128,14 +131,6 @@ const Navbar = () => {
           </div>
 
           <div className="ml-auto flex items-center gap-1 lg:hidden">
-            <Link to={cartPath} aria-label="Open cart" className="relative rounded-full p-2 text-[var(--color-text)]">
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-primary)] text-[9px] font-bold text-white">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
             <button
               type="button"
               className="rounded-full p-2 text-[var(--color-text)] hover:bg-[var(--color-green-bg)]"

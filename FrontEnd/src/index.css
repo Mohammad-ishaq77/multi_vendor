@@ -286,6 +286,11 @@
     color: var(--color-primary-dark);
   }
 
+  .hero-shell {
+    height: 65vh;
+    min-height: 360px;
+  }
+
   .site-header-offset {
     height: 60px;
   }

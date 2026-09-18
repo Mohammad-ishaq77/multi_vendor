@@ -47,6 +47,7 @@ const Register = () => {
   const [otpError, setOtpError] = useState("");
   const [otpSuccess, setOtpSuccess] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(true);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -114,6 +115,7 @@ const Register = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) return;
     if (formData.password !== formData.confirmPassword) return;
+    if (!agreedTerms) return;
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -534,20 +536,15 @@ const Register = () => {
                                   : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-md"
                               }`}
                             >
-                              {/* Check Badge */}
-                              <AnimatePresence>
-                                {isActive && (
-                                  <motion.div
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0, opacity: 0 }}
-                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-600 rounded-full flex items-center justify-center shadow-sm"
-                                  >
-                                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
+                              {isActive && (
+                                <input
+                                  type="checkbox"
+                                  checked
+                                  readOnly
+                                  tabIndex={-1}
+                                  className="pointer-events-none absolute -top-1.5 -right-1.5 h-4 w-4 rounded border-[#dce8e2] accent-[var(--color-primary)]"
+                                />
+                              )}
 
                               <div
                                 className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-all duration-300 ${
@@ -575,31 +572,25 @@ const Register = () => {
                     </motion.div>
 
                     {/* Terms */}
-                    <motion.div variants={itemVariants} className="flex items-start gap-2.5">
-                      <div className="relative mt-0.5">
+                    <motion.div variants={itemVariants} className="flex items-center">
+                      <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
                         <input
                           type="checkbox"
-                          defaultChecked
-                          className="peer h-[18px] w-[18px] cursor-pointer appearance-none rounded-lg border-2 border-slate-200 checked:bg-emerald-600 checked:border-emerald-600 transition-all duration-200"
+                          checked={agreedTerms}
+                          onChange={(e) => setAgreedTerms(e.target.checked)}
+                          className="h-4 w-4 rounded border-[#dce8e2] accent-[var(--color-primary)]"
                         />
-                        <svg
-                          className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
-                          viewBox="0 0 14 14"
-                          fill="none"
-                        >
-                          <path d="M2 7L5.5 10.5L12 3.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </div>
-                      <span className="text-[0.75rem] text-slate-500 leading-relaxed">
-                        I agree to NearMart's{" "}
-                        <a href="#" className="text-emerald-600 font-semibold hover:underline">
-                          Terms
-                        </a>{" "}
-                        and{" "}
-                        <a href="#" className="text-emerald-600 font-semibold hover:underline">
-                          Privacy Policy
-                        </a>
-                      </span>
+                        <span>
+                          I agree to NearMart's{" "}
+                          <a href="#" className="font-semibold text-[var(--color-primary)] hover:underline">
+                            Terms
+                          </a>{" "}
+                          and{" "}
+                          <a href="#" className="font-semibold text-[var(--color-primary)] hover:underline">
+                            Privacy Policy
+                          </a>
+                        </span>
+                      </label>
                     </motion.div>
 
                     {/* Submit Button */}
@@ -608,7 +599,7 @@ const Register = () => {
                         whileHover={{ scale: 1.015, boxShadow: "0 24px 48px -12px rgba(5, 150, 105, 0.35)" }}
                         whileTap={{ scale: 0.985 }}
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isLoading || !agreedTerms}
                         className="relative flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 py-4 text-[0.9rem] font-semibold text-white shadow-lg shadow-emerald-600/25 transition-all duration-300 hover:from-emerald-700 hover:via-emerald-700 hover:to-teal-700 disabled:opacity-70 overflow-hidden"
                       >
                         {isLoading ? (

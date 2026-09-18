@@ -25,7 +25,7 @@ const RotatingHeroTitle = ({
   return (
     <>
       <h1
-        className={`mt-5 font-display text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl lg:text-[4.5rem] ${
+        className={`mt-3 font-display text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.6rem] ${
           dark ? "text-white" : "text-[var(--color-text)]"
         }`}
       >
@@ -37,7 +37,7 @@ const RotatingHeroTitle = ({
         <span className="relative mt-2 inline-grid justify-items-center lg:justify-items-start">
           <span
             aria-hidden
-            className="invisible col-start-1 row-start-1 text-[1.22em] font-extrabold tracking-tight sm:text-[1.26em]"
+            className="invisible col-start-1 row-start-1 text-[1.2em] font-extrabold tracking-tight sm:text-[1.24em]"
           >
             {`${[...rotating].sort((a, b) => b.length - a.length)[0].replace(/\.$/, "")}.`}
           </span>
@@ -57,7 +57,7 @@ const RotatingHeroTitle = ({
               whileTap={{ opacity: 0.75 }}
               transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               aria-label={`${currentWord} Click to see the next title`}
-              className={`hero-rotating-word col-start-1 row-start-1 w-max justify-self-center text-[1.22em] sm:text-[1.26em] lg:justify-self-start ${
+              className={`hero-rotating-word col-start-1 row-start-1 w-max justify-self-center text-[1.2em] sm:text-[1.24em] lg:justify-self-start ${
                 dark ? "text-[var(--color-green-soft)]" : "text-[var(--color-primary)]"
               }`}
             >

@@ -50,7 +50,6 @@ const MarketplaceCategoryPage = () => {
         description={category.intro || category.story}
         image={category.cover}
         mosaic={related.slice(0, 3).map((item) => item.cover).filter(Boolean)}
-        stats={category.stats}
         primaryTo="/marketplace"
         primaryLabel="All shops"
         secondaryTo="/categories"

@@ -133,8 +133,8 @@ export const authService = {
 };
 
 export const logoutAndRedirect = (navigate) => {
+  navigate("/", { replace: true });
   authService.logout();
-  navigate("/login", { replace: true });
 };
 
 export default authService;

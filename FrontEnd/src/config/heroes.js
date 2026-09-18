@@ -18,11 +18,6 @@ export const pageHeroes = {
       HD("photo-1441984904996-e0b6ba687e04", "w=800&q=85"),
       HD("photo-1519389950473-47ba0277781c", "w=800&q=85"),
     ],
-    stats: [
-      { value: "8", label: "Aisles" },
-      { value: "50+", label: "Shops" },
-      { value: "2k+", label: "Products" },
-    ],
     primaryTo: "/marketplace",
     primaryLabel: "Open marketplace",
     secondaryTo: "/register",
@@ -47,11 +42,6 @@ export const pageHeroes = {
       { label: "Beauty", to: "/marketplace/beauty" },
       { label: "Dairy & bakery", to: "/marketplace/dairy-bakery" },
       { label: "Beverages", to: "/marketplace/beverages" },
-    ],
-    stats: [
-      { value: "25m", label: "Avg delivery" },
-      { value: "4.6", label: "Shop rating" },
-      { value: "24/7", label: "Browse" },
     ],
     primaryTo: "/categories",
     primaryLabel: "Browse aisles",
@@ -81,11 +71,6 @@ export const pageHeroes = {
       HD("photo-1556740749-887f6717d7e4", "w=800&q=85"),
       HD("photo-1578916171728-46686eac8d58", "w=800&q=85"),
     ],
-    stats: [
-      { value: "50+", label: "Local shops" },
-      { value: "4 roles", label: "One platform" },
-      { value: "Same day", label: "Delivery" },
-    ],
     primaryTo: "/marketplace",
     primaryLabel: "Start shopping",
     secondaryTo: "/contact",
@@ -112,11 +97,6 @@ export const pageHeroes = {
       { label: "Partnerships", href: "#contact-form" },
       { label: "Visit Srinagar HQ", icon: "pin", href: "#contact-form" },
     ],
-    stats: [
-      { value: "9–8", label: "Mon–Sat" },
-      { value: "< 1 day", label: "Reply time" },
-      { value: "JK", label: "Based in Srinagar" },
-    ],
   },
 };
 
@@ -127,11 +107,6 @@ export const homeHero = {
   description:
     "Groceries, fashion, electronics, beauty and pharmacy from the shops you already know. Compare prices, checkout once, and get it at your door the same day.",
   image: HD("photo-1542838132-92c53300491e"),
-  stats: [
-    { value: "50+", label: "Trusted local shops" },
-    { value: "25 min", label: "Average delivery" },
-    { value: "2,000+", label: "Everyday products" },
-  ],
 };
 
 export const aboutHero = {
@@ -140,11 +115,6 @@ export const aboutHero = {
   rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
   description:
     "NearMart connects customers with trusted shopkeepers and delivery partners in their neighborhood — simple, reliable and built for the street around you.",
-  stats: [
-    { value: "50+", label: "Local shops" },
-    { value: "4 roles", label: "One platform" },
-    { value: "Same day", label: "Delivery" },
-  ],
 };
 
 export const homeFloatCards = [

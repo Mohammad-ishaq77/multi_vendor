@@ -107,7 +107,7 @@ const MarketplaceSearch = ({
           className={
             hero
               ? "btn-on-green absolute right-1.5 top-1/2 !min-h-9 -translate-y-1/2 !rounded-xl !px-3.5 !text-sm"
-              : "absolute right-1 top-1/2 inline-flex h-8 -translate-y-1/2 items-center rounded-full bg-[var(--color-primary)] px-3.5 text-xs font-semibold text-white hover:bg-[var(--color-primary-dark)]"
+              : "absolute right-1 top-1/2 inline-flex h-7 -translate-y-1/2 items-center rounded-lg bg-[var(--color-primary)] px-3 text-xs font-semibold text-white hover:bg-[var(--color-primary-dark)]"
           }
         >
           Search
