@@ -5,8 +5,11 @@ export const pageHeroes = {
   categories: {
     variant: "split",
     eyebrow: "Eight local aisles",
-    title: "Shop every",
+    title: "Shop",
     highlight: "neighborhood",
+    titleMid: "every",
+    titleLine: ["Your local", "marketplace,"],
+    rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
     description:
       "Skip the mixed feed. Open grocery, fashion, electronics, beauty and more — each aisle has its own shops, products and a same-day delivery story.",
     image: HD("photo-1534723452862-4c874018d66d"),
@@ -117,21 +120,9 @@ export const pageHeroes = {
   },
 };
 
-export const aboutHero = {
-  eyebrow: "Our story",
-  titleLine: "Empowering local.",
-  rotating: ["Delivering joy", "Together", "Nearby", "Every day"],
-  description:
-    "NearMart connects customers with trusted shopkeepers and delivery partners in their neighborhood — simple, reliable and built for the street around you.",
-  stats: [
-    { value: "50+", label: "Local shops" },
-    { value: "4 roles", label: "One platform" },
-    { value: "Same day", label: "Delivery" },
-  ],
-};
-
 export const homeHero = {
   eyebrow: "Srinagar's neighborhood marketplace",
+  titleLine: ["Your local", "marketplace,"],
   rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
   description:
     "Groceries, fashion, electronics, beauty and pharmacy from the shops you already know. Compare prices, checkout once, and get it at your door the same day.",
@@ -140,6 +131,19 @@ export const homeHero = {
     { value: "50+", label: "Trusted local shops" },
     { value: "25 min", label: "Average delivery" },
     { value: "2,000+", label: "Everyday products" },
+  ],
+};
+
+export const aboutHero = {
+  eyebrow: "Our story",
+  titleLine: ["Your local", "marketplace,"],
+  rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
+  description:
+    "NearMart connects customers with trusted shopkeepers and delivery partners in their neighborhood — simple, reliable and built for the street around you.",
+  stats: [
+    { value: "50+", label: "Local shops" },
+    { value: "4 roles", label: "One platform" },
+    { value: "Same day", label: "Delivery" },
   ],
 };
 

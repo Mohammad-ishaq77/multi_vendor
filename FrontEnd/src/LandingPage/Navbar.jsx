@@ -8,13 +8,13 @@ import {
   LogOut,
   Menu,
   Phone,
-  Search,
   ShoppingCart,
   Store,
   User,
   X,
 } from "lucide-react";
 import BrandLogo from "../components/common/BrandLogo";
+import MarketplaceSearch from "../components/common/MarketplaceSearch";
 import { publicNav } from "../config/navigation";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../features/customer/context/CartContext";
@@ -32,7 +32,6 @@ const NAV_ICONS = {
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, dashboardPath } = useAuth();
@@ -46,13 +45,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setMobileOpen(false);
-  }, [location.pathname]);
-
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const term = query.trim();
-    navigate(term ? `/marketplace?q=${encodeURIComponent(term)}` : "/marketplace");
-  };
+  }, [location.pathname, location.search]);
 
   const cartPath = isAuthenticated && user?.role === "customer" ? "/customer/cart" : "/login";
   const accountPath = isAuthenticated ? dashboardPath || getDashboardPath(user?.role) : "/login";
@@ -93,17 +86,9 @@ const Navbar = () => {
         <div className="container-app flex h-[60px] items-center gap-3 lg:gap-5">
           <BrandLogo showText={false} size={36} />
 
-          <form onSubmit={handleSearch} className="relative hidden min-w-0 flex-1 md:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search products, shops and categories"
-              aria-label="Search marketplace"
-              className="h-10 w-full rounded-full border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-10 pr-4 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-green)] focus:bg-white focus:ring-4 focus:ring-[var(--color-green-light)]/15"
-            />
-          </form>
+          <div className="relative z-[60] hidden min-w-0 flex-1 md:block">
+            <MarketplaceSearch />
+          </div>
 
           <div className="ml-auto hidden items-center gap-2 lg:flex">
             <Link
@@ -173,17 +158,7 @@ const Navbar = () => {
             className="border-b border-[var(--color-green-soft)] bg-white lg:hidden"
           >
             <div className="container-app space-y-3 py-3">
-              <form onSubmit={handleSearch} className="relative">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search marketplace"
-                  aria-label="Search marketplace"
-                  className="h-11 w-full rounded-xl border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-11 pr-4 text-sm outline-none"
-                />
-              </form>
+              <MarketplaceSearch variant="mobile" placeholder="Search marketplace" />
 
               <nav className="flex flex-col overflow-hidden rounded-2xl border border-[var(--color-green-soft)] bg-[var(--color-surface)]" aria-label="Mobile">
                 {publicNav.map((item) => {

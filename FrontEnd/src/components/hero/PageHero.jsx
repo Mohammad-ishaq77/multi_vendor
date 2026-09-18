@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -8,22 +7,23 @@ import {
   MapPin,
   MessageCircle,
   Phone,
-  Search,
   Store,
 } from "lucide-react";
+import MarketplaceSearch from "../common/MarketplaceSearch";
+import RotatingHeroTitle from "./RotatingHeroTitle";
 
-const TitleBlock = ({ title, highlight, variant, align = "left" }) => {
+const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => {
   const centered = align === "center";
 
   if (variant === "split") {
     return (
-      <h1 className="hero-title-rise font-display text-3xl font-bold leading-[1.12] tracking-tight text-[var(--color-text)] sm:text-5xl">
-        {title}
+      <h1 className="hero-title-rise font-display text-4xl font-bold leading-[1.08] tracking-tight text-[var(--color-text)] sm:text-6xl lg:text-[4.5rem]">
+        <span className="block">{title}</span>
+        {titleMid && <span className="block">{titleMid}</span>}
         {highlight && (
-          <>
-            {" "}
-            <span className="hero-title-underline relative text-[var(--color-primary)]">{highlight}</span>
-          </>
+          <span className="mt-1 block">
+            <span className="hero-word-underline text-[var(--color-primary)]">{highlight}</span>
+          </span>
         )}
       </h1>
     );
@@ -83,35 +83,11 @@ const HoursBadge = () => {
   );
 };
 
-const OverlaySearch = ({ placeholder }) => {
-  const [query, setQuery] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const term = query.trim();
-    navigate(term ? `/marketplace?q=${encodeURIComponent(term)}` : "/marketplace");
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="mt-4 flex w-full items-center gap-2">
-      <label className="relative min-w-0 flex-1">
-        <span className="sr-only">{placeholder}</span>
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={placeholder}
-          className="h-11 w-full rounded-2xl border border-white/70 bg-white pl-10 pr-3 text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white"
-        />
-      </label>
-      <button type="submit" className="btn-on-green !min-h-11 shrink-0 px-4">
-        Search
-      </button>
-    </form>
-  );
-};
+const OverlaySearch = ({ placeholder }) => (
+  <div className="mt-4 w-full max-w-2xl">
+    <MarketplaceSearch variant="hero" placeholder={placeholder} />
+  </div>
+);
 
 const Actions = ({ primaryTo, primaryLabel, secondaryTo, secondaryLabel, onGreen, centered }) => {
   if (!primaryTo && !secondaryTo) return null;
@@ -130,7 +106,9 @@ const Actions = ({ primaryTo, primaryLabel, secondaryTo, secondaryLabel, onGreen
           className={
             onGreen
               ? "inline-flex min-h-11 items-center rounded-[12px] border border-white/30 px-5 text-sm font-semibold text-white hover:bg-white/10"
-              : "btn-secondary"
+              : /sell|seller/i.test(secondaryLabel)
+                ? "btn-secondary btn-green-border"
+                : "btn-secondary"
           }
         >
           {secondaryLabel}
@@ -172,7 +150,10 @@ const PageHero = ({
   variant = "overlay",
   eyebrow,
   title,
+  titleMid,
   highlight,
+  titleLine,
+  rotating,
   image,
   mosaic = [],
   stats,
@@ -235,7 +216,11 @@ const PageHero = ({
               </motion.span>
             )}
             <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-4">
-              <TitleBlock title={title} highlight={highlight} variant="split" />
+              {rotating?.length ? (
+                <RotatingHeroTitle titleLine={titleLine} rotating={rotating} />
+              ) : (
+                <TitleBlock title={title} titleMid={titleMid} highlight={highlight} variant="split" />
+              )}
             </motion.div>
             <Actions
               primaryTo={primaryTo}
@@ -281,7 +266,7 @@ const PageHero = ({
               <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/75">{eyebrow}</span>
             )}
             <div className="mt-3">
-              <TitleBlock title={title} highlight={highlight} variant="mosaic" />
+              <TitleBlock title={title} titleMid={titleMid} highlight={highlight} variant="mosaic" />
             </div>
             <Actions
               primaryTo={primaryTo}
@@ -379,12 +364,12 @@ const PageHero = ({
 
           <h1 className="hero-title-rise mx-auto mt-3 w-full max-w-5xl text-balance text-center font-display text-[1.75rem] font-bold leading-[1.15] tracking-tight text-white sm:text-[2.15rem] lg:text-[2.55rem]">
             {title}
-            {highlight && (
-              <>
-                {" "}
-                <span className="text-[var(--color-green-soft)]">{highlight}</span>
-              </>
-            )}
+          {highlight && (
+            <>
+              {" "}
+              <span className="text-[var(--color-green-soft)]">{highlight}</span>
+            </>
+          )}
           </h1>
 
           {searchPlaceholder && <OverlaySearch placeholder={searchPlaceholder} />}

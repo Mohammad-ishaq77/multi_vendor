@@ -116,6 +116,25 @@ const MarketplacePage = () => {
         </div>
       </section>
 
+      {query && results.categories.length > 0 && (
+        <section className="bg-white py-6">
+          <div className="container-app">
+            <h2 className="mb-3 font-display text-lg font-bold">Categories</h2>
+            <div className="flex flex-wrap gap-2">
+              {results.categories.map((category) => (
+                <Link
+                  key={category.slug}
+                  to={`/marketplace/${category.slug}`}
+                  className="rounded-full bg-[var(--color-green-bg)] px-4 py-2 text-sm font-semibold text-[var(--color-primary-dark)] hover:bg-[var(--color-green-soft)]"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="bg-white py-6 lg:py-8">
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{products.length} products</h2>

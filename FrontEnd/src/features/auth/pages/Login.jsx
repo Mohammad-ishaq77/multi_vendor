@@ -16,7 +16,7 @@ import BrandLogo from "../../../components/common/BrandLogo";
 import AuthCloseButton from "../../../components/common/AuthCloseButton";
 import { useAuth } from "../../../hooks/useAuth";
 import { useToast } from "../../../components/common/Toast";
-import { APP_CONFIG, TEST_CREDENTIALS } from "../../../config/appConfig";
+import { APP_CONFIG } from "../../../config/appConfig";
 import { ROLE_META } from "../../../config/roles";
 
 const roleIcons = {
@@ -34,8 +34,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [role, setRole] = useState("customer");
-  const [email, setEmail] = useState(TEST_CREDENTIALS.email);
-  const [password, setPassword] = useState(TEST_CREDENTIALS.password);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
 
   const handleSubmit = async (event) => {
@@ -68,24 +68,25 @@ const Login = () => {
         className="relative z-10 grid w-full max-w-[1040px] overflow-hidden rounded-[24px] border border-white/70 bg-white/80 shadow-[var(--shadow-hover)] backdrop-blur-xl lg:grid-cols-[0.9fr_1.1fr]"
       >
         <AuthCloseButton className="right-4 top-4 lg:right-5 lg:top-5" />
-        <div className="relative hidden overflow-hidden bg-gradient-to-br from-[var(--color-primary-dark)] via-[var(--color-primary)] to-[var(--color-green)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
-          <BrandLogo inverted to="/" subtitle="Local Marketplace" />
-          <div>
-            <p className="badge-soft !bg-white/10 !text-white">Frontend test login</p>
-            <h2 className="mt-5 font-display text-3xl font-bold leading-tight">
-              Shop local.
-              <br />
-              Delivered fast.
-            </h2>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/75">
-              Use the shared test account and switch roles to preview every NearMart dashboard.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-white/15 bg-white/10 p-4 text-sm">
-            <p className="font-semibold">Test credentials</p>
-            <p className="mt-2 text-white/80">Email: {TEST_CREDENTIALS.email}</p>
-            <p className="text-white/80">Password: {TEST_CREDENTIALS.password}</p>
-          </div>
+        <div className="relative hidden overflow-hidden bg-gradient-to-br from-[var(--color-primary-dark)] via-[var(--color-primary)] to-[var(--color-green)] p-10 text-white lg:flex lg:flex-col lg:items-center lg:justify-center lg:text-center">
+          <Link to="/" className="flex flex-col items-center">
+            <img
+              src={APP_CONFIG.logo}
+              alt={`${APP_CONFIG.name} logo`}
+              className="h-28 w-28 object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.25)] sm:h-32 sm:w-32"
+            />
+            <span className="mt-5 font-display text-3xl font-bold tracking-tight text-white">
+              {APP_CONFIG.name}
+            </span>
+            <span className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-white/70">
+              Local Marketplace
+            </span>
+          </Link>
+          {/* <h2 className="mt-6 font-display text-3xl font-bold leading-tight">
+            Shop local.
+            <br />
+            Delivered fast.
+          </h2> */}
         </div>
 
         <div className="flex flex-col justify-center px-5 pb-8 pt-14 sm:px-10 lg:px-12 lg:pt-8">
@@ -138,7 +139,7 @@ const Login = () => {
                   autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={TEST_CREDENTIALS.email}
+                  placeholder="Enter Your Email"
                   className="input-field pl-11"
                 />
               </div>
@@ -156,7 +157,7 @@ const Login = () => {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
+                  placeholder="Enter Your Password"
                   className="input-field pl-11 pr-12"
                 />
                 <button

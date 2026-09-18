@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, MapPin, Sparkles, Store, Truck } from "lucide-react";
 import { APP_CONFIG } from "../config/appConfig";
 import { homeFloatCards, homeHero } from "../config/heroes";
+import RotatingHeroTitle from "../components/hero/RotatingHeroTitle";
 
 const Hero = ({
   tone = "light",
   eyebrow = homeHero.eyebrow,
-  titleLine = "Your local marketplace,",
+  titleLine = homeHero.titleLine,
   rotating = homeHero.rotating,
   stats = homeHero.stats,
   primaryTo = "/marketplace",
@@ -17,15 +17,7 @@ const Hero = ({
   secondaryLabel = "Sell on NearMart",
   footer,
 }) => {
-  const [wordIndex, setWordIndex] = useState(0);
   const dark = tone === "dark";
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setWordIndex((current) => (current + 1) % rotating.length);
-    }, 2400);
-    return () => clearInterval(timer);
-  }, [rotating.length]);
 
   return (
     <section className={`relative overflow-hidden ${dark ? "on-green bg-[var(--color-primary-dark)]" : "bg-[var(--color-surface-tint)]"}`}>
@@ -56,27 +48,7 @@ const Hero = ({
               {eyebrow}
             </motion.span>
 
-            <h1
-              className={`mt-5 font-display text-3xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.35rem] ${
-                dark ? "text-white" : "text-[var(--color-text)]"
-              }`}
-            >
-              <span className="block">{titleLine}</span>
-              <span className="relative mt-1 block h-[1.15em] overflow-hidden">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={rotating[wordIndex]}
-                    initial={{ y: "110%", opacity: 0 }}
-                    animate={{ y: "0%", opacity: 1 }}
-                    exit={{ y: "-110%", opacity: 0 }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className={`absolute inset-x-0 top-0 ${dark ? "text-[var(--color-green-soft)]" : "text-[var(--color-primary)]"}`}
-                  >
-                    {rotating[wordIndex]}
-                  </motion.span>
-                </AnimatePresence>
-              </span>
-            </h1>
+            <RotatingHeroTitle titleLine={titleLine} rotating={rotating} dark={dark} />
 
             <motion.div
               initial={{ opacity: 0, y: 14 }}
@@ -93,7 +65,7 @@ const Hero = ({
                 className={
                   dark
                     ? "inline-flex min-h-11 w-full items-center justify-center rounded-[12px] border border-white/30 px-5 text-sm font-semibold text-white hover:bg-white/10 sm:w-auto"
-                    : "btn-secondary w-full sm:w-auto"
+                    : "btn-secondary btn-green-border w-full sm:w-auto"
                 }
               >
                 {secondaryLabel}
@@ -104,24 +76,26 @@ const Hero = ({
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.34 }}
-              className="mt-8 grid grid-cols-3 gap-2 sm:max-w-lg sm:gap-3 lg:max-w-none"
+              className="mx-auto mt-8 grid w-[90%] max-w-[28rem] grid-cols-3 gap-2.5 sm:max-w-[34rem] lg:mx-0 lg:w-[88%] lg:max-w-[36rem]"
             >
-              {stats.map((stat) => (
-                <div
+              {stats.map((stat, index) => (
+                <motion.div
                   key={stat.label}
-                  className={`rounded-2xl px-3 py-3 text-center sm:px-4 ${
-                    dark
-                      ? "border border-white/15 bg-white/10 backdrop-blur-sm"
-                      : "border border-[var(--color-green-soft)] bg-white/80 backdrop-blur-sm"
+                  whileHover={{ y: -6, scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 320, damping: 20 }}
+                  className={`stat-liquid group relative min-h-[6.75rem] cursor-pointer overflow-hidden rounded-2xl px-3 py-5 text-center sm:min-h-[7.25rem] sm:px-4 ${
+                    dark ? "stat-liquid-dark border border-white/15" : "border border-[var(--color-green-soft)]"
                   }`}
+                  style={{ animationDelay: `${index * 0.35}s` }}
                 >
-                  <p className={`font-display text-lg font-bold sm:text-xl ${dark ? "text-white" : "text-[var(--color-primary-dark)]"}`}>
+                  <p className={`relative z-10 font-display text-xl font-bold sm:text-2xl ${dark ? "text-white" : "text-[var(--color-primary-dark)]"}`}>
                     {stat.value}
                   </p>
-                  <p className={`mt-0.5 text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] ${dark ? "text-white/70" : "text-[var(--color-text-muted)]"}`}>
+                  <p className={`relative z-10 mt-1 text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] ${dark ? "text-white/75" : "text-[var(--color-text-muted)]"}`}>
                     {stat.label}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </motion.div>
 

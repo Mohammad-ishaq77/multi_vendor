@@ -31,15 +31,16 @@ export const searchCatalog = (query = "") => {
   if (!term) {
     return { products, vendors, categories };
   }
+  const matches = (values) => values.filter(Boolean).join(" ").toLowerCase().includes(term);
   return {
     products: products.filter((item) =>
-      [item.name, item.category, item.shop].join(" ").toLowerCase().includes(term)
+      matches([item.name, item.category, item.shop, item.unit, item.badge])
     ),
     vendors: vendors.filter((item) =>
-      [item.name, item.category, item.location].join(" ").toLowerCase().includes(term)
+      matches([item.name, item.category, item.location])
     ),
     categories: categories.filter((item) =>
-      [item.name, item.description, item.headline].join(" ").toLowerCase().includes(term)
+      matches([item.name, item.description, item.headline, item.intro, ...(item.related || [])])
     ),
   };
 };
