@@ -43,8 +43,16 @@ function saveLS(key, value) {
   }
 }
 
+const mergeProfile = (saved) => {
+  const next = { ...deliveryPartnerProfile, ...(saved || {}) };
+  ["rating", "totalDeliveries", "completedDeliveries", "cancelledDeliveries", "todayDeliveries", "todayEarnings", "totalEarnings"].forEach((key) => {
+    if (!Number.isFinite(Number(next[key]))) next[key] = deliveryPartnerProfile[key];
+  });
+  return next;
+};
+
 export function DeliveryPartnerProvider({ children }) {
-  const [profile, setProfile] = useState(() => loadLS(LS_KEYS.profile, deliveryPartnerProfile));
+  const [profile, setProfile] = useState(() => mergeProfile(loadLS(LS_KEYS.profile, {})));
   const [isOnline, setIsOnline] = useState(() => loadLS(LS_KEYS.isOnline, false));
   const [applicationStatus, setApplicationStatus] = useState(() => {
     const savedStatus = loadLS(LS_KEYS.applicationStatus, null);
@@ -56,7 +64,14 @@ export function DeliveryPartnerProvider({ children }) {
   const [activeDelivery, setActiveDelivery] = useState(() => loadLS(LS_KEYS.activeDelivery, null));
   const [deliveryHistory, setDeliveryHistory] = useState(() => loadLS(LS_KEYS.deliveryHistory, dummyDeliveries.filter((d) => d.status === "completed")));
   const [availableDeliveries, setAvailableDeliveries] = useState(() => loadLS(LS_KEYS.availableDeliveries, dummyDeliveries.filter((d) => d.status === "ready_for_pickup")));
-  const [earnings, setEarnings] = useState(() => loadLS(LS_KEYS.earnings, defaultEarnings));
+  const [earnings, setEarnings] = useState(() => {
+    const saved = loadLS(LS_KEYS.earnings, null);
+    return {
+      ...defaultEarnings,
+      ...(saved || {}),
+      weeklyBreakdown: saved?.weeklyBreakdown?.length ? saved.weeklyBreakdown : defaultEarnings.weeklyBreakdown,
+    };
+  });
   const [notifications, setNotifications] = useState(() => loadLS(LS_KEYS.notifications, defaultNotifications));
   const [identityData, setIdentityData] = useState(() => loadLS(LS_KEYS.identityData, null));
   const [contactData, setContactData] = useState(() => loadLS(LS_KEYS.contactData, null));
@@ -112,9 +127,9 @@ export function DeliveryPartnerProvider({ children }) {
   }, []);
 
   const toggleAvailability = useCallback(() => {
-    if (applicationStatus !== "approved") return;
+    if (applicationStatus !== "approved" && !hasCompletedOnboarding) return;
     setIsOnline((prev) => !prev);
-  }, [applicationStatus]);
+  }, [applicationStatus, hasCompletedOnboarding]);
 
   const acceptDelivery = useCallback((deliveryId) => {
     if (applicationStatus !== "approved") return { success: false, message: "Your account must be approved before accepting deliveries." };
@@ -222,7 +237,15 @@ export function DeliveryPartnerProvider({ children }) {
 
   const setContactVerified = useCallback((data) => {
     setContactData(data);
-    setProfile((prev) => ({ ...prev, phone: data.phone, email: data.email, contactVerification: "verified" }));
+    setProfile((prev) => ({
+      ...prev,
+      name: data.fullName || prev.name,
+      phone: data.phone,
+      email: data.email,
+      vehicleType: data.vehicleType || prev.vehicleType,
+      vehicleNumber: data.vehicleNumber || prev.vehicleNumber,
+      contactVerification: "verified",
+    }));
   }, []);
 
   const setAddressVerified = useCallback((data) => {

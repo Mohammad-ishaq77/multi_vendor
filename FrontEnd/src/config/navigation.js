@@ -12,7 +12,7 @@ export const footerColumns = [
     links: [
       { name: "About Us", to: "/about" },
       { name: "Contact Us", to: "/contact" },
-      { name: "Become a Vendor", to: "/register" },
+      { name: "Become a Vendor", to: "/register?role=shopkeeper" },
       { name: "Careers", to: "/contact" },
     ],
   },

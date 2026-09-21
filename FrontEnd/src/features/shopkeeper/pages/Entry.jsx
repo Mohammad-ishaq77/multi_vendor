@@ -10,16 +10,20 @@ const ShopkeeperGate = () => {
   useEffect(() => {
     const path = location.pathname;
 
-    // If on an onboarding page, allow it
     if (path.startsWith("/shopkeeper/onboarding")) return;
 
-    // If not approved, redirect to onboarding
     if (!isApproved) {
-      navigate("/shopkeeper/onboarding", { replace: true });
+      const dest =
+        {
+          type_selection: "/shopkeeper/onboarding",
+          create_shop: "/shopkeeper/onboarding/create-shop",
+          documents: "/shopkeeper/onboarding/documents",
+          approval: "/shopkeeper/onboarding/approval",
+        }[onboardingStep] || "/shopkeeper/onboarding";
+      navigate(dest, { replace: true });
       return;
     }
 
-    // If approved and on root shopkeeper path, go to dashboard
     if (path === "/shopkeeper") {
       navigate("/shopkeeper/dashboard", { replace: true });
     }

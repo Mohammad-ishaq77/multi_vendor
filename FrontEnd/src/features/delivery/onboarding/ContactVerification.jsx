@@ -1,51 +1,65 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Phone, User, ShieldCheck, ChevronRight, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Bike, Car, CheckCircle, ChevronRight, Mail, Phone, User } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
+import { useAuth } from "../../../hooks/useAuth";
 import OnboardingLayout from "./OnboardingLayout";
 
 const DEMO_OTP = "123456";
+const PHONE_RE = /^(\+91[\s-]?)?[6-9]\d{9}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const vehicles = [
+  { id: "Motorcycle", label: "Bike", icon: Bike },
+  { id: "Scooter", label: "Scooter", icon: Bike },
+  { id: "Bicycle", label: "Cycle", icon: Bike },
+  { id: "Car", label: "Car", icon: Car },
+];
+
+const fieldClass = (error) => `input-field ${error ? "border-rose-300 bg-rose-50/70" : ""}`;
 
 export default function ContactVerification() {
   const navigate = useNavigate();
-  const { contactData, setContactVerified } = useDeliveryPartner();
+  const { user } = useAuth();
+  const { contactData, setContactVerified, updateOnboardingStep, updateProfile } = useDeliveryPartner();
   const [form, setForm] = useState({
-    fullName: contactData?.fullName || "",
-    phone: contactData?.phone || "",
-    email: contactData?.email || "",
+    fullName: contactData?.fullName || user?.name || "",
+    phone: contactData?.phone || user?.phone || "",
+    email: contactData?.email || user?.email || "",
+    vehicleType: contactData?.vehicleType || "",
+    vehicleNumber: contactData?.vehicleNumber || "",
   });
   const [sent, setSent] = useState({ phone: false, email: false });
   const [verified, setVerified] = useState({
-    phone: contactData?.phoneVerified || false,
-    email: contactData?.emailVerified || false,
+    phone: Boolean(contactData?.phoneVerified),
+    email: Boolean(contactData?.emailVerified),
   });
   const [otp, setOtp] = useState({ phone: "", email: "" });
   const [errors, setErrors] = useState({});
 
+  const update = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
   const sendOtp = (channel) => {
     const value = form[channel];
-    const valid =
-      channel === "phone"
-        ? /^\+?[0-9\s-]{10,}$/.test(value)
-        : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    const valid = channel === "phone" ? PHONE_RE.test(value.trim()) : EMAIL_RE.test(value.trim());
     if (!valid) {
       setErrors((prev) => ({
         ...prev,
-        [channel]: `Enter a valid ${channel === "phone" ? "mobile number" : "email address"}`,
+        [channel]: channel === "phone" ? "Enter a valid 10-digit mobile number" : "Enter a valid email",
       }));
       return;
     }
     setErrors((prev) => ({ ...prev, [channel]: "" }));
     setSent((prev) => ({ ...prev, [channel]: true }));
+    setOtp((prev) => ({ ...prev, [channel]: "" }));
   };
 
   const verifyOtp = (channel) => {
     if (otp[channel] !== DEMO_OTP) {
-      setErrors((prev) => ({
-        ...prev,
-        [`${channel}Otp`]: "Use the 6-digit OTP sent to you.",
-      }));
+      setErrors((prev) => ({ ...prev, [`${channel}Otp`]: "Use demo OTP 123456" }));
       return;
     }
     setVerified((prev) => ({ ...prev, [channel]: true }));
@@ -53,93 +67,81 @@ export default function ContactVerification() {
   };
 
   const handleContinue = () => {
-    if (!form.fullName.trim()) {
-      setErrors((prev) => ({ ...prev, fullName: "Full name is required" }));
-      return;
+    const next = {};
+    if (!form.fullName.trim() || form.fullName.trim().length < 2) next.fullName = "Enter your full name";
+    if (!verified.phone) next.phone = "Verify your mobile number";
+    if (!verified.email) next.email = "Verify your email";
+    if (!form.vehicleType) next.vehicleType = "Select the vehicle you will use";
+    if (form.vehicleType && form.vehicleType !== "Bicycle" && !form.vehicleNumber.trim()) {
+      next.vehicleNumber = "Enter your vehicle number";
     }
-    if (!verified.phone || !verified.email) {
-      setErrors((prev) => ({
-        ...prev,
-        form: "Verify both your mobile number and email to continue.",
-      }));
-      return;
-    }
-    setContactVerified({
-      fullName: form.fullName,
-      phone: form.phone,
-      email: form.email,
+    setErrors(next);
+    if (Object.keys(next).length) return;
+
+    const payload = {
+      fullName: form.fullName.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      vehicleType: form.vehicleType,
+      vehicleNumber: form.vehicleNumber.trim(),
       phoneVerified: true,
       emailVerified: true,
+    };
+    setContactVerified(payload);
+    updateProfile({
+      name: payload.fullName,
+      phone: payload.phone,
+      email: payload.email,
+      vehicleType: payload.vehicleType,
+      vehicleNumber: payload.vehicleNumber,
     });
+    updateOnboardingStep("identity");
     navigate("/delivery/onboarding/identity");
   };
 
-  const inputClass = (field) =>
-    `w-full px-3.5 py-2.5 rounded-md border text-sm outline-none transition-all duration-200 ${
-      errors[field]
-        ? "border-rose-300 bg-rose-50/50 focus:border-rose-400 focus:ring-2 focus:ring-rose-100"
-        : "border-gray-200 bg-[#F8FAFC] focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10 focus:bg-white"
-    }`;
-
-  const field = (channel, label, Icon, type) => (
+  const otpRow = (channel, label, Icon, type) => (
     <div className="space-y-2">
-      <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A]">
-        <Icon className="w-3.5 h-3.5 text-[#1B4332]" />
-        {label}
-      </label>
+      <label className="text-xs font-semibold uppercase tracking-wider">{label}</label>
       <div className="flex gap-2">
-        <input
-          type={type}
-          value={form[channel]}
-          disabled={verified[channel]}
-          onChange={(e) => setForm({ ...form, [channel]: e.target.value })}
-          placeholder={channel === "phone" ? "+91 98765 43210" : "you@example.com"}
-          className={`${inputClass(channel)} flex-1 disabled:bg-gray-50 disabled:text-gray-500`}
-        />
+        <div className="relative flex-1">
+          <Icon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+          <input
+            type={type}
+            value={form[channel]}
+            disabled={verified[channel]}
+            onChange={(e) => update(channel, e.target.value)}
+            placeholder={channel === "phone" ? "+91 98765 43210" : "you@example.com"}
+            className={`${fieldClass(errors[channel])} pl-11 disabled:opacity-70`}
+          />
+        </div>
         <button
           type="button"
           onClick={() => sendOtp(channel)}
           disabled={verified[channel]}
-          className={`px-3.5 py-2 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
-            verified[channel]
-              ? "bg-[#1B4332]/10 text-[#1B4332]"
-              : "bg-[#0F172A] text-white hover:bg-[#1E293B]"
-          }`}
+          className="btn-secondary min-h-12 shrink-0 px-3 text-xs"
         >
           {verified[channel] ? "Verified" : sent[channel] ? "Resend" : "Send OTP"}
         </button>
       </div>
-      {errors[channel] && (
-        <p className="text-xs text-rose-500">{errors[channel]}</p>
-      )}
+      {errors[channel] && <p className="text-xs text-rose-600">{errors[channel]}</p>}
       {sent[channel] && !verified[channel] && (
         <div className="flex gap-2">
           <input
             value={otp[channel]}
-            onChange={(e) => setOtp({ ...otp, [channel]: e.target.value })}
+            onChange={(e) => setOtp((prev) => ({ ...prev, [channel]: e.target.value.replace(/\D/g, "").slice(0, 6) }))}
             maxLength={6}
-            placeholder="Enter 6-digit OTP"
-            className={`${inputClass(channel)} flex-1`}
+            placeholder="6-digit OTP"
+            className={fieldClass(errors[`${channel}Otp`])}
           />
-          <button
-            type="button"
-            onClick={() => verifyOtp(channel)}
-            className="px-3.5 py-2 rounded-md bg-[#1B4332] text-white text-xs font-semibold hover:bg-[#143728] transition-colors"
-          >
+          <button type="button" onClick={() => verifyOtp(channel)} className="btn-primary min-h-12 shrink-0 px-4 text-xs">
             Verify
           </button>
         </div>
       )}
-      {errors[`${channel}Otp`] && (
-        <p className="text-xs text-rose-500">{errors[`${channel}Otp`]}</p>
-      )}
-      {sent[channel] && !verified[channel] && (
-        <p className="text-[0.65rem] text-[#94A3B8]">Demo OTP: 123456</p>
-      )}
+      {errors[`${channel}Otp`] && <p className="text-xs text-rose-600">{errors[`${channel}Otp`]}</p>}
       {verified[channel] && (
-        <p className="flex items-center gap-1 text-xs text-[#1B4332] font-medium">
-          <CheckCircle className="w-3.5 h-3.5" />
-          Verified successfully
+        <p className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-primary)]">
+          <CheckCircle className="h-3.5 w-3.5" /> Verified
         </p>
       )}
     </div>
@@ -147,65 +149,79 @@ export default function ContactVerification() {
 
   return (
     <OnboardingLayout>
-      <div className="p-5 sm:p-6 space-y-5">
-        {/* Title */}
+      <div className="space-y-5 p-5 sm:p-7 lg:p-8">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-lg bg-[#1B4332]/10 flex items-center justify-center mx-auto mb-3">
-            <User className="w-6 h-6 text-[#1B4332]" />
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+            <User className="h-6 w-6" />
           </div>
-          <h1 className="font-serif text-xl font-bold text-[#0F172A]">
-            Basic Details
-          </h1>
-          <p className="text-sm text-[#64748B] mt-1">
-            Verify your name, mobile number, and email
-          </p>
+          <h1 className="font-display text-xl font-bold">Your details</h1>
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">We'll use these to assign nearby deliveries.</p>
         </div>
 
-        {/* Full Name */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A]">
-            <User className="w-3.5 h-3.5 text-[#1B4332]" />
-            Full name
-          </label>
-          <input
-            value={form.fullName}
-            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-            placeholder="Enter your full name"
-            className={inputClass("fullName")}
-          />
-          {errors.fullName && (
-            <p className="text-xs text-rose-500">{errors.fullName}</p>
-          )}
+          <label className="text-xs font-semibold uppercase tracking-wider">Full name</label>
+          <div className="relative">
+            <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <input
+              value={form.fullName}
+              onChange={(e) => update("fullName", e.target.value)}
+              placeholder="Your full name"
+              className={`${fieldClass(errors.fullName)} pl-11`}
+            />
+          </div>
+          {errors.fullName && <p className="text-xs text-rose-600">{errors.fullName}</p>}
         </div>
 
-        {/* Phone */}
-        {field("phone", "Mobile number", Phone, "tel")}
+        {otpRow("phone", "Mobile number", Phone, "tel")}
+        {otpRow("email", "Email address", Mail, "email")}
 
-        {/* Email */}
-        {field("email", "Email address", Mail, "email")}
-
-        {/* Demo hint */}
-        <div className="flex items-start gap-2.5 p-3 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-md">
-          <ShieldCheck className="w-4 h-4 text-[#1B4332] shrink-0 mt-0.5" />
-          <p className="text-[0.7rem] text-[#334155] leading-relaxed">
-            Demo OTP for both fields: <span className="font-mono font-bold">123456</span>
-          </p>
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider">Vehicle</p>
+          <div className="grid grid-cols-4 gap-2">
+            {vehicles.map((item) => {
+              const Icon = item.icon;
+              const active = form.vehicleType === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => update("vehicleType", item.id)}
+                  className={`flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[12px] border text-xs font-semibold ${
+                    active
+                      ? "border-[var(--color-primary)] bg-[var(--color-green-bg)] text-[var(--color-primary-dark)]"
+                      : "border-[#dce8e2] bg-white text-[var(--color-text-muted)]"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+          {errors.vehicleType && <p className="mt-1 text-xs text-rose-600">{errors.vehicleType}</p>}
         </div>
 
-        {errors.form && (
-          <p className="text-xs text-rose-500">{errors.form}</p>
+        {form.vehicleType && form.vehicleType !== "Bicycle" && (
+          <div className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider">Vehicle number</label>
+            <input
+              value={form.vehicleNumber}
+              onChange={(e) => update("vehicleNumber", e.target.value.toUpperCase())}
+              placeholder="JK01AB1234"
+              className={fieldClass(errors.vehicleNumber)}
+            />
+            {errors.vehicleNumber && <p className="text-xs text-rose-600">{errors.vehicleNumber}</p>}
+          </div>
         )}
 
-        {/* Continue */}
-        <motion.button
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleContinue}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold bg-[#1B4332] text-white hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
-        >
+        <div className="rounded-[12px] border border-[var(--color-green-soft)] bg-[var(--color-green-bg)] px-3 py-2.5 text-xs text-[var(--color-primary-dark)]">
+          Demo OTP for mobile and email: <span className="font-mono font-bold">123456</span>
+        </div>
+
+        <button type="button" onClick={handleContinue} className="btn-primary w-full">
           Continue
-          <ChevronRight className="w-4 h-4" />
-        </motion.button>
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
     </OnboardingLayout>
   );

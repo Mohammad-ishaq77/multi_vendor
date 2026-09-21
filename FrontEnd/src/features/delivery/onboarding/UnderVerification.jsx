@@ -1,66 +1,72 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, Clock, LayoutDashboard } from "lucide-react";
-import { motion } from "framer-motion";
+import { CheckCircle2, Clock, LayoutDashboard, Mail, Phone } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import OnboardingLayout from "./OnboardingLayout";
+import { APP_CONFIG } from "../../../config/appConfig";
 
 export default function UnderVerification() {
   const navigate = useNavigate();
-  const { submitApplication } = useDeliveryPartner();
+  const { submitApplication, updateOnboardingStep, contactData } = useDeliveryPartner();
+  const [opening, setOpening] = useState(false);
 
   const handleOpenDashboard = () => {
+    setOpening(true);
     submitApplication();
-    navigate("/delivery/dashboard");
+    updateOnboardingStep("approved");
+    setTimeout(() => navigate("/delivery/dashboard"), 700);
   };
 
   return (
     <OnboardingLayout>
-      <div className="p-5 sm:p-6 space-y-5 text-center">
-        {/* Animated icon */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.2 }}
-          className="mx-auto"
-        >
-          <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] flex items-center justify-center mx-auto shadow-lg shadow-[#1B4332]/20">
-            <Clock className="w-8 h-8 text-white" />
-          </div>
-        </motion.div>
-
-        {/* Title */}
+      <div className="space-y-5 p-5 text-center sm:p-7 lg:p-8">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+          <Clock className="h-8 w-8" />
+        </div>
         <div>
-          <h1 className="font-serif text-xl font-bold text-[#0F172A]">
-            Under Verification
-          </h1>
-          <p className="text-sm text-[#64748B] mt-1">
-            Your details have been submitted successfully
+          <h1 className="font-display text-xl font-bold">Application submitted</h1>
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+            {contactData?.fullName ? `${contactData.fullName}, ` : ""}we'll notify you when your partner account is approved.
           </p>
         </div>
 
-        {/* Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-start gap-3 text-left p-3.5 bg-[#1B4332]/[0.04] border border-[#1B4332]/10 rounded-md"
-        >
-          <CheckCircle className="w-4 h-4 text-[#1B4332] shrink-0 mt-0.5" />
-          <p className="text-sm text-[#334155] leading-relaxed">
-            This is a frontend demo. Backend verification will be connected later.
-          </p>
-        </motion.div>
+        <div className="space-y-2.5 text-left">
+          {[
+            { title: "Details saved", desc: "Name, mobile, email and vehicle" },
+            { title: "Identity verified", desc: "Aadhaar checked via DigiLocker" },
+            { title: "Under review", desc: "Usually takes a few hours" },
+          ].map((item, index) => (
+            <div key={item.title} className="flex items-center gap-3 rounded-[12px] border border-[#edf3ef] bg-[#f8fbf9] p-3">
+              <div className={`flex h-9 w-9 items-center justify-center rounded-[10px] ${index < 2 ? "bg-[var(--color-green-bg)] text-[var(--color-primary)]" : "bg-amber-50 text-amber-600"}`}>
+                {index < 2 ? <CheckCircle2 className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+              </div>
+              <div>
+                <p className="text-sm font-semibold">{item.title}</p>
+                <p className="text-xs text-[var(--color-text-muted)]">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
-        {/* Open Dashboard */}
-        <motion.button
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleOpenDashboard}
-          className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-[#1B4332] text-white text-sm font-semibold hover:bg-[#143728] shadow-lg shadow-[#1B4332]/20 transition-all"
-        >
-          <LayoutDashboard className="w-4 h-4" />
-          Open Demo Dashboard
-        </motion.button>
+        <div className="rounded-[12px] border border-[var(--color-green-soft)] bg-[var(--color-green-bg)] p-4 text-left">
+          <p className="text-xs font-semibold text-[var(--color-primary-dark)]">Questions?</p>
+          <div className="mt-2 flex flex-col gap-1 text-xs text-[var(--color-text-muted)]">
+            <span className="inline-flex items-center gap-1">
+              <Mail className="h-3 w-3" /> {APP_CONFIG.supportEmail}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Phone className="h-3 w-3" /> {APP_CONFIG.supportPhone}
+            </span>
+          </div>
+        </div>
+
+        <button type="button" onClick={handleOpenDashboard} disabled={opening} className="btn-primary w-full">
+          {opening ? "Opening dashboard..." : "Simulate approval"}
+          {!opening && <LayoutDashboard className="h-4 w-4" />}
+        </button>
+        <p className="text-[11px] text-[var(--color-text-muted)]">
+          Demo shortcut. Live approvals happen from the admin panel.
+        </p>
       </div>
     </OnboardingLayout>
   );

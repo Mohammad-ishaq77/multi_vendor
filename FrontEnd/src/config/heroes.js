@@ -20,7 +20,7 @@ export const pageHeroes = {
     ],
     primaryTo: "/marketplace",
     primaryLabel: "Open marketplace",
-    secondaryTo: "/register",
+    secondaryTo: "/register?role=shopkeeper",
     secondaryLabel: "Become a seller",
   },
   marketplace: {
@@ -45,7 +45,7 @@ export const pageHeroes = {
     ],
     primaryTo: "/categories",
     primaryLabel: "Browse aisles",
-    secondaryTo: "/register",
+    secondaryTo: "/register?role=shopkeeper",
     secondaryLabel: "Sell with us",
   },
   search: {
@@ -92,8 +92,8 @@ export const pageHeroes = {
     ],
     chips: [
       { label: "Order help", href: "#contact-form" },
-      { label: "Become a vendor", to: "/register" },
-      { label: "Ride with us", to: "/register" },
+      { label: "Become a vendor", to: "/register?role=shopkeeper" },
+      { label: "Ride with us", to: "/register?role=delivery" },
       { label: "Partnerships", href: "#contact-form" },
       { label: "Visit Srinagar HQ", icon: "pin", href: "#contact-form" },
     ],

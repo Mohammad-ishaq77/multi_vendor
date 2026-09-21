@@ -1,47 +1,51 @@
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Store,
-  Phone,
-  MapPin,
-  Clock,
-  Mail,
-  FileText,
-  ChevronRight,
-  ChevronLeft,
   Camera,
+  ChevronRight,
+  Clock,
+  FileText,
+  IndianRupee,
+  Mail,
+  MapPin,
+  Phone,
+  Store,
   X,
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import ShopOnboardingLayout from "./ShopOnboardingLayout";
 
-const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const PHONE_RE = /^(\+91[\s-]?)?[6-9]\d{9}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PIN_RE = /^\d{6}$/;
 
-const getTimePeriod = (time) => Number(time?.split(":")[0]) >= 12 ? "PM" : "AM";
-
-const updateTimePeriod = (time, period) => {
-  const [hours, minutes] = time.split(":");
-  let hour = Number(hours) % 12;
-  if (period === "PM") hour += 12;
-  return `${String(hour).padStart(2, "0")}:${minutes}`;
+const formatTimeLabel = (time) => {
+  if (!time) return "";
+  const [hours, minutes] = time.split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
+  const hour = hours % 12 || 12;
+  return `${hour}:${String(minutes || 0).padStart(2, "0")} ${period}`;
 };
+
+const fieldClass = (hasError) =>
+  `input-field ${hasError ? "border-rose-300 bg-rose-50/70" : ""}`;
 
 const CreateShop = () => {
   const navigate = useNavigate();
-  const { shop, setShop, setOnboardingStep } = useShopkeeper();
+  const { shop, setShop, setOnboardingStep, profile } = useShopkeeper();
   const fileInputRef = useRef(null);
   const [form, setForm] = useState({
-    name: shop.name !== "Fresh Basket" ? shop.name : "",
-    description: shop.description !== "Your one-stop shop for fresh groceries, fruits, vegetables, and daily essentials. We source directly from local farmers to ensure the freshest products." ? shop.description : "",
-    phone: shop.phone !== "+91 98765 43210" ? shop.phone : "",
-    email: shop.email !== "freshbasket@example.com" ? shop.email : "",
-    address: shop.address !== "123 Residency Road, Near Polo View" ? shop.address : "",
-    city: shop.city !== "Srinagar" ? shop.city : "",
-    state: shop.state !== "Jammu & Kashmir" ? shop.state : "",
-    pincode: shop.pincode !== "190001" ? shop.pincode : "",
-    openingTime: shop.openingTime,
-    closingTime: shop.closingTime,
-    minOrder: shop.minOrder,
+    name: shop.name || "",
+    description: shop.description || "",
+    phone: shop.phone || profile.phone || "",
+    email: shop.email || profile.email || "",
+    address: shop.address || "",
+    city: shop.city || "",
+    state: shop.state || "",
+    pincode: shop.pincode || "",
+    openingTime: shop.openingTime || "09:00",
+    closingTime: shop.closingTime || "21:00",
+    minOrder: shop.minOrder || 99,
     shopImage: shop.shopImage || null,
   });
   const [errors, setErrors] = useState({});
@@ -52,226 +56,284 @@ const CreateShop = () => {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0];
+  const handleImageUpload = (event) => {
+    const file = event.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setErrors((prev) => ({ ...prev, shopImage: "Please choose an image file" }));
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       setErrors((prev) => ({ ...prev, shopImage: "Image must be under 5MB" }));
       return;
     }
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      update("shopImage", ev.target.result);
-    };
+    reader.onload = (ev) => update("shopImage", ev.target.result);
     reader.readAsDataURL(file);
   };
 
   const validate = () => {
-    const errs = {};
-    if (!form.name.trim()) errs.name = "Shop name is required";
-    if (!form.phone.trim()) errs.phone = "Phone number is required";
-    if (!form.address.trim()) errs.address = "Address is required";
-    if (!form.city.trim()) errs.city = "City is required";
-    if (!form.openingTime) errs.openingTime = "Required";
-    if (!form.closingTime) errs.closingTime = "Required";
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    const next = {};
+    if (!form.name.trim()) next.name = "Shop name is required";
+    if (form.description.trim().length > 0 && form.description.trim().length < 20) {
+      next.description = "Add a short description (at least 20 characters)";
+    }
+    if (!PHONE_RE.test(form.phone.trim())) next.phone = "Enter a valid 10-digit mobile number";
+    if (form.email.trim() && !EMAIL_RE.test(form.email.trim())) next.email = "Enter a valid email";
+    if (!form.address.trim()) next.address = "Address is required";
+    if (!form.city.trim()) next.city = "City is required";
+    if (!form.state.trim()) next.state = "State is required";
+    if (!PIN_RE.test(form.pincode.trim())) next.pincode = "Enter a 6-digit PIN code";
+    if (!form.openingTime) next.openingTime = "Opening time is required";
+    if (!form.closingTime) next.closingTime = "Closing time is required";
+    if (form.openingTime && form.closingTime && form.closingTime <= form.openingTime) {
+      next.closingTime = "Closing time must be after opening time";
+    }
+    if (Number(form.minOrder) < 0) next.minOrder = "Minimum order cannot be negative";
+    setErrors(next);
+    return Object.keys(next).length === 0;
   };
 
   const handleProceed = () => {
     if (!validate()) return;
     setSaving(true);
     setTimeout(() => {
-      setShop({ ...form, isApproved: false });
+      setShop({
+        ...form,
+        minOrder: Number(form.minOrder) || 0,
+        type: shop.type,
+        typeId: shop.typeId,
+        isApproved: false,
+      });
       setOnboardingStep("documents");
       navigate("/shopkeeper/onboarding/documents");
-    }, 500);
+    }, 450);
   };
 
   return (
-    <div className="min-h-screen bg-[#f7faf8] flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-xl"
-      >
-        <div className="text-center mb-6">
-          <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-xl shadow-emerald-600/25 mx-auto mb-3">
-            <Store className="w-7 h-7" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Create Your Shop</h1>
-          <p className="text-sm text-gray-500 mt-1">Fill in your shop details to get started.</p>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm space-y-4">
-          {/* Shop Name */}
-          <div>
-            <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Shop Name *</label>
-            <div className="relative">
-              <Store className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="e.g. Fresh Basket" className={inputClass} />
-            </div>
-            {errors.name && <p className="text-xs text-rose-500 mt-1">{errors.name}</p>}
+    <ShopOnboardingLayout
+      stepKey="create_shop"
+      onBack={() => {
+        setOnboardingStep("type_selection");
+        navigate("/shopkeeper/onboarding");
+      }}
+    >
+      <div className="grid lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.75fr)]">
+        <div className="p-5 sm:p-7 lg:p-8">
+          <div className="mb-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
+              {shop.type || "Your shop"}
+            </p>
+            <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">Create your shop</h1>
+            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+              Customers will see these details on your public shop page.
+            </p>
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Description</label>
-            <div className="relative">
-              <FileText className="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
-              <textarea
-                value={form.description}
-                onChange={(e) => update("description", e.target.value)}
-                placeholder="Tell customers about your shop..."
-                rows={3}
-                className={inputClass + " resize-none"}
-              />
-            </div>
-          </div>
-
-          {/* Shop Image */}
-          <div>
-            <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Shop Image</label>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-            {form.shopImage ? (
-              <div className="relative inline-block">
-                <img
-                  src={form.shopImage}
-                  alt="Shop preview"
-                  className="w-32 h-32 rounded-lg object-cover border-2 border-gray-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => update("shopImage", null)}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center hover:bg-rose-600 transition-colors"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+          <div className="space-y-5">
+            <section className="space-y-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Identity</h2>
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Shop name *</label>
+                <div className="relative">
+                  <Store className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                  <input
+                    value={form.name}
+                    onChange={(e) => update("name", e.target.value)}
+                    placeholder="e.g. Fresh Basket"
+                    className={`${fieldClass(errors.name)} pl-11`}
+                  />
+                </div>
+                {errors.name && <p className="mt-1 text-xs text-rose-600">{errors.name}</p>}
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full border-2 border-dashed border-gray-200 rounded-lg p-6 flex flex-col items-center gap-2 text-gray-400 hover:border-emerald-300 hover:text-emerald-500 transition-colors"
-              >
-                <Camera className="w-8 h-8" />
-                <span className="text-sm font-medium">Upload shop image</span>
-                <span className="text-xs">Customers will see this on your shop page</span>
-              </button>
-            )}
-            {errors.shopImage && <p className="text-xs text-rose-500 mt-1">{errors.shopImage}</p>}
-          </div>
-
-          {/* Phone & Email */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Phone *</label>
-              <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+91 98765 43210" className={inputClass} />
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">
+                  Description <span className="normal-case tracking-normal text-[var(--color-text-muted)]">{form.description.length}/240</span>
+                </label>
+                <div className="relative">
+                  <FileText className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-[var(--color-text-muted)]" />
+                  <textarea
+                    value={form.description}
+                    maxLength={240}
+                    onChange={(e) => update("description", e.target.value)}
+                    placeholder="Tell customers what you sell and why they should order from you."
+                    rows={3}
+                    className={`${fieldClass(errors.description)} resize-none pl-11`}
+                  />
+                </div>
+                {errors.description && <p className="mt-1 text-xs text-rose-600">{errors.description}</p>}
               </div>
-              {errors.phone && <p className="text-xs text-rose-500 mt-1">{errors.phone}</p>}
-            </div>
-            <div>
-              <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" placeholder="shop@example.com" className={inputClass} />
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Shop photo</label>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                {form.shopImage ? (
+                  <div className="relative inline-block">
+                    <img src={form.shopImage} alt="Shop preview" className="h-28 w-28 rounded-[12px] object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => update("shopImage", null)}
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-white"
+                      aria-label="Remove image"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex w-full flex-col items-center gap-1 rounded-[12px] border border-dashed border-[#dce8e2] bg-[#f8fbf9] px-4 py-6 text-[var(--color-text-muted)] hover:border-[var(--color-primary)]"
+                  >
+                    <Camera className="h-6 w-6" />
+                    <span className="text-sm font-medium">Upload shop image</span>
+                    <span className="text-xs">JPG or PNG, up to 5MB</span>
+                  </button>
+                )}
+                {errors.shopImage && <p className="mt-1 text-xs text-rose-600">{errors.shopImage}</p>}
               </div>
-            </div>
-          </div>
+            </section>
 
-          {/* Address */}
-          <div>
-            <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Address *</label>
-            <div className="relative">
-              <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
-              <textarea
-                value={form.address}
-                onChange={(e) => update("address", e.target.value)}
-                placeholder="Full shop address"
-                rows={2}
-                className={inputClass + " resize-none"}
-              />
-            </div>
-            {errors.address && <p className="text-xs text-rose-500 mt-1">{errors.address}</p>}
-          </div>
-
-          {/* City, State, Pincode */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">City *</label>
-              <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="City" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
-              {errors.city && <p className="text-xs text-rose-500 mt-1">{errors.city}</p>}
-            </div>
-            <div>
-              <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">State</label>
-              <input value={form.state} onChange={(e) => update("state", e.target.value)} placeholder="State" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
-            </div>
-            <div>
-              <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pincode</label>
-              <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} placeholder="190001" className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
-            </div>
-          </div>
-
-          {/* Hours */}
-          <div>
-            <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Business Hours *</label>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="relative">
-                <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <div className="flex gap-2">
-                  <input type="time" value={form.openingTime} onChange={(e) => update("openingTime", e.target.value)} className={inputClass + " flex-1"} />
-                  <select value={getTimePeriod(form.openingTime)} onChange={(e) => update("openingTime", updateTimePeriod(form.openingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-md px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
-                    <option>AM</option>
-                    <option>PM</option>
-                  </select>
+            <section className="space-y-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Contact</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Phone *</label>
+                  <div className="relative">
+                    <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <input
+                      value={form.phone}
+                      onChange={(e) => update("phone", e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className={`${fieldClass(errors.phone)} pl-11`}
+                    />
+                  </div>
+                  {errors.phone && <p className="mt-1 text-xs text-rose-600">{errors.phone}</p>}
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Email</label>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => update("email", e.target.value)}
+                      placeholder="shop@example.com"
+                      className={`${fieldClass(errors.email)} pl-11`}
+                    />
+                  </div>
+                  {errors.email && <p className="mt-1 text-xs text-rose-600">{errors.email}</p>}
                 </div>
               </div>
-              <div className="relative">
-                <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <div className="flex gap-2">
-                  <input type="time" value={form.closingTime} onChange={(e) => update("closingTime", e.target.value)} className={inputClass + " flex-1"} />
-                  <select value={getTimePeriod(form.closingTime)} onChange={(e) => update("closingTime", updateTimePeriod(form.closingTime, e.target.value))} className="bg-gray-50 border border-gray-200 rounded-md px-3 text-sm text-gray-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50">
-                    <option>AM</option>
-                    <option>PM</option>
-                  </select>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Location</h2>
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Street address *</label>
+                <div className="relative">
+                  <MapPin className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-[var(--color-text-muted)]" />
+                  <textarea
+                    value={form.address}
+                    onChange={(e) => update("address", e.target.value)}
+                    placeholder="Shop no., street, landmark"
+                    rows={2}
+                    className={`${fieldClass(errors.address)} resize-none pl-11`}
+                  />
                 </div>
+                {errors.address && <p className="mt-1 text-xs text-rose-600">{errors.address}</p>}
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">City *</label>
+                  <input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Srinagar" className={fieldClass(errors.city)} />
+                  {errors.city && <p className="mt-1 text-xs text-rose-600">{errors.city}</p>}
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">State *</label>
+                  <input value={form.state} onChange={(e) => update("state", e.target.value)} placeholder="Jammu & Kashmir" className={fieldClass(errors.state)} />
+                  {errors.state && <p className="mt-1 text-xs text-rose-600">{errors.state}</p>}
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">PIN code *</label>
+                  <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} placeholder="190001" maxLength={6} className={fieldClass(errors.pincode)} />
+                  {errors.pincode && <p className="mt-1 text-xs text-rose-600">{errors.pincode}</p>}
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Operations</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Opens *</label>
+                  <div className="relative">
+                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <input type="time" value={form.openingTime} onChange={(e) => update("openingTime", e.target.value)} className={`${fieldClass(errors.openingTime)} pl-11`} />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Closes *</label>
+                  <div className="relative">
+                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <input type="time" value={form.closingTime} onChange={(e) => update("closingTime", e.target.value)} className={`${fieldClass(errors.closingTime)} pl-11`} />
+                  </div>
+                  {errors.closingTime && <p className="mt-1 text-xs text-rose-600">{errors.closingTime}</p>}
+                </div>
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Minimum order (₹)</label>
+                <div className="relative">
+                  <IndianRupee className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                  <input
+                    type="number"
+                    min="0"
+                    value={form.minOrder}
+                    onChange={(e) => update("minOrder", e.target.value)}
+                    className={`${fieldClass(errors.minOrder)} pl-11`}
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <button type="button" onClick={handleProceed} disabled={saving} className="btn-primary mt-6 w-full">
+            {saving ? "Saving shop..." : "Continue to documents"}
+            {!saving && <ChevronRight className="h-4 w-4" />}
+          </button>
+        </div>
+
+        <aside className="border-t border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/50 p-5 sm:p-7 lg:sticky lg:top-6 lg:border-l lg:border-t-0 lg:p-8">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Live preview</p>
+          <div className="mt-3 overflow-hidden rounded-[16px] border border-white bg-white shadow-[var(--shadow-card)]">
+            <div className="h-28 bg-[var(--color-green-soft)]">
+              {form.shopImage ? (
+                <img src={form.shopImage} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-[var(--color-primary)]">
+                  <Store className="h-8 w-8" />
+                </div>
+              )}
+            </div>
+            <div className="p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-primary)]">
+                {shop.type || "Shop type"}
+              </p>
+              <h3 className="mt-1 text-lg font-bold">{form.name || "Your shop name"}</h3>
+              <p className="mt-1 line-clamp-3 text-sm text-[var(--color-text-muted)]">
+                {form.description || "Your shop description will appear here."}
+              </p>
+              <div className="mt-3 space-y-1 text-xs text-[var(--color-text-muted)]">
+                <p>{form.address || "Street address"}{form.city ? `, ${form.city}` : ""}</p>
+                <p>
+                  {formatTimeLabel(form.openingTime)} – {formatTimeLabel(form.closingTime)}
+                </p>
+                <p>Min. order ₹{Number(form.minOrder) || 0}</p>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Navigation */}
-        <div className="flex items-center gap-3 mt-5">
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { setOnboardingStep("type_selection"); navigate("/shopkeeper/onboarding"); }}
-            className="flex items-center gap-2 px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all"
-          >
-            <ChevronLeft className="w-4 h-4" /> Back
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={handleProceed}
-            disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50"
-          >
-            {saving ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <>Continue <ChevronRight className="w-4 h-4" /></>
-            )}
-          </motion.button>
-        </div>
-      </motion.div>
-    </div>
+        </aside>
+      </div>
+    </ShopOnboardingLayout>
   );
 };
 

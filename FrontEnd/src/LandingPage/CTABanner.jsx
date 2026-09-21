@@ -26,7 +26,7 @@ const CTABanner = () => {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/register"
+                to="/register?role=shopkeeper"
                 className="hero-cta lg:inline-flex lg:min-h-11 lg:items-center lg:gap-2 lg:rounded-[12px] lg:border lg:border-[var(--color-primary)] lg:px-5 lg:text-sm lg:font-semibold lg:text-white lg:hover:bg-white/10"
               >
                 <Store className="h-4 w-4" />

@@ -1,12 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { getDashboardPath } from "../../config/roles";
+import authService from "../../services/authService";
 
 const GuestRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
 
   if (isAuthenticated && user) {
-    return <Navigate to={getDashboardPath(user.role)} replace />;
+    return <Navigate to={authService.getPostAuthPath(user)} replace />;
   }
 
   return children || <Outlet />;
