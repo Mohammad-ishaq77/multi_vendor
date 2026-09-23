@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -136,7 +137,7 @@ const HeroCarousel = ({ onNavigate }) => {
                   {slide.badge}
                 </span>
                 {slide.extraBadge && (
-                  <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[9px] font-bold text-[var(--color-primary-dark)] sm:px-2.5 sm:py-1 sm:text-[10px] md:text-xs">
+                  <span className="inline-flex items-center rounded-full bg-white px-2 py-0.5 text-[9px] font-bold text-(--color-primary-dark) sm:px-2.5 sm:py-1 sm:text-[10px] md:text-xs">
                     {slide.extraBadge}
                   </span>
                 )}
@@ -251,11 +252,11 @@ const SectionHeader = ({ title, subtitle, actionLabel, onAction, showCartCount, 
       {subtitle && <p className="mt-0.5 text-[10px] text-gray-500 sm:mt-1 sm:text-xs md:text-sm">{subtitle}</p>}
     </div>
     {showCartCount && cartCount > 0 ? (
-      <span className="flex-shrink-0 rounded-full bg-[#155c43]/10 px-2.5 py-1 text-[10px] font-semibold text-[#155c43] sm:px-3 sm:py-1.5 sm:text-xs">
+      <span className="shrink-0 rounded-full bg-[#155c43]/10 px-2.5 py-1 text-[10px] font-semibold text-[#155c43] sm:px-3 sm:py-1.5 sm:text-xs">
         {cartCount} {cartCount === 1 ? "item" : "items"}
       </span>
     ) : actionLabel ? (
-      <button onClick={onAction} className="flex-shrink-0 inline-flex items-center gap-1 rounded-full bg-[#155c43]/5 px-2.5 py-1.5 text-[10px] font-semibold text-[#155c43] transition-colors hover:bg-[#155c43]/10 sm:px-3 sm:py-2 sm:text-xs md:px-4 md:text-sm">
+      <button onClick={onAction} className="shrink-0 inline-flex items-center gap-1 rounded-full bg-[#155c43]/5 px-2.5 py-1.5 text-[10px] font-semibold text-[#155c43] transition-colors hover:bg-[#155c43]/10 sm:px-3 sm:py-2 sm:text-xs md:px-4 md:text-sm">
         {actionLabel}
         <span>→</span>
       </button>
@@ -374,7 +375,7 @@ const CustomerDashboard = () => {
                   className="rounded-md border border-gray-100 bg-white p-2 text-left shadow-sm transition hover:shadow-md sm:rounded-lg sm:p-4"
                 >
                   <div className="flex items-center gap-1.5 sm:gap-3">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)] sm:h-10 sm:w-10 sm:rounded-md">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-(--color-green-bg) text-(--color-primary) sm:h-10 sm:w-10 sm:rounded-md">
                       <Icon className="h-3 w-3 sm:h-5 sm:w-5" />
                     </div>
                     <div className="min-w-0">
@@ -399,7 +400,7 @@ const CustomerDashboard = () => {
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {categories.map((category) => (
-                <motion.div key={category.id} variants={fadeUpItem} className="min-w-[88px] flex-shrink-0 snap-start sm:min-w-0">
+                <motion.div key={category.id} variants={fadeUpItem} className="min-w-[88px] shrink-0 snap-start sm:min-w-0">
                   <CategoryCard category={category} onClick={() => navigate("/customer/categories")} />
                 </motion.div>
               ))}

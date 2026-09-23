@@ -32,29 +32,29 @@ const MarketplaceProductCard = ({ product }) => {
         <div className="card-media relative h-40 overflow-hidden sm:h-48">
           <CardImage src={product.image} alt={product.name} category={product.category} className="h-full w-full object-cover" />
           {product.badge && (
-            <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-[var(--color-primary)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-(--color-primary) px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
               {product.badge}
             </span>
           )}
           {product.rating && (
-            <span className="absolute right-2.5 top-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-bold text-[var(--color-primary-dark)]">
-              <Star className="h-3 w-3 fill-current text-[var(--color-primary)]" />
+            <span className="absolute right-2.5 top-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-bold text-(--color-primary-dark)">
+              <Star className="h-3 w-3 fill-current text-(--color-primary)" />
               {product.rating}
             </span>
           )}
         </div>
         <div className="px-3 pt-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-primary)]">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-(--color-primary)">
             {product.shop || product.category}
           </p>
-          <h3 className="mt-1 line-clamp-1 text-sm font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
+          <h3 className="mt-1 line-clamp-1 text-sm font-bold text-(--color-text) group-hover:text-(--color-primary)">
             {product.name}
           </h3>
-          {product.unit && <p className="mt-0.5 text-[11px] text-[var(--color-text-muted)]">{product.unit}</p>}
+          {product.unit && <p className="mt-0.5 text-[11px] text-(--color-text-muted)">{product.unit}</p>}
           <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-base font-bold text-[var(--color-primary-dark)]">₹{product.price}</span>
+            <span className="text-base font-bold text-(--color-primary-dark)">₹{product.price}</span>
             {product.originalPrice && (
-              <span className="text-[11px] text-[var(--color-text-muted)] line-through">₹{product.originalPrice}</span>
+              <span className="text-[11px] text-(--color-text-muted) line-through">₹{product.originalPrice}</span>
             )}
           </div>
         </div>

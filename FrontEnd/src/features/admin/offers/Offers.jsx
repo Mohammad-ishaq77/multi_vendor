@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, Plus, Tag, Percent, IndianRupee, Calendar, BarChart3, Filter } from "lucide-react";
+import { Search, Plus, Tag, Percent, IndianRupee, Calendar, BarChart3 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 

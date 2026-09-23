@@ -121,22 +121,22 @@ const CreateShop = () => {
       <div className="grid lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.75fr)]">
         <div className="p-5 sm:p-7 lg:p-8">
           <div className="mb-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-(--color-primary)">
               {shop.type || "Your shop"}
             </p>
             <h1 className="mt-1 font-display text-2xl font-bold tracking-tight">Create your shop</h1>
-            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+            <p className="mt-1 text-sm text-(--color-text-muted)">
               Customers will see these details on your public shop page.
             </p>
           </div>
 
           <div className="space-y-5">
             <section className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Identity</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Identity</h2>
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Shop name *</label>
                 <div className="relative">
-                  <Store className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                  <Store className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                   <input
                     value={form.name}
                     onChange={(e) => update("name", e.target.value)}
@@ -148,10 +148,10 @@ const CreateShop = () => {
               </div>
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">
-                  Description <span className="normal-case tracking-normal text-[var(--color-text-muted)]">{form.description.length}/240</span>
+                  Description <span className="normal-case tracking-normal text-(--color-text-muted)">{form.description.length}/240</span>
                 </label>
                 <div className="relative">
-                  <FileText className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-[var(--color-text-muted)]" />
+                  <FileText className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-(--color-text-muted)" />
                   <textarea
                     value={form.description}
                     maxLength={240}
@@ -182,7 +182,7 @@ const CreateShop = () => {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex w-full flex-col items-center gap-1 rounded-[12px] border border-dashed border-[#dce8e2] bg-[#f8fbf9] px-4 py-6 text-[var(--color-text-muted)] hover:border-[var(--color-primary)]"
+                    className="flex w-full flex-col items-center gap-1 rounded-[12px] border border-dashed border-[#dce8e2] bg-[#f8fbf9] px-4 py-6 text-(--color-text-muted) hover:border-(--color-primary)"
                   >
                     <Camera className="h-6 w-6" />
                     <span className="text-sm font-medium">Upload shop image</span>
@@ -194,12 +194,12 @@ const CreateShop = () => {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Contact</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Contact</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Phone *</label>
                   <div className="relative">
-                    <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                     <input
                       value={form.phone}
                       onChange={(e) => update("phone", e.target.value)}
@@ -212,7 +212,7 @@ const CreateShop = () => {
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Email</label>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                     <input
                       type="email"
                       value={form.email}
@@ -227,11 +227,11 @@ const CreateShop = () => {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Location</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Location</h2>
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Street address *</label>
                 <div className="relative">
-                  <MapPin className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-[var(--color-text-muted)]" />
+                  <MapPin className="pointer-events-none absolute left-4 top-3.5 h-4 w-4 text-(--color-text-muted)" />
                   <textarea
                     value={form.address}
                     onChange={(e) => update("address", e.target.value)}
@@ -262,19 +262,19 @@ const CreateShop = () => {
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Operations</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Operations</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Opens *</label>
                   <div className="relative">
-                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                     <input type="time" value={form.openingTime} onChange={(e) => update("openingTime", e.target.value)} className={`${fieldClass(errors.openingTime)} pl-11`} />
                   </div>
                 </div>
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Closes *</label>
                   <div className="relative">
-                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                    <Clock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                     <input type="time" value={form.closingTime} onChange={(e) => update("closingTime", e.target.value)} className={`${fieldClass(errors.closingTime)} pl-11`} />
                   </div>
                   {errors.closingTime && <p className="mt-1 text-xs text-rose-600">{errors.closingTime}</p>}
@@ -283,7 +283,7 @@ const CreateShop = () => {
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Minimum order (₹)</label>
                 <div className="relative">
-                  <IndianRupee className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                  <IndianRupee className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                   <input
                     type="number"
                     min="0"
@@ -302,27 +302,27 @@ const CreateShop = () => {
           </button>
         </div>
 
-        <aside className="border-t border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/50 p-5 sm:p-7 lg:sticky lg:top-6 lg:border-l lg:border-t-0 lg:p-8">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Live preview</p>
+        <aside className="border-t border-(--color-green-soft) bg-(--color-green-bg)/50 p-5 sm:p-7 lg:sticky lg:top-6 lg:border-l lg:border-t-0 lg:p-8">
+          <p className="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Live preview</p>
           <div className="mt-3 overflow-hidden rounded-[16px] border border-white bg-white shadow-[var(--shadow-card)]">
-            <div className="h-28 bg-[var(--color-green-soft)]">
+            <div className="h-28 bg-(--color-green-soft)">
               {form.shopImage ? (
                 <img src={form.shopImage} alt="" className="h-full w-full object-cover" />
               ) : (
-                <div className="flex h-full items-center justify-center text-[var(--color-primary)]">
+                <div className="flex h-full items-center justify-center text-(--color-primary)">
                   <Store className="h-8 w-8" />
                 </div>
               )}
             </div>
             <div className="p-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-primary)]">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-(--color-primary)">
                 {shop.type || "Shop type"}
               </p>
               <h3 className="mt-1 text-lg font-bold">{form.name || "Your shop name"}</h3>
-              <p className="mt-1 line-clamp-3 text-sm text-[var(--color-text-muted)]">
+              <p className="mt-1 line-clamp-3 text-sm text-(--color-text-muted)">
                 {form.description || "Your shop description will appear here."}
               </p>
-              <div className="mt-3 space-y-1 text-xs text-[var(--color-text-muted)]">
+              <div className="mt-3 space-y-1 text-xs text-(--color-text-muted)">
                 <p>{form.address || "Street address"}{form.city ? `, ${form.city}` : ""}</p>
                 <p>
                   {formatTimeLabel(form.openingTime)} – {formatTimeLabel(form.closingTime)}

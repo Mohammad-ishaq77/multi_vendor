@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { useLocation, useNavigate } from "react-router-dom";
 import OnboardingShell from "../../../components/onboarding/OnboardingShell";
 

@@ -66,8 +66,8 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
           onClick={toggleWishlist}
           className={`absolute top-1.5 right-1.5 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 sm:top-2.5 sm:right-2.5 sm:w-9 sm:h-9 ${
             saved
-              ? "bg-[var(--color-green-bg)] border-[var(--color-green-soft)] text-[var(--color-primary)]"
-              : "bg-white/80 border-white/50 text-gray-400 hover:text-[var(--color-primary)]"
+              ? "bg-(--color-green-bg) border-(--color-green-soft) text-(--color-primary)"
+              : "bg-white/80 border-white/50 text-gray-400 hover:text-(--color-primary)"
           }`}
         >
           <AnimatePresence mode="wait">
@@ -102,8 +102,8 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
             {product.category}
           </span>
           {product.rating && (
-            <span className="flex items-center gap-0.5 text-[0.55rem] text-[var(--color-primary)] font-medium sm:text-[0.65rem]">
-              <Star className="w-2.5 h-2.5 fill-[var(--color-green-light)] text-[var(--color-green-light)] sm:w-3 sm:h-3" />
+            <span className="flex items-center gap-0.5 text-[0.55rem] text-(--color-primary) font-medium sm:text-[0.65rem]">
+              <Star className="w-2.5 h-2.5 fill-(--color-green-light) text-(--color-green-light) sm:w-3 sm:h-3" />
               {product.rating}
             </span>
           )}
@@ -116,7 +116,7 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
         <p className="text-[10px] text-gray-400 mt-0.5 sm:text-xs">{product.unit}</p>
 
         {/* Shop Name — Prominent Display */}
-        <div className="mt-1.5 mb-1.5 inline-flex items-center gap-1 px-1.5 py-1 bg-gradient-to-r from-[#155c43]/8 to-[#155c43]/5 rounded-md border border-[#155c43]/10 sm:mt-2 sm:mb-3 sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:rounded-lg">
+        <div className="mt-1.5 mb-1.5 inline-flex items-center gap-1 px-1.5 py-1 bg-linear-to-r from-[#155c43]/8 to-[#155c43]/5 rounded-md border border-[#155c43]/10 sm:mt-2 sm:mb-3 sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:rounded-lg">
           <span className="text-[9px] font-bold text-[#155c43] uppercase tracking-wide sm:text-[11px]">{product.shop}</span>
         </div>
 

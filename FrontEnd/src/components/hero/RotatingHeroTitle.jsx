@@ -5,6 +5,7 @@ const RotatingHeroTitle = ({
   titleLine = ["Your local", "marketplace,"],
   rotating = ["Delivered", "Nearby", "Fresh", "In minutes"],
   dark = false,
+  centered = false,
 }) => {
   const [wordIndex, setWordIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -25,16 +26,17 @@ const RotatingHeroTitle = ({
   return (
     <>
       <h1
-        className={`mt-[max(0.7rem,1.6vh)] font-display text-[clamp(2.7rem,13vw,3.45rem)] font-extrabold leading-[1.06] tracking-tight sm:text-[clamp(2.85rem,6.8vw,3.5rem)] lg:mt-3 lg:text-[3.6rem] lg:font-bold lg:leading-[1.08] ${
-          dark ? "text-white" : "text-[var(--color-text)]"
+        className={`${centered ? "text-center lg:whitespace-nowrap" : ""} mt-[max(0.45rem,1vh)] font-display text-[clamp(2.7rem,13vw,3.45rem)] font-extrabold leading-[1.06] tracking-tight sm:text-[clamp(2.85rem,6.8vw,3.5rem)] lg:mt-2 lg:text-[3.6rem] lg:font-bold lg:leading-[1.08] ${
+          dark ? "text-white" : "text-(--color-text)"
         }`}
       >
         {(Array.isArray(titleLine) ? titleLine : [titleLine]).map((line) => (
-          <span key={line} className="block">
+          <span key={line} className={centered ? "inline" : "block"}>
+            {centered && line !== titleLine[0] ? " " : ""}
             {line}
           </span>
         ))}
-        <span className="relative mt-[max(0.2rem,0.55vh)] inline-grid justify-items-start lg:mt-2">
+        <span className={`relative mt-0 inline-grid ${centered ? "justify-items-center" : "justify-items-start"}`}>
           <span
             aria-hidden
             className="invisible col-start-1 row-start-1 text-[1.16em] font-extrabold tracking-tight sm:text-[1.2em] lg:text-[1.24em]"
@@ -57,8 +59,8 @@ const RotatingHeroTitle = ({
               whileTap={{ opacity: 0.75 }}
               transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               aria-label={`${currentWord} Click to see the next title`}
-              className={`hero-rotating-word col-start-1 row-start-1 w-max justify-self-start text-[1.16em] sm:text-[1.2em] lg:text-[1.24em] lg:justify-self-start ${
-                dark ? "text-[var(--color-green-soft)]" : "text-[var(--color-primary)]"
+              className={`hero-rotating-word col-start-1 row-start-1 w-max ${centered ? "justify-self-center" : "justify-self-start"} text-[1.16em] sm:text-[1.2em] lg:text-[1.24em] lg:${centered ? "justify-self-center" : "justify-self-start"} ${
+                dark ? "text-white" : "text-(--color-primary)"
               }`}
             >
               {currentWord}
@@ -66,22 +68,6 @@ const RotatingHeroTitle = ({
           </AnimatePresence>
         </span>
       </h1>
-      <div className={`mt-[max(0.35rem,0.8vh)] flex items-center justify-start gap-1.5 lg:mt-2 ${dark ? "text-white" : "text-[var(--color-primary)]"}`}>
-        {rotating.map((word, index) => (
-          <button
-            key={word}
-            type="button"
-            aria-label={`Show ${word}`}
-            aria-current={index === wordIndex ? "true" : undefined}
-            onClick={() => setWordIndex(index)}
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            className={`h-1.5 rounded-full transition-all ${
-              index === wordIndex ? "w-6 bg-current" : "w-1.5 bg-current/30 hover:bg-current/60"
-            }`}
-          />
-        ))}
-      </div>
     </>
   );
 };

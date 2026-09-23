@@ -38,27 +38,27 @@ export default function DeliveryGuidelines() {
     <OnboardingLayout>
       <div className="p-5 sm:p-7 lg:p-8">
         <div className="mb-6">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
             <ClipboardCheck className="h-6 w-6" />
           </div>
           <h1 className="font-display text-2xl font-bold lg:text-3xl">Partner guidelines</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+          <p className="mt-1 text-sm text-(--color-text-muted)">
             Read these once — they keep deliveries safe for everyone.
           </p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Eligibility</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Eligibility</p>
             <div className="space-y-2.5">
               {guidelines.map((item) => (
                 <div key={item.title} className="flex items-start gap-3 rounded-[16px] border border-[#edf3ef] bg-[#f8fbf9] p-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-white text-[var(--color-primary)]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-white text-(--color-primary)">
                     <item.icon className="h-5 w-5" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold">{item.title}</p>
-                    <p className="text-xs text-[var(--color-text-muted)]">{item.text}</p>
+                    <p className="text-xs text-(--color-text-muted)">{item.text}</p>
                   </div>
                 </div>
               ))}
@@ -66,11 +66,11 @@ export default function DeliveryGuidelines() {
           </div>
 
           <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">On the road</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">On the road</p>
             <div className="space-y-2">
               {responsibilities.map((item) => (
-                <div key={item} className="flex items-start gap-2.5 rounded-[16px] border border-[#edf3ef] bg-[#f8fbf9] p-3.5 text-sm text-[var(--color-text-muted)]">
-                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-primary)]" />
+                <div key={item} className="flex items-start gap-2.5 rounded-[16px] border border-[#edf3ef] bg-[#f8fbf9] p-3.5 text-sm text-(--color-text-muted)">
+                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-(--color-primary)" />
                   <span className="text-[13px]">{item}</span>
                 </div>
               ))}
@@ -93,7 +93,7 @@ export default function DeliveryGuidelines() {
               setAgreed(e.target.checked);
               setError("");
             }}
-            className="mt-0.5 h-4 w-4 rounded border-[#dce8e2] accent-[var(--color-primary)]"
+            className="mt-0.5 h-4 w-4 rounded border-[#dce8e2] accent-(--color-primary)"
           />
           <span className="text-sm font-medium">I have read and agree to the delivery partner guidelines</span>
         </label>

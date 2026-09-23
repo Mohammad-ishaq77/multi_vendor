@@ -7,16 +7,12 @@ import {
   Eye,
   Ban,
   CheckCircle,
-  Star,
   Store,
-  IndianRupee,
-  ShoppingCart,
   AlertTriangle,
   SlidersHorizontal,
   ArrowUpDown,
   ChevronUp,
   ChevronDown,
-  X,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
@@ -342,7 +338,7 @@ export default function Products() {
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-md bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div className="w-9 h-9 rounded-md bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
                           {product.name?.charAt(0)}
                         </div>
                         <div>

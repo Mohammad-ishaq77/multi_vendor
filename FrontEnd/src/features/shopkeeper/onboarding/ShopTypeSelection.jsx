@@ -65,16 +65,16 @@ const ShopTypeSelection = () => {
       <div className="p-5 sm:p-7 lg:p-8">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
               <Store className="h-6 w-6" />
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">What do you sell?</h1>
-            <p className="mt-1 max-w-xl text-sm text-[var(--color-text-muted)]">
+            <p className="mt-1 max-w-xl text-sm text-(--color-text-muted)">
               Choose the aisle that fits your shop. Customers will find you faster.
             </p>
           </div>
           <div className="relative w-full lg:max-w-sm">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
             <input
               type="search"
               value={searchQuery}
@@ -100,23 +100,23 @@ const ShopTypeSelection = () => {
                   onClick={() => handleSelect(type)}
                   className={`relative flex items-start gap-3 rounded-[16px] border p-4 text-left transition-all ${
                     active
-                      ? "border-[var(--color-primary)] bg-[var(--color-green-bg)] shadow-[var(--shadow-card)]"
-                      : "border-[#dce8e2] bg-white hover:-translate-y-0.5 hover:border-[var(--color-green-soft)] hover:shadow-[var(--shadow-card)]"
+                      ? "border-(--color-primary) bg-(--color-green-bg) shadow-[var(--shadow-card)]"
+                      : "border-[#dce8e2] bg-white hover:-translate-y-0.5 hover:border-(--color-green-soft) hover:shadow-[var(--shadow-card)]"
                   }`}
                 >
                   {active && (
-                    <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-[var(--color-primary)]" />
+                    <CheckCircle2 className="absolute right-3 top-3 h-5 w-5 text-(--color-primary)" />
                   )}
                   <span
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] ${
-                      active ? "bg-white text-[var(--color-primary)]" : "bg-[var(--color-green-bg)] text-[var(--color-primary)]"
+                      active ? "bg-white text-(--color-primary)" : "bg-(--color-green-bg) text-(--color-primary)"
                     }`}
                   >
                     <Icon className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 pr-5">
-                    <span className="block text-sm font-semibold text-[var(--color-text)]">{type.name}</span>
-                    <span className="mt-0.5 block text-xs leading-relaxed text-[var(--color-text-muted)]">
+                    <span className="block text-sm font-semibold text-(--color-text)">{type.name}</span>
+                    <span className="mt-0.5 block text-xs leading-relaxed text-(--color-text-muted)">
                       {type.description}
                     </span>
                   </span>
@@ -130,16 +130,16 @@ const ShopTypeSelection = () => {
             onClick={handleCustom}
             className={`flex items-start gap-3 rounded-[16px] border border-dashed p-4 text-left transition-all ${
               isCustom
-                ? "border-[var(--color-primary)] bg-[var(--color-green-bg)]"
-                : "border-[#dce8e2] bg-white hover:border-[var(--color-primary)]"
+                ? "border-(--color-primary) bg-(--color-green-bg)"
+                : "border-[#dce8e2] bg-white hover:border-(--color-primary)"
             }`}
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-white text-[var(--color-primary)]">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-white text-(--color-primary)">
               <Plus className="h-5 w-5" />
             </span>
             <span>
               <span className="block text-sm font-semibold">Create new type</span>
-              <span className="mt-0.5 block text-xs text-[var(--color-text-muted)]">
+              <span className="mt-0.5 block text-xs text-(--color-text-muted)">
                 Don't see your category? Add a custom one for review.
               </span>
             </span>
@@ -147,7 +147,7 @@ const ShopTypeSelection = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className="mt-4 text-sm text-[var(--color-text-muted)]">
+          <p className="mt-4 text-sm text-(--color-text-muted)">
             No types match “{searchQuery}”. Create a custom type instead.
           </p>
         )}
@@ -176,10 +176,10 @@ const ShopTypeSelection = () => {
         </AnimatePresence>
 
         {selectedMeta?.name && (
-          <div className="mt-5 flex items-center justify-between gap-4 rounded-[16px] border border-[var(--color-green-soft)] bg-[var(--color-green-bg)] px-4 py-3.5 sm:px-5">
+          <div className="mt-5 flex items-center justify-between gap-4 rounded-[16px] border border-(--color-green-soft) bg-(--color-green-bg) px-4 py-3.5 sm:px-5">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--color-primary-dark)]">{selectedMeta.name}</p>
-              <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">{selectedMeta.description}</p>
+              <p className="text-sm font-semibold text-(--color-primary-dark)">{selectedMeta.name}</p>
+              <p className="mt-0.5 text-xs text-(--color-text-muted)">{selectedMeta.description}</p>
             </div>
             {error && <p className="text-sm text-rose-600">{error}</p>}
             <button type="button" onClick={handleProceed} disabled={submitting} className="btn-primary shrink-0">

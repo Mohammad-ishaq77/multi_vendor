@@ -43,7 +43,7 @@ const ShopkeeperDashboard = () => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-md p-3 text-white shadow-xl shadow-emerald-600/20 mb-3 sm:rounded-lg sm:p-6 sm:mb-6 lg:p-8"
+        className="bg-linear-to-r from-emerald-600 to-teal-600 rounded-md p-3 text-white shadow-xl shadow-emerald-600/20 mb-3 sm:rounded-lg sm:p-6 sm:mb-6 lg:p-8"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
           <div>

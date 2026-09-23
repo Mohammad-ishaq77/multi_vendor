@@ -13,8 +13,6 @@ import {
   MapPin,
   Clock,
   Star,
-  Phone,
-  Mail,
   Calendar,
   CheckCircle,
   XCircle,
@@ -231,7 +229,6 @@ export default function OrderDetails() {
                   const stepStatus = statusOrder[step.key] ?? -1;
                   const isCompleted = order.status !== "cancelled" && currentStepIndex >= stepStatus;
                   const isCurrent = order.status === step.key;
-                  const isCancelled = order.status === "cancelled" && idx === 0;
 
                   return (
                     <div key={step.key} className="flex items-start gap-4 relative">
@@ -243,7 +240,7 @@ export default function OrderDetails() {
                         />
                       )}
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${
                           isCompleted
                             ? "bg-[#155c43] text-white"
                             : isCurrent
@@ -274,7 +271,7 @@ export default function OrderDetails() {
                 })}
                 {order.status === "cancelled" && (
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center flex-shrink-0 z-10">
+                    <div className="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 z-10">
                       <XCircle size={14} />
                     </div>
                     <div>
@@ -315,7 +312,7 @@ export default function OrderDetails() {
                       <tr key={idx} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition-colors">
                         <td className="px-6 py-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
                               <Package size={14} />
                             </div>
                             <div>
@@ -413,7 +410,7 @@ export default function OrderDetails() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {order.deliveryAddress && (
                     <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
-                      <MapPin size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                      <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Delivery Address</p>
                         <p className="text-sm font-semibold" style={{ color: "#14261f" }}>{order.deliveryAddress}</p>
@@ -422,7 +419,7 @@ export default function OrderDetails() {
                   )}
                   {order.shopAddress && (
                     <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
-                      <Store size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                      <Store size={16} className="text-gray-400 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Pickup Address</p>
                         <p className="text-sm font-semibold" style={{ color: "#14261f" }}>{order.shopAddress}</p>
@@ -431,7 +428,7 @@ export default function OrderDetails() {
                   )}
                   {order.deliveryDistance && (
                     <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
-                      <Navigation size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                      <Navigation size={16} className="text-gray-400 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Distance</p>
                         <p className="text-sm font-semibold" style={{ color: "#14261f" }}>{order.deliveryDistance} km</p>
@@ -440,7 +437,7 @@ export default function OrderDetails() {
                   )}
                   {order.deliveryTime && (
                     <div className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
-                      <Timer size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                      <Timer size={16} className="text-gray-400 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Delivery Time</p>
                         <p className="text-sm font-semibold" style={{ color: "#14261f" }}>{order.deliveryTime} minutes</p>
@@ -475,7 +472,7 @@ export default function OrderDetails() {
                   <p className="font-semibold truncate" style={{ color: "#14261f" }}>{order.customerName}</p>
                   <p className="text-xs text-gray-400">{order.customerPhone || "—"}</p>
                 </div>
-                <ExternalLink size={14} className="text-gray-400 flex-shrink-0" />
+                <ExternalLink size={14} className="text-gray-400 shrink-0" />
               </div>
             </motion.div>
 
@@ -502,7 +499,7 @@ export default function OrderDetails() {
                   </p>
                   <p className="text-xs text-gray-400">{shop?.category || shop?.type || "—"}</p>
                 </div>
-                <ExternalLink size={14} className="text-gray-400 flex-shrink-0" />
+                <ExternalLink size={14} className="text-gray-400 shrink-0" />
               </div>
             </motion.div>
 
@@ -528,7 +525,7 @@ export default function OrderDetails() {
                     <p className="font-semibold truncate" style={{ color: "#14261f" }}>{order.deliveryPartnerName}</p>
                     <p className="text-xs text-gray-400">{order.deliveryPartnerId || "—"}</p>
                   </div>
-                  <ExternalLink size={14} className="text-gray-400 flex-shrink-0" />
+                  <ExternalLink size={14} className="text-gray-400 shrink-0" />
                 </div>
               ) : (
                 <div className="p-3 rounded-md bg-gray-50 text-center">

@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, AlertCircle, X } from "lucide-react";
@@ -31,20 +32,20 @@ export const ToastProvider = ({ children }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.22 }}
-              className="pointer-events-auto flex items-start gap-3 rounded-[16px] border border-[var(--color-green-soft)] bg-white px-4 py-3 shadow-[var(--shadow-hover)]"
+              className="pointer-events-auto flex items-start gap-3 rounded-[16px] border border-(--color-green-soft) bg-white px-4 py-3 shadow-[var(--shadow-hover)]"
               role="status"
             >
               {toast.type === "error" ? (
-                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--color-primary-dark)]" />
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-(--color-primary-dark)" />
               ) : (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[var(--color-primary)]" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-(--color-primary)" />
               )}
-              <p className="flex-1 text-sm font-medium text-[var(--color-text)]">{toast.message}</p>
+              <p className="flex-1 text-sm font-medium text-(--color-text)">{toast.message}</p>
               <button
                 type="button"
                 aria-label="Dismiss notification"
                 onClick={() => dismiss(toast.id)}
-                className="rounded-lg p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-green-bg)]"
+                className="rounded-lg p-1 text-(--color-text-muted) hover:bg-(--color-green-bg)"
               >
                 <X className="h-4 w-4" />
               </button>

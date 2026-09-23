@@ -104,7 +104,7 @@ export default function ContactVerification() {
       <label className="text-xs font-semibold uppercase tracking-wider">{label}</label>
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Icon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+          <Icon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
           <input
             type={type}
             value={form[channel]}
@@ -140,7 +140,7 @@ export default function ContactVerification() {
       )}
       {errors[`${channel}Otp`] && <p className="text-xs text-rose-600">{errors[`${channel}Otp`]}</p>}
       {verified[channel] && (
-        <p className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-primary)]">
+        <p className="inline-flex items-center gap-1 text-xs font-medium text-(--color-primary)">
           <CheckCircle className="h-3.5 w-3.5" /> Verified
         </p>
       )}
@@ -151,17 +151,17 @@ export default function ContactVerification() {
     <OnboardingLayout>
       <div className="space-y-5 p-5 sm:p-7 lg:p-8">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
             <User className="h-6 w-6" />
           </div>
           <h1 className="font-display text-xl font-bold">Your details</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">We'll use these to assign nearby deliveries.</p>
+          <p className="mt-1 text-sm text-(--color-text-muted)">We'll use these to assign nearby deliveries.</p>
         </div>
 
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider">Full name</label>
           <div className="relative">
-            <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
             <input
               value={form.fullName}
               onChange={(e) => update("fullName", e.target.value)}
@@ -188,8 +188,8 @@ export default function ContactVerification() {
                   onClick={() => update("vehicleType", item.id)}
                   className={`flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[12px] border text-xs font-semibold ${
                     active
-                      ? "border-[var(--color-primary)] bg-[var(--color-green-bg)] text-[var(--color-primary-dark)]"
-                      : "border-[#dce8e2] bg-white text-[var(--color-text-muted)]"
+                      ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark)"
+                      : "border-[#dce8e2] bg-white text-(--color-text-muted)"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -214,7 +214,7 @@ export default function ContactVerification() {
           </div>
         )}
 
-        <div className="rounded-[12px] border border-[var(--color-green-soft)] bg-[var(--color-green-bg)] px-3 py-2.5 text-xs text-[var(--color-primary-dark)]">
+        <div className="rounded-[12px] border border-(--color-green-soft) bg-(--color-green-bg) px-3 py-2.5 text-xs text-(--color-primary-dark)">
           Demo OTP for mobile and email: <span className="font-mono font-bold">123456</span>
         </div>
 

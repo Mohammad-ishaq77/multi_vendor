@@ -70,7 +70,7 @@ const Navbar = () => {
   return (
     <header className={`fixed inset-x-0 top-0 z-50 ${scrolled ? "shadow-[var(--shadow-card)]" : ""}`}>
       <div
-        className={`hidden overflow-hidden bg-[var(--color-primary-dark)] transition-[max-height] duration-300 ease-out md:block ${
+        className={`hidden overflow-hidden bg-(--color-primary-dark) transition-[max-height] duration-300 ease-out md:block ${
           hidden ? "max-h-0" : "max-h-9"
         }`}
       >
@@ -98,7 +98,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="border-b border-[var(--color-green-soft)] bg-white/95 backdrop-blur-xl">
+      <div className="border-b border-(--color-green-soft) bg-white/95 backdrop-blur-xl">
         <div className="container-app flex h-[60px] items-center gap-3 lg:gap-5">
           <BrandLogo showText={false} size={36} />
 
@@ -133,7 +133,7 @@ const Navbar = () => {
           <div className="ml-auto flex items-center gap-1 lg:hidden">
             <button
               type="button"
-              className="rounded-full p-2 text-[var(--color-text)] hover:bg-[var(--color-green-bg)]"
+              className="rounded-full p-2 text-(--color-text) hover:bg-(--color-green-bg)"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((open) => !open)}
@@ -150,12 +150,12 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="border-b border-[var(--color-green-soft)] bg-white lg:hidden"
+            className="border-b border-(--color-green-soft) bg-white lg:hidden"
           >
             <div className="container-app space-y-3 py-3">
               <MarketplaceSearch variant="mobile" placeholder="Search marketplace" />
 
-              <nav className="flex flex-col overflow-hidden rounded-2xl border border-[var(--color-green-soft)] bg-[var(--color-surface)]" aria-label="Mobile">
+              <nav className="flex flex-col overflow-hidden rounded-2xl border border-(--color-green-soft) bg-(--color-surface)" aria-label="Mobile">
                 {publicNav.map((item) => {
                   const Icon = NAV_ICONS[item.to] || Store;
                   const active = isNavActive(item.to);
@@ -165,10 +165,10 @@ const Navbar = () => {
                       key={item.to}
                       to={item.to}
                       end={item.to === "/"}
-                      className={`flex items-center gap-3 border-b border-[var(--color-green-soft)] px-4 py-3.5 text-sm font-semibold last:border-b-0 ${
+                      className={`flex items-center gap-3 border-b border-(--color-green-soft) px-4 py-3.5 text-sm font-semibold last:border-b-0 ${
                         active
-                          ? "bg-[var(--color-green-bg)] text-[var(--color-primary-dark)]"
-                          : "text-[var(--color-text)] hover:bg-white"
+                          ? "bg-(--color-green-bg) text-(--color-primary-dark)"
+                          : "text-(--color-text) hover:bg-white"
                       }`}
                     >
                       <Icon className="h-4 w-4 shrink-0" />

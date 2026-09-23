@@ -35,7 +35,7 @@ const ShopCard = ({ shop, onClick }) => {
           animate={{ opacity: 1, scale: 1 }}
           className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow-sm sm:top-3 sm:left-3 sm:px-2.5 sm:py-1 sm:rounded-lg sm:gap-1"
         >
-          <Star className="w-3 h-3 text-[var(--color-green-light)] fill-[var(--color-green-light)] sm:w-3.5 sm:h-3.5" />
+          <Star className="w-3 h-3 text-(--color-green-light) fill-(--color-green-light) sm:w-3.5 sm:h-3.5" />
           <span className="text-[10px] font-bold text-[#14261f] sm:text-xs">{shop.rating}</span>
           <span className="text-[0.55rem] text-gray-400 hidden sm:inline">({shop.reviewCount || 120})</span>
         </motion.div>
@@ -58,7 +58,7 @@ const ShopCard = ({ shop, onClick }) => {
           <motion.div
             initial={{ opacity: 0, x: -5 }}
             whileHover={{ x: 3 }}
-            className="hidden sm:flex w-8 h-8 rounded-full bg-[#f5f7f6] items-center justify-center text-gray-400 group-hover:bg-[#155c43] group-hover:text-white transition-all duration-300 flex-shrink-0"
+            className="hidden sm:flex w-8 h-8 rounded-full bg-[#f5f7f6] items-center justify-center text-gray-400 group-hover:bg-[#155c43] group-hover:text-white transition-all duration-300 shrink-0"
           >
             <ArrowRight className="w-4 h-4" />
           </motion.div>
@@ -71,7 +71,7 @@ const ShopCard = ({ shop, onClick }) => {
             {shop.deliveryTime}
           </span>
           <span className="flex items-center gap-0.5 truncate sm:gap-1">
-            <MapPin className="w-3 h-3 flex-shrink-0 sm:w-3.5 sm:h-3.5" />
+            <MapPin className="w-3 h-3 shrink-0 sm:w-3.5 sm:h-3.5" />
             <span className="truncate">{shop.location}</span>
           </span>
         </div>

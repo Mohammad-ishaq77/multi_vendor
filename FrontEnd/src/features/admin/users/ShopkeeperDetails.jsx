@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, User, Mail, Phone, Calendar, MapPin, Store, Star,
+  ArrowLeft, Mail, Phone, Calendar, Store, Star,
   IndianRupee, ShoppingBag, Package, UserCheck, UserX, Loader2, AlertCircle, TrendingUp,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";

@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
 import { useCart } from "../context/CartContext";
-import { products as allProducts, shops } from "../data/customerData";
+import { products as allProducts } from "../data/customerData";
 
 // --- Enrich products from shared data with detail-only fields ---
 

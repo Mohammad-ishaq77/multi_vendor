@@ -25,11 +25,11 @@ import RevenueCard from "../components/RevenueCard";
 import PageTransition from "../components/PageTransition";
 
 const statusBadge = {
-  pending: "bg-[var(--color-green-bg)] text-[var(--color-primary-dark)] border border-[var(--color-green-soft)]",
+  pending: "bg-(--color-green-bg) text-(--color-primary-dark) border border-(--color-green-soft)",
   confirmed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   preparing: "bg-teal-50 text-teal-700 border border-teal-200",
   ready_for_pickup: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  out_for_delivery: "bg-[var(--color-green-bg)] text-[var(--color-primary)] border border-[var(--color-green-soft)]",
+  out_for_delivery: "bg-(--color-green-bg) text-(--color-primary) border border-(--color-green-soft)",
   delivered: "bg-green-50 text-green-700 border border-green-200",
   completed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   cancelled: "bg-slate-50 text-slate-600 border border-slate-200",
@@ -39,7 +39,7 @@ const quickActions = [
   { label: "Review Shop Approvals", icon: Store, route: "/admin/approvals/shopkeepers", color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" },
   { label: "Review Delivery Partners", icon: Truck, route: "/admin/approvals/delivery-partners", color: "bg-teal-50 text-teal-600 hover:bg-teal-100" },
   { label: "View Orders", icon: ShoppingCart, route: "/admin/orders", color: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" },
-  { label: "Monitor Deliveries", icon: Navigation, route: "/admin/deliveries", color: "bg-[var(--color-green-bg)] text-[var(--color-primary)] hover:bg-[var(--color-green-soft)]" },
+  { label: "Monitor Deliveries", icon: Navigation, route: "/admin/deliveries", color: "bg-(--color-green-bg) text-(--color-primary) hover:bg-(--color-green-soft)" },
   { label: "View Payments", icon: CreditCard, route: "/admin/payments", color: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" },
   { label: "View Reports", icon: FileText, route: "/admin/reports", color: "bg-teal-50 text-teal-700 hover:bg-teal-100" },
 ];

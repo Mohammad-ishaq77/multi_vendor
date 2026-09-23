@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, Clock, Truck, Store, User, Package, IndianRupee, Shield, CheckCircle } from "lucide-react";

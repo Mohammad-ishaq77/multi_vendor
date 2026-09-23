@@ -14,9 +14,9 @@ export default function OnboardingShell({
   const progress = steps.length ? ((safeIndex + 1) / steps.length) * 100 : 0;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[var(--color-surface-tint)]">
-      <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-[var(--color-green-soft)] blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-[var(--color-green-light)]/20 blur-3xl" />
+    <div className="relative min-h-screen overflow-x-hidden bg-(--color-surface-tint)">
+      <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-(--color-green-soft) blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-(--color-green-light)/20 blur-3xl" />
 
       <div className="container-app relative z-10 py-6 sm:py-8 lg:py-10">
         <motion.div
@@ -28,7 +28,7 @@ export default function OnboardingShell({
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-green-soft)] bg-white px-3.5 py-2 text-sm font-medium text-[var(--color-text-muted)] shadow-[var(--shadow-card)] hover:text-[var(--color-primary)]"
+              className="inline-flex items-center gap-1.5 rounded-full border border-(--color-green-soft) bg-white px-3.5 py-2 text-sm font-medium text-(--color-text-muted) shadow-[var(--shadow-card)] hover:text-(--color-primary)"
             >
               <ArrowLeft className="h-4 w-4" />
               {backLabel}
@@ -46,14 +46,14 @@ export default function OnboardingShell({
             className="mb-5 rounded-[16px] border border-white/70 bg-white/80 px-4 py-3.5 shadow-[var(--shadow-card)] backdrop-blur-xl sm:px-5"
           >
             <div className="mb-2.5 flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-(--color-primary)">
                 Step {safeIndex + 1} of {steps.length}
               </p>
-              <p className="text-xs font-medium text-[var(--color-text-muted)]">{steps[safeIndex]?.label}</p>
+              <p className="text-xs font-medium text-(--color-text-muted)">{steps[safeIndex]?.label}</p>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-[var(--color-green-bg)]">
+            <div className="h-1.5 overflow-hidden rounded-full bg-(--color-green-bg)">
               <motion.div
-                className="h-full rounded-full bg-[var(--color-primary)]"
+                className="h-full rounded-full bg-(--color-primary)"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.45, ease: "easeOut" }}
@@ -68,17 +68,17 @@ export default function OnboardingShell({
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
                         done
-                          ? "bg-[var(--color-primary)] text-white"
+                          ? "bg-(--color-primary) text-white"
                           : active
-                            ? "bg-[var(--color-green-bg)] text-[var(--color-primary-dark)] ring-2 ring-[var(--color-primary)]"
-                            : "bg-[#eef4f0] text-[var(--color-text-muted)]"
+                            ? "bg-(--color-green-bg) text-(--color-primary-dark) ring-2 ring-(--color-primary)"
+                            : "bg-[#eef4f0] text-(--color-text-muted)"
                       }`}
                     >
                       {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
                     </span>
                     <span
                       className={`truncate text-xs ${
-                        active ? "font-semibold text-[var(--color-text)]" : "text-[var(--color-text-muted)]"
+                        active ? "font-semibold text-(--color-text)" : "text-(--color-text-muted)"
                       }`}
                     >
                       {step.label}

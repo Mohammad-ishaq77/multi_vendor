@@ -98,11 +98,11 @@ const Contact = () => {
             >
               <span className="badge-soft mb-5">Get in touch</span>
 
-              <h2 className="font-display text-3xl font-bold text-[var(--color-text)] leading-[1.15] mb-4">
+              <h2 className="font-display text-3xl font-bold text-(--color-text) leading-[1.15] mb-4">
                 Send a message
               </h2>
 
-              <p className="text-base text-[var(--color-text-muted)] leading-relaxed mb-10 max-w-md">
+              <p className="text-base text-(--color-text-muted) leading-relaxed mb-10 max-w-md">
                 Have a question, suggestion, or need assistance? Our Srinagar team is ready to help.
               </p>
 
@@ -115,7 +115,7 @@ const Contact = () => {
                     transition={{ delay: 0.2 + idx * 0.1 }}
                     className="flex items-start gap-4"
                   >
-                    <div className="w-11 h-11 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-11 h-11 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0 mt-0.5">
                       <item.icon className="w-5 h-5 text-[#1B4332]" />
                     </div>
                     <div>
@@ -273,7 +273,7 @@ const Contact = () => {
                     transition={{ delay: idx * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <div className="w-10 h-10 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
                       <reason.icon className="w-5 h-5 text-[#1B4332]" />
                     </div>
                     <div>

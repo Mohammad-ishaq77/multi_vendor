@@ -39,7 +39,7 @@ export default function ActiveDeliveryCard({ delivery }) {
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+            className="h-full bg-linear-to-r from-emerald-500 to-teal-500 rounded-full"
           />
         </div>
         <p className="text-[0.65rem] text-gray-400 mt-1">{delivery.status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</p>

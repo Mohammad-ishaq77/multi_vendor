@@ -47,7 +47,7 @@ const MyShop = () => {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg p-6 sm:p-8 text-white shadow-xl shadow-emerald-600/20 mb-6"
+          className="bg-linear-to-r from-emerald-600 to-teal-600 rounded-lg p-6 sm:p-8 text-white shadow-xl shadow-emerald-600/20 mb-6"
         >
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
