@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { useState, useCallback, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, XCircle, AlertCircle, X } from "lucide-react";

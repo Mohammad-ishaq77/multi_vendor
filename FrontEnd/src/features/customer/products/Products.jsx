@@ -13,11 +13,10 @@ import {
   ArrowRight,
   Package,
   Filter,
-  ChevronDown,
   IndianRupee,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
-import { products, shops } from "../data/customerData";
+import { shops } from "../data/customerData";
 import { useCart } from "../context/CartContext";
 
 // --- Helpers ---

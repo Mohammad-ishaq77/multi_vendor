@@ -9,7 +9,7 @@ const CardImage = ({ src, alt = "", className = "", category, onLoad }) => {
   }, [src]);
 
   if (!url) {
-    return <div className={`bg-[var(--color-green-bg)] ${className}`} aria-hidden="true" />;
+    return <div className={`bg-(--color-green-bg) ${className}`} aria-hidden="true" />;
   }
 
   return (

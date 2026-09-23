@@ -1,126 +1,131 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AdminProvider } from "../context/AdminContext";
 import AdminShell from "../components/AdminShell";
+import PageLoader from "../../../components/common/PageLoader";
 
-import AdminDashboard from "./Dashboard";
+// Lazy-loaded admin pages (code-split on demand)
+const AdminDashboard = lazy(() => import("./Dashboard"));
 
 // Approvals
-import ShopkeeperApprovals from "../approvals/ShopkeeperApprovals";
-import ShopkeeperApprovalDetails from "../approvals/ShopkeeperApprovalDetails";
-import DeliveryPartnerApprovals from "../approvals/DeliveryPartnerApprovals";
-import DeliveryPartnerApprovalDetails from "../approvals/DeliveryPartnerApprovalDetails";
+const ShopkeeperApprovals = lazy(() => import("../approvals/ShopkeeperApprovals"));
+const ShopkeeperApprovalDetails = lazy(() => import("../approvals/ShopkeeperApprovalDetails"));
+const DeliveryPartnerApprovals = lazy(() => import("../approvals/DeliveryPartnerApprovals"));
+const DeliveryPartnerApprovalDetails = lazy(() => import("../approvals/DeliveryPartnerApprovalDetails"));
 
 // Users
-import Customers from "../users/Customers";
-import CustomerDetails from "../users/CustomerDetails";
-import Shopkeepers from "../users/Shopkeepers";
-import ShopkeeperDetails from "../users/ShopkeeperDetails";
-import DeliveryPartners from "../users/DeliveryPartners";
-import DeliveryPartnerDetails from "../users/DeliveryPartnerDetails";
+const Customers = lazy(() => import("../users/Customers"));
+const CustomerDetails = lazy(() => import("../users/CustomerDetails"));
+const Shopkeepers = lazy(() => import("../users/Shopkeepers"));
+const ShopkeeperDetails = lazy(() => import("../users/ShopkeeperDetails"));
+const DeliveryPartners = lazy(() => import("../users/DeliveryPartners"));
+const DeliveryPartnerDetails = lazy(() => import("../users/DeliveryPartnerDetails"));
 
 // Shops
-import Shops from "../shops/Shops";
-import ShopDetails from "../shops/ShopDetails";
-import ShopTypeRequests from "../shops/ShopTypeRequests";
+const Shops = lazy(() => import("../shops/Shops"));
+const ShopDetails = lazy(() => import("../shops/ShopDetails"));
+const ShopTypeRequests = lazy(() => import("../shops/ShopTypeRequests"));
 
 // Products
-import Products from "../products/Products";
-import ProductDetails from "../products/ProductDetails";
+const Products = lazy(() => import("../products/Products"));
+const ProductDetails = lazy(() => import("../products/ProductDetails"));
 
 // Orders
-import Orders from "../orders/Orders";
-import OrderDetails from "../orders/OrderDetails";
+const Orders = lazy(() => import("../orders/Orders"));
+const OrderDetails = lazy(() => import("../orders/OrderDetails"));
 
 // Deliveries
-import DeliveryMonitoring from "../deliveries/DeliveryMonitoring";
-import DeliveryDetails from "../deliveries/DeliveryDetails";
+const DeliveryMonitoring = lazy(() => import("../deliveries/DeliveryMonitoring"));
+const DeliveryDetails = lazy(() => import("../deliveries/DeliveryDetails"));
 
 // Payments
-import Payments from "../payments/Payments";
-import PaymentDetails from "../payments/PaymentDetails";
+const Payments = lazy(() => import("../payments/Payments"));
+const PaymentDetails = lazy(() => import("../payments/PaymentDetails"));
 
 // Offers
-import Offers from "../offers/Offers";
-import OfferDetails from "../offers/OfferDetails";
+const Offers = lazy(() => import("../offers/Offers"));
+const OfferDetails = lazy(() => import("../offers/OfferDetails"));
 
 // Reports
-import Reports from "../reports/Reports";
-import SalesReports from "../reports/SalesReports";
-import UserReports from "../reports/UserReports";
-import DeliveryReports from "../reports/DeliveryReports";
+const Reports = lazy(() => import("../reports/Reports"));
+const SalesReports = lazy(() => import("../reports/SalesReports"));
+const UserReports = lazy(() => import("../reports/UserReports"));
+const DeliveryReports = lazy(() => import("../reports/DeliveryReports"));
 
 // Notifications
-import Notifications from "../notifications/Notifications";
+const Notifications = lazy(() => import("../notifications/Notifications"));
 
 // Settings
-import AdminProfile from "../settings/AdminProfile";
-import AdminSettings from "../settings/AdminSettings";
+const AdminProfile = lazy(() => import("../settings/AdminProfile"));
+const AdminSettings = lazy(() => import("../settings/AdminSettings"));
 
 function AdminEntry() {
   return (
     <AdminProvider>
-      <Routes>
-        <Route element={<AdminShell />}>
-          {/* Dashboard */}
-          <Route index element={<AdminDashboard />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route element={<AdminShell />}>
+            {/* Dashboard */}
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
 
-          {/* Approvals */}
-          <Route path="approvals/shopkeepers" element={<ShopkeeperApprovals />} />
-          <Route path="approvals/shopkeepers/:id" element={<ShopkeeperApprovalDetails />} />
-          <Route path="approvals/delivery-partners" element={<DeliveryPartnerApprovals />} />
-          <Route path="approvals/delivery-partners/:id" element={<DeliveryPartnerApprovalDetails />} />
+            {/* Approvals */}
+            <Route path="approvals/shopkeepers" element={<ShopkeeperApprovals />} />
+            <Route path="approvals/shopkeepers/:id" element={<ShopkeeperApprovalDetails />} />
+            <Route path="approvals/delivery-partners" element={<DeliveryPartnerApprovals />} />
+            <Route path="approvals/delivery-partners/:id" element={<DeliveryPartnerApprovalDetails />} />
 
-          {/* Users */}
-          <Route path="users/customers" element={<Customers />} />
-          <Route path="users/customers/:customerId" element={<CustomerDetails />} />
-          <Route path="users/shopkeepers" element={<Shopkeepers />} />
-          <Route path="users/shopkeepers/:shopkeeperId" element={<ShopkeeperDetails />} />
-          <Route path="users/delivery-partners" element={<DeliveryPartners />} />
-          <Route path="users/delivery-partners/:partnerId" element={<DeliveryPartnerDetails />} />
+            {/* Users */}
+            <Route path="users/customers" element={<Customers />} />
+            <Route path="users/customers/:customerId" element={<CustomerDetails />} />
+            <Route path="users/shopkeepers" element={<Shopkeepers />} />
+            <Route path="users/shopkeepers/:shopkeeperId" element={<ShopkeeperDetails />} />
+            <Route path="users/delivery-partners" element={<DeliveryPartners />} />
+            <Route path="users/delivery-partners/:partnerId" element={<DeliveryPartnerDetails />} />
 
-          {/* Shops */}
-          <Route path="shops" element={<Shops />} />
-          <Route path="shops/:shopId" element={<ShopDetails />} />
-          <Route path="shops/requests" element={<ShopTypeRequests />} />
+            {/* Shops */}
+            <Route path="shops" element={<Shops />} />
+            <Route path="shops/:shopId" element={<ShopDetails />} />
+            <Route path="shops/requests" element={<ShopTypeRequests />} />
 
-          {/* Products */}
-          <Route path="products" element={<Products />} />
-          <Route path="products/:productId" element={<ProductDetails />} />
+            {/* Products */}
+            <Route path="products" element={<Products />} />
+            <Route path="products/:productId" element={<ProductDetails />} />
 
-          {/* Orders */}
-          <Route path="orders" element={<Orders />} />
-          <Route path="orders/:orderId" element={<OrderDetails />} />
+            {/* Orders */}
+            <Route path="orders" element={<Orders />} />
+            <Route path="orders/:orderId" element={<OrderDetails />} />
 
-          {/* Deliveries */}
-          <Route path="deliveries" element={<DeliveryMonitoring />} />
-          <Route path="deliveries/:orderId" element={<DeliveryDetails />} />
+            {/* Deliveries */}
+            <Route path="deliveries" element={<DeliveryMonitoring />} />
+            <Route path="deliveries/:orderId" element={<DeliveryDetails />} />
 
-          {/* Payments */}
-          <Route path="payments" element={<Payments />} />
-          <Route path="payments/:orderId" element={<PaymentDetails />} />
+            {/* Payments */}
+            <Route path="payments" element={<Payments />} />
+            <Route path="payments/:orderId" element={<PaymentDetails />} />
 
-          {/* Offers */}
-          <Route path="offers" element={<Offers />} />
-          <Route path="offers/:offerId" element={<OfferDetails />} />
+            {/* Offers */}
+            <Route path="offers" element={<Offers />} />
+            <Route path="offers/:offerId" element={<OfferDetails />} />
 
-          {/* Reports */}
-          <Route path="reports" element={<Reports />} />
-          <Route path="reports/sales" element={<SalesReports />} />
-          <Route path="reports/users" element={<UserReports />} />
-          <Route path="reports/delivery" element={<DeliveryReports />} />
+            {/* Reports */}
+            <Route path="reports" element={<Reports />} />
+            <Route path="reports/sales" element={<SalesReports />} />
+            <Route path="reports/users" element={<UserReports />} />
+            <Route path="reports/delivery" element={<DeliveryReports />} />
 
-          {/* Notifications */}
-          <Route path="notifications" element={<Notifications />} />
+            {/* Notifications */}
+            <Route path="notifications" element={<Notifications />} />
 
-          {/* Settings */}
-          <Route path="profile" element={<AdminProfile />} />
-          <Route path="settings" element={<AdminSettings />} />
+            {/* Settings */}
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="settings" element={<AdminSettings />} />
 
-          {/* Catch-all → dashboard */}
-          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
-        </Route>
-      </Routes>
+            {/* Catch-all → dashboard */}
+            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </AdminProvider>
   );
 }

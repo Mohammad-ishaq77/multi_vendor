@@ -169,7 +169,7 @@ const OrderDetails = () => {
                 key={item.id}
                 className="flex items-center gap-4 pb-4 border-b border-gray-50 last:border-0 last:pb-0"
               >
-                <div className="w-16 h-16 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-16 h-16 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
                   <Package className="w-6 h-6 text-gray-300" />
                 </div>
                 <div className="flex-1 min-w-0">

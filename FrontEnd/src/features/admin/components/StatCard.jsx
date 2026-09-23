@@ -12,8 +12,8 @@ const accents = {
     gradient: "from-[#047857] to-[#10B981]",
   },
   amber: {
-    bg: "bg-[var(--color-green-bg)]",
-    text: "text-[var(--color-primary)]",
+    bg: "bg-(--color-green-bg)",
+    text: "text-(--color-primary)",
     gradient: "from-[#059669] to-[#10B981]",
   },
   violet: {
@@ -22,8 +22,8 @@ const accents = {
     gradient: "from-[#047857] to-[#059669]",
   },
   rose: {
-    bg: "bg-[var(--color-green-soft)]",
-    text: "text-[var(--color-primary-dark)]",
+    bg: "bg-(--color-green-soft)",
+    text: "text-(--color-primary-dark)",
     gradient: "from-[#064E3B] to-[#047857]",
   },
 };
@@ -60,7 +60,7 @@ export default function StatCard({ icon, label, value, accent = "emerald", trend
           )}
         </div>
         <div
-          className={`h-6 w-6 rounded-md bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0 sm:h-12 sm:w-12 sm:rounded-md`}
+          className={`h-6 w-6 rounded-md bg-gradient-to-br ${colors.gradient} flex items-center justify-center shrink-0 sm:h-12 sm:w-12 sm:rounded-md`}
         >
           <span className="text-white text-xs sm:text-xl [&_svg]:w-3 [&_svg]:h-3 sm:[&_svg]:w-5 sm:[&_svg]:h-5">{icon}</span>
         </div>

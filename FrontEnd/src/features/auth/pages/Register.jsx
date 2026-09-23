@@ -221,9 +221,9 @@ const Register = () => {
   }, [selectedRole]);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-surface-tint)] px-4 py-8">
-      <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-[var(--color-green-soft)] blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-[var(--color-green-light)]/20 blur-3xl" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-(--color-surface-tint) px-4 py-8">
+      <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-(--color-green-soft) blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-(--color-green-light)/20 blur-3xl" />
 
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -232,7 +232,7 @@ const Register = () => {
       >
         <AuthCloseButton className="right-4 top-4 lg:right-5 lg:top-5" />
 
-        <div className="relative hidden overflow-hidden bg-gradient-to-br from-[var(--color-primary-dark)] via-[var(--color-primary)] to-[var(--color-green)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
+        <div className="relative hidden overflow-hidden bg-gradient-to-br from-(--color-primary-dark) via-(--color-primary) to-(--color-green) p-10 text-white lg:flex lg:flex-col lg:justify-between">
           <Link to="/" className="flex flex-col items-start">
             <img
               src={APP_CONFIG.logo}
@@ -276,13 +276,13 @@ const Register = () => {
                 exit={{ opacity: 0, x: -16 }}
               >
                 <h1 className="font-display text-[1.8rem] font-bold tracking-tight">Create your account</h1>
-                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                <p className="mt-1 text-sm text-(--color-text-muted)">
                   Choose how you want to join {APP_CONFIG.name}.
                 </p>
 
                 <form onSubmit={handleFormSubmit} className="mt-6 space-y-4" noValidate>
                   <fieldset>
-                    <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text)]">
+                    <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-(--color-text)">
                       Join as
                     </legend>
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -297,8 +297,8 @@ const Register = () => {
                             aria-pressed={active}
                             className={`flex min-h-[86px] flex-col items-center justify-center gap-1 rounded-[12px] border px-2 py-3 text-center transition-all ${
                               active
-                                ? "border-[var(--color-primary)] bg-[var(--color-green-bg)] text-[var(--color-primary-dark)] shadow-[var(--shadow-card)]"
-                                : "border-[#dce8e2] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-green-soft)]"
+                                ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark) shadow-[var(--shadow-card)]"
+                                : "border-[#dce8e2] bg-white text-(--color-text-muted) hover:border-(--color-green-soft)"
                             }`}
                           >
                             <Icon className="h-4 w-4" />
@@ -308,7 +308,7 @@ const Register = () => {
                         );
                       })}
                     </div>
-                    <p className="mt-2 text-xs text-[var(--color-text-muted)]">{activeRole.next}</p>
+                    <p className="mt-2 text-xs text-(--color-text-muted)">{activeRole.next}</p>
                   </fieldset>
 
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -317,7 +317,7 @@ const Register = () => {
                         Full name
                       </label>
                       <div className="relative">
-                        <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                        <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                         <input
                           id="register-name"
                           type="text"
@@ -335,7 +335,7 @@ const Register = () => {
                         Email
                       </label>
                       <div className="relative">
-                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                         <input
                           id="register-email"
                           type="email"
@@ -352,10 +352,10 @@ const Register = () => {
 
                   <div>
                     <label htmlFor="register-phone" className="mb-2 block text-xs font-semibold uppercase tracking-wider">
-                      Mobile number {phoneRequired ? "" : <span className="normal-case tracking-normal text-[var(--color-text-muted)]">(optional)</span>}
+                      Mobile number {phoneRequired ? "" : <span className="normal-case tracking-normal text-(--color-text-muted)">(optional)</span>}
                     </label>
                     <div className="relative">
-                      <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                      <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                       <input
                         id="register-phone"
                         type="tel"
@@ -375,7 +375,7 @@ const Register = () => {
                         Password
                       </label>
                       <div className="relative">
-                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                         <input
                           id="register-password"
                           type={showPass ? "text" : "password"}
@@ -388,7 +388,7 @@ const Register = () => {
                         <button
                           type="button"
                           onClick={() => setShowPass((value) => !value)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-(--color-text-muted) hover:text-(--color-primary)"
                           aria-label={showPass ? "Hide password" : "Show password"}
                         >
                           {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -401,12 +401,12 @@ const Register = () => {
                               <span
                                 key={level}
                                 className={`h-1.5 flex-1 rounded-full ${
-                                  passwordScore >= level ? "bg-[var(--color-primary)]" : "bg-[#e5eee9]"
+                                  passwordScore >= level ? "bg-(--color-primary)" : "bg-[#e5eee9]"
                                 }`}
                               />
                             ))}
                           </div>
-                          <p className="mt-1 text-[11px] text-[var(--color-text-muted)]">{strengthLabels[passwordScore]}</p>
+                          <p className="mt-1 text-[11px] text-(--color-text-muted)">{strengthLabels[passwordScore]}</p>
                         </div>
                       )}
                       {errors.password && <p className="mt-1 text-xs text-rose-600">{errors.password}</p>}
@@ -416,7 +416,7 @@ const Register = () => {
                         Confirm password
                       </label>
                       <div className="relative">
-                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                         <input
                           id="register-confirm"
                           type={showConfirm ? "text" : "password"}
@@ -429,7 +429,7 @@ const Register = () => {
                         <button
                           type="button"
                           onClick={() => setShowConfirm((value) => !value)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-(--color-text-muted) hover:text-(--color-primary)"
                           aria-label={showConfirm ? "Hide password" : "Show password"}
                         >
                           {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -441,7 +441,7 @@ const Register = () => {
                     </div>
                   </div>
 
-                  <label className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
+                  <label className="flex items-start gap-2 text-sm text-(--color-text-muted)">
                     <input
                       type="checkbox"
                       checked={agreedTerms}
@@ -449,12 +449,12 @@ const Register = () => {
                         setAgreedTerms(e.target.checked);
                         if (errors.terms) setErrors((prev) => ({ ...prev, terms: "" }));
                       }}
-                      className="mt-0.5 h-4 w-4 rounded border-[#dce8e2] accent-[var(--color-primary)]"
+                      className="mt-0.5 h-4 w-4 rounded border-[#dce8e2] accent-(--color-primary)"
                     />
                     <span>
                       I agree to NearMart's{" "}
-                      <span className="font-semibold text-[var(--color-primary)]">Terms</span> and{" "}
-                      <span className="font-semibold text-[var(--color-primary)]">Privacy Policy</span>
+                      <span className="font-semibold text-(--color-primary)">Terms</span> and{" "}
+                      <span className="font-semibold text-(--color-primary)">Privacy Policy</span>
                     </span>
                   </label>
                   {errors.terms && <p className="text-xs text-rose-600">{errors.terms}</p>}
@@ -480,19 +480,19 @@ const Register = () => {
                     setOtpError("");
                     setOtpSuccess(false);
                   }}
-                  className="mb-5 inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+                  className="mb-5 inline-flex items-center gap-1.5 text-sm text-(--color-text-muted) hover:text-(--color-primary)"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Back to details
                 </button>
 
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
                   {otpSuccess ? <Check className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6" />}
                 </div>
                 <h1 className="font-display text-[1.8rem] font-bold tracking-tight">
                   {otpSuccess ? "Email verified" : "Verify your email"}
                 </h1>
-                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                <p className="mt-1 text-sm text-(--color-text-muted)">
                   {otpSuccess
                     ? activeRole.next
                     : `We sent a 6-digit code to ${formData.email}`}
@@ -500,8 +500,8 @@ const Register = () => {
 
                 {otpSuccess ? (
                   <div className="mt-8 flex flex-col items-center gap-3 py-6">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-green-soft)] border-t-[var(--color-primary)]" />
-                    <p className="text-sm text-[var(--color-text-muted)]">Setting up your account...</p>
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-(--color-green-soft) border-t-(--color-primary)" />
+                    <p className="text-sm text-(--color-text-muted)">Setting up your account...</p>
                   </div>
                 ) : (
                   <div className="mt-6 space-y-4">
@@ -530,7 +530,7 @@ const Register = () => {
                       {!isVerifying && <ShieldCheck className="h-4 w-4" />}
                     </button>
 
-                    <p className="text-center text-sm text-[var(--color-text-muted)]">
+                    <p className="text-center text-sm text-(--color-text-muted)">
                       Didn't get the code?{" "}
                       <button
                         type="button"
@@ -541,7 +541,7 @@ const Register = () => {
                           setResendIn(30);
                           showToast("A new code was sent");
                         }}
-                        className="font-semibold text-[var(--color-primary)] disabled:text-[var(--color-text-muted)]"
+                        className="font-semibold text-(--color-primary) disabled:text-(--color-text-muted)"
                       >
                         {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend"}
                       </button>
@@ -553,9 +553,9 @@ const Register = () => {
           </AnimatePresence>
 
           {step === "form" && (
-            <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
+            <p className="mt-6 text-center text-sm text-(--color-text-muted)">
               Already have an account?{" "}
-              <Link to="/login" className="font-semibold text-[var(--color-primary)]">
+              <Link to="/login" className="font-semibold text-(--color-primary)">
                 Sign in
               </Link>
             </p>

@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { deliveryPartnerProfile, defaultNotifications, defaultEarnings } from "../data/deliveryPartnerData";
 import { dummyDeliveries } from "../data/dummyDeliveries";

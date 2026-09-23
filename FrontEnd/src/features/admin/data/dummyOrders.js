@@ -1,20 +1,3 @@
-const calculateDeliveryFee = (distanceKm) => {
-  if (distanceKm <= 0) return 0;
-  if (distanceKm > 20) return 110;
-  const firstKmFee = 15;
-  const additionalKmFee = 5;
-  if (distanceKm <= 1) return firstKmFee;
-  return firstKmFee + (distanceKm - 1) * additionalKmFee;
-};
-
-const calculateMinOrder = (distanceKm) => {
-  if (distanceKm <= 5) return 100;
-  if (distanceKm <= 10) return 150;
-  if (distanceKm <= 15) return 250;
-  if (distanceKm <= 20) return 350;
-  return 350;
-};
-
 export const dummyOrders = [
   {
     id: "ORD-1001",

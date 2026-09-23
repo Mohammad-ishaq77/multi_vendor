@@ -22,16 +22,16 @@ const CategoryCard = ({ category, onClick }) => {
           className="h-full w-full object-cover"
         />
         {category.count && (
-          <span className="absolute right-3 top-3 z-10 rounded-full bg-white/95 px-2 py-0.5 text-[0.65rem] font-bold text-[var(--color-primary)]">
+          <span className="absolute right-3 top-3 z-10 rounded-full bg-white/95 px-2 py-0.5 text-[0.65rem] font-bold text-(--color-primary)">
             {category.count}
           </span>
         )}
       </div>
       <div className="flex items-center gap-3 p-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+        <span className="flex h-10 w-10 items-center justify-center rounded-md bg-(--color-green-bg) text-(--color-primary)">
           <Icon className="h-5 w-5" />
         </span>
-        <p className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)]">
+        <p className="text-sm font-semibold text-(--color-text) group-hover:text-(--color-primary)">
           {category.name}
         </p>
       </div>

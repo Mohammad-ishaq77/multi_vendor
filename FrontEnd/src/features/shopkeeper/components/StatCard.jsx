@@ -4,9 +4,9 @@ const StatCard = ({ icon: Icon, label, value, trend, trendUp, color = "emerald" 
   const colorMap = {
     emerald: { bg: "bg-emerald-50", text: "text-emerald-600", iconBg: "from-emerald-500 to-teal-500" },
     blue: { bg: "bg-emerald-50", text: "text-emerald-600", iconBg: "from-emerald-600 to-emerald-500" },
-    amber: { bg: "bg-[var(--color-green-bg)]", text: "text-[var(--color-primary)]", iconBg: "from-emerald-700 to-emerald-500" },
+    amber: { bg: "bg-(--color-green-bg)", text: "text-(--color-primary)", iconBg: "from-emerald-700 to-emerald-500" },
     violet: { bg: "bg-teal-50", text: "text-teal-700", iconBg: "from-teal-600 to-emerald-500" },
-    rose: { bg: "bg-[var(--color-green-soft)]", text: "text-[var(--color-primary-dark)]", iconBg: "from-emerald-800 to-emerald-600" },
+    rose: { bg: "bg-(--color-green-soft)", text: "text-(--color-primary-dark)", iconBg: "from-emerald-800 to-emerald-600" },
     cyan: { bg: "bg-teal-50", text: "text-teal-600", iconBg: "from-teal-500 to-emerald-500" },
   };
 

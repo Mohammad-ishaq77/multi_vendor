@@ -378,7 +378,6 @@ export default function ShopkeeperApprovals() {
               >
                 <div className="flex flex-wrap gap-2 pt-3">
                   {FILTER_OPTIONS.map((opt) => {
-                    const key = opt.toLowerCase().replace(" ", "_");
                     const isActive = statusFilter === opt;
                     return (
                       <button

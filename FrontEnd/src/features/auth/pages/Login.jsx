@@ -58,9 +58,9 @@ const Login = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-surface-tint)] px-4 py-8">
-      <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-[var(--color-green-soft)] blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-[var(--color-green-light)]/20 blur-3xl" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-(--color-surface-tint) px-4 py-8">
+      <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-(--color-green-soft) blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-(--color-green-light)/20 blur-3xl" />
 
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -68,7 +68,7 @@ const Login = () => {
         className="relative z-10 grid w-full max-w-[1040px] overflow-hidden rounded-[24px] border border-white/70 bg-white/80 shadow-[var(--shadow-hover)] backdrop-blur-xl lg:grid-cols-[0.9fr_1.1fr]"
       >
         <AuthCloseButton className="right-4 top-4 lg:right-5 lg:top-5" />
-        <div className="relative hidden overflow-hidden bg-gradient-to-br from-[var(--color-primary-dark)] via-[var(--color-primary)] to-[var(--color-green)] p-10 text-white lg:flex lg:flex-col lg:items-center lg:justify-center lg:text-center">
+        <div className="relative hidden overflow-hidden bg-gradient-to-br from-(--color-primary-dark) via-(--color-primary) to-(--color-green) p-10 text-white lg:flex lg:flex-col lg:items-center lg:justify-center lg:text-center">
           <Link to="/" className="flex flex-col items-center">
             <img
               src={APP_CONFIG.logo}
@@ -94,13 +94,13 @@ const Login = () => {
             <BrandLogo />
           </div>
           <h1 className="font-display text-[1.8rem] font-bold tracking-tight">Welcome back</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+          <p className="mt-1 text-sm text-(--color-text-muted)">
             Sign in with the test account and choose a role to continue.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-5" noValidate>
             <fieldset>
-              <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-text)]">
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-(--color-text)">
                 Login as
               </legend>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -114,8 +114,8 @@ const Login = () => {
                       onClick={() => setRole(item.id)}
                       className={`flex min-h-[78px] flex-col items-center justify-center gap-1 rounded-[12px] border px-2 py-3 text-center text-xs font-semibold transition-all ${
                         active
-                          ? "border-[var(--color-primary)] bg-[var(--color-green-bg)] text-[var(--color-primary-dark)] shadow-[var(--shadow-card)]"
-                          : "border-[#dce8e2] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-green-soft)]"
+                          ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark) shadow-[var(--shadow-card)]"
+                          : "border-[#dce8e2] bg-white text-(--color-text-muted) hover:border-(--color-green-soft)"
                       }`}
                       aria-pressed={active}
                     >
@@ -132,7 +132,7 @@ const Login = () => {
                 Email / ID
               </label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                 <input
                   id="login-email"
                   type="text"
@@ -150,7 +150,7 @@ const Login = () => {
                 Password
               </label>
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                 <input
                   id="login-password"
                   type={showPass ? "text" : "password"}
@@ -163,7 +163,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPass((value) => !value)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-(--color-text-muted) hover:text-(--color-primary)"
                   aria-label={showPass ? "Hide password" : "Show password"}
                 >
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -172,12 +172,12 @@ const Login = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+              <label className="flex items-center gap-2 text-sm text-(--color-text-muted)">
                 <input
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
-                  className="h-4 w-4 rounded border-[#dce8e2] accent-[var(--color-primary)]"
+                  className="h-4 w-4 rounded border-[#dce8e2] accent-(--color-primary)"
                 />
                 Keep me signed in
               </label>
@@ -189,7 +189,7 @@ const Login = () => {
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-[12px] border border-[var(--color-green-soft)] bg-[var(--color-green-bg)] px-3 py-2 text-sm text-[var(--color-primary-dark)]"
+                  className="rounded-[12px] border border-(--color-green-soft) bg-(--color-green-bg) px-3 py-2 text-sm text-(--color-primary-dark)"
                   role="alert"
                 >
                   {error}
@@ -203,9 +203,9 @@ const Login = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
+          <p className="mt-6 text-center text-sm text-(--color-text-muted)">
             New to {APP_CONFIG.name}?{" "}
-            <Link to="/register" className="font-semibold text-[var(--color-primary)]">
+            <Link to="/register" className="font-semibold text-(--color-primary)">
               Create an account
             </Link>
           </p>

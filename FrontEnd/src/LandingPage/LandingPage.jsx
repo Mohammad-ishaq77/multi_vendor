@@ -6,7 +6,6 @@ import Categories from "./Categories";
 import FeaturedShops from "./FeaturedShops";
 import PopularProducts from "./PopularProducts";
 import HowItWorks from "./HowItWorks";
-import CTABanner from "./CTABanner";
 
 const LandingPage = () => {
   const { hash } = useLocation();
@@ -22,12 +21,11 @@ const LandingPage = () => {
 
   return (
     <MainLayout>
-      <Hero />
+      <Hero compactHome />
       <Categories />
       <FeaturedShops />
       <PopularProducts />
       <HowItWorks />
-      <CTABanner />
     </MainLayout>
   );
 };

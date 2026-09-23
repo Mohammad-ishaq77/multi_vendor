@@ -64,7 +64,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-[0.55rem] font-bold text-white ring-2 ring-white">
+            <span className="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-(--color-primary) px-1 text-[0.55rem] font-bold text-white ring-2 ring-white">
               {unreadCount}
             </span>
           )}

@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import authService, { AUTH_CHANGE_EVENT } from "../services/authService";
 import { getDashboardPath } from "../config/roles";

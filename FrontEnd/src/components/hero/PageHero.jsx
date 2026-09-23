@@ -17,12 +17,12 @@ const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => 
 
   if (variant === "split") {
     return (
-      <h1 className="hero-title-rise font-display text-[clamp(2.7rem,13vw,3.45rem)] font-extrabold leading-[1.06] tracking-tight text-[var(--color-text)] sm:text-[clamp(2.85rem,6.8vw,3.5rem)] lg:text-[3.6rem] lg:font-bold lg:leading-[1.08]">
+      <h1 className="hero-title-rise font-display text-[clamp(2.7rem,13vw,3.45rem)] font-extrabold leading-[1.06] tracking-tight text-(--color-text) sm:text-[clamp(2.85rem,6.8vw,3.5rem)] lg:text-[3.6rem] lg:font-bold lg:leading-[1.08]">
         <span className="block">{title}</span>
         {titleMid && <span className="block">{titleMid}</span>}
         {highlight && (
           <span className="mt-1 block">
-            <span className="hero-word-underline text-[var(--color-primary)]">{highlight}</span>
+            <span className="hero-word-underline text-(--color-primary)">{highlight}</span>
           </span>
         )}
       </h1>
@@ -33,7 +33,7 @@ const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => 
     return (
       <h1 className="hero-title-rise font-display text-[clamp(2.5rem,12vw,3.25rem)] font-extrabold leading-[1.06] tracking-tight text-white sm:text-[clamp(2.65rem,6.4vw,3.3rem)] lg:text-[3.25rem] lg:font-bold lg:leading-[1.1]">
         <span className="block">{title}</span>
-        {highlight && <span className="mt-1 block text-[var(--color-green-soft)]">{highlight}</span>}
+        {highlight && <span className="mt-1 block text-(--color-green-soft)">{highlight}</span>}
       </h1>
     );
   }
@@ -45,7 +45,7 @@ const TitleBlock = ({ title, titleMid, highlight, variant, align = "left" }) => 
       }`}
     >
       <span className="block">{title}</span>
-      {highlight && <span className="mt-1.5 block text-[var(--color-green-soft)]">{highlight}</span>}
+      {highlight && <span className="mt-1.5 block text-(--color-green-soft)">{highlight}</span>}
     </h1>
   );
 };
@@ -73,11 +73,11 @@ const HoursBadge = () => {
     <span
       className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] lg:gap-1.5 lg:px-3 lg:py-1 lg:text-[10px] ${
         open
-          ? "border-[var(--color-green-soft)]/40 bg-[var(--color-green)]/25 text-[var(--color-green-soft)]"
+          ? "border-(--color-green-soft)/40 bg-(--color-green)/25 text-(--color-green-soft)"
           : "border-white/20 bg-white/10 text-white/80"
       }`}
     >
-      <span className={`h-1 w-1 rounded-full lg:h-1.5 lg:w-1.5 ${open ? "animate-pulse bg-[var(--color-green-soft)]" : "bg-white/50"}`} />
+      <span className={`h-1 w-1 rounded-full lg:h-1.5 lg:w-1.5 ${open ? "animate-pulse bg-(--color-green-soft)" : "bg-white/50"}`} />
       {open ? "Open now · till 8 PM" : "Closed · opens 9 AM"}
     </span>
   );
@@ -105,7 +105,7 @@ const Actions = ({ primaryTo, primaryLabel, secondaryTo, secondaryLabel, onGreen
           to={secondaryTo}
           className={
             onGreen
-              ? "hero-cta lg:inline-flex lg:min-h-11 lg:items-center lg:rounded-[12px] lg:border lg:border-white/30 lg:px-5 lg:text-sm lg:font-semibold lg:text-white lg:hover:bg-white/10"
+              ? "hero-cta lg:inline-flex lg:min-h-11 lg:items-center lg:rounded-xl lg:border lg:border-white/30 lg:px-5 lg:text-sm lg:font-semibold lg:text-white lg:hover:bg-white/10"
               : /sell|seller/i.test(secondaryLabel)
                 ? "hero-cta btn-secondary btn-green-border"
                 : "hero-cta btn-secondary"
@@ -140,7 +140,7 @@ const PageHero = ({
 }) => {
   if (variant === "ribbon") {
     return (
-      <section className="on-green relative overflow-hidden bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)]">
+      <section className="on-green relative overflow-hidden bg-linear-to-r from-(--color-primary-dark) to-(--color-primary)">
         {image && (
           <img src={image} alt="" className="hero-ken-burns pointer-events-none absolute inset-0 h-full w-full object-cover opacity-20" />
         )}
@@ -160,7 +160,7 @@ const PageHero = ({
               animate={{ opacity: 1, y: 0 }}
               className="mt-[max(0.5rem,1.1vh)] font-display text-[clamp(2.4rem,11.5vw,3.1rem)] font-extrabold text-white sm:text-[clamp(2.55rem,5.8vw,3.2rem)] lg:mt-2 lg:text-4xl lg:font-bold"
             >
-              {title} {highlight && <span className="text-[var(--color-green-soft)]">{highlight}</span>}
+              {title} {highlight && <span className="text-(--color-green-soft)">{highlight}</span>}
             </motion.h1>
           </div>
           <Actions
@@ -178,7 +178,7 @@ const PageHero = ({
 
   if (variant === "split") {
     return (
-      <section className="hero-shell flex items-end overflow-hidden bg-[var(--color-surface-tint)] lg:items-center">
+      <section className="hero-shell flex items-end overflow-hidden bg-(--color-surface-tint) lg:items-center">
         <div className="container-app grid h-full items-end gap-[max(0.7rem,1.6vh)] pt-[max(0.9rem,2.2vh)] pb-[max(1.6rem,4.2vh)] lg:grid-cols-2 lg:items-center lg:gap-10 lg:py-5">
           <div>
             {eyebrow && (
@@ -207,7 +207,7 @@ const PageHero = ({
             className="relative hidden h-full max-h-[56vh] pt-10 lg:block"
           >
             <div className="card-shine h-full overflow-hidden rounded-xl shadow-[0_30px_60px_-28px_rgba(6,78,59,0.45)]">
-              <img src={image} alt="" className="hero-ken-burns h-full min-h-[220px] w-full object-cover sm:min-h-[280px]" />
+              <img src={image} alt="" className="hero-ken-burns h-full min-h-55 w-full object-cover sm:min-h-70" />
             </div>
             {mosaic[0] && (
               <motion.img
@@ -229,7 +229,7 @@ const PageHero = ({
     const frames = mosaic.length ? mosaic : [image, image, image];
 
     return (
-      <section className="hero-shell on-green relative flex items-end overflow-hidden bg-[var(--color-primary-dark)] lg:items-center">
+      <section className="hero-shell on-green relative flex items-end overflow-hidden bg-(--color-primary-dark) lg:items-center">
         <div className="container-app grid h-full items-end gap-[max(0.7rem,1.6vh)] pt-[max(0.9rem,2.2vh)] pb-[max(1.6rem,4.2vh)] lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-5">
           <div>
             {eyebrow && (
@@ -284,7 +284,7 @@ const PageHero = ({
     <section className="hero-shell hero-overlay on-green relative isolate flex items-end justify-start overflow-hidden lg:items-center lg:justify-center">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute -inset-[12%] h-[124%] w-[124%]"
+          className="absolute inset-[-12%] h-[124%] w-[124%]"
           animate={{
             x: ["0%", "-5%", "4%", "-2%", "0%"],
             y: ["0%", "-3%", "2%", "3%", "0%"],
@@ -298,7 +298,7 @@ const PageHero = ({
       <div className="pointer-events-none absolute inset-0 bg-black/25" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.38)_100%)]" />
       <div className={`relative z-10 mx-auto flex w-full justify-start px-[max(1rem,4vw)] lg:justify-center sm:px-6 ${
-        rich ? "max-w-6xl pt-[max(0.55rem,1.4vh)] pb-[max(1rem,2.6vh)] lg:py-6" : "max-w-[720px] pt-[max(0.65rem,1.6vh)] pb-[max(1.1rem,2.8vh)] lg:py-8"
+        rich ? "max-w-6xl pt-[max(0.55rem,1.4vh)] pb-[max(1rem,2.6vh)] lg:py-6" : "max-w-180 pt-[max(0.65rem,1.6vh)] pb-[max(1.1rem,2.8vh)] lg:py-8"
       }`}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -319,8 +319,8 @@ const PageHero = ({
               </motion.span>
             )}
             {liveLabel && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-green-soft)]/40 bg-[var(--color-green)]/25 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-[var(--color-green-soft)] lg:gap-1.5 lg:px-3 lg:py-1 lg:text-[10px]">
-                <span className="h-1 w-1 animate-pulse rounded-full bg-[var(--color-green-soft)] lg:h-1.5 lg:w-1.5" />
+              <span className="inline-flex items-center gap-1 rounded-full border border-(--color-green-soft)/40 bg-(--color-green)/25 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-(--color-green-soft) lg:gap-1.5 lg:px-3 lg:py-1 lg:text-[10px]">
+                <span className="h-1 w-1 animate-pulse rounded-full bg-(--color-green-soft) lg:h-1.5 lg:w-1.5" />
                 {liveLabel}
               </span>
             )}
@@ -334,7 +334,7 @@ const PageHero = ({
           {highlight && (
             <>
               {" "}
-              <span className="text-[var(--color-green-soft)]">{highlight}</span>
+              <span className="text-(--color-green-soft)">{highlight}</span>
             </>
           )}
           </h1>

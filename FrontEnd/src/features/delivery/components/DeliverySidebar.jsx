@@ -71,7 +71,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
           <motion.div
             whileHover={{ rotate: -8, scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center"
           >
             <img src="/logo/logo.png" alt="NearMart" className="h-10 w-10 object-contain" />
           </motion.div>
@@ -178,7 +178,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                     {/* Icon Container */}
                     <motion.div
                       animate={{ scale: isActive ? 1.05 : 1 }}
-                      className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
+                      className={`relative z-10 shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
                         isActive
                           ? `bg-gradient-to-br ${item.accent} text-white shadow-md`
                           : isHovered
@@ -214,7 +214,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="relative z-10 ml-auto bg-[var(--color-primary)] text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
+                        className="relative z-10 ml-auto bg-(--color-primary) text-white text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center shadow-sm"
                       >
                         {availableCount}
                       </motion.span>
@@ -319,7 +319,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                           </div>
                           <span>{item.name}</span>
                           {item.badge && availableCount > 0 && (
-                            <span className="ml-auto rounded-full bg-[var(--color-primary)] px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
+                            <span className="ml-auto rounded-full bg-(--color-primary) px-1.5 py-0.5 text-[0.6rem] font-bold text-white">
                               {availableCount}
                             </span>
                           )}
@@ -358,7 +358,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                 {isActive && (
                   <motion.div
                     layoutId="dpMobileNav"
-                    className="absolute -top-1 w-5 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
+                    className="absolute -top-1 w-5 h-[2px] bg-linear-to-r from-emerald-500 to-teal-500 rounded-b-full"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
@@ -376,7 +376,7 @@ export default function DeliverySidebar({ isMobileOpen = false, onMobileClose = 
                   {item.name.split(" ")[0]}
                 </span>
                 {item.badge && availableCount > 0 && (
-                  <span className="absolute top-0 right-0.5 w-3.5 h-3.5 bg-[var(--color-primary)] text-white text-[0.5rem] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  <span className="absolute top-0 right-0.5 w-3.5 h-3.5 bg-(--color-primary) text-white text-[0.5rem] font-bold rounded-full flex items-center justify-center shadow-sm">
                     {availableCount}
                   </span>
                 )}

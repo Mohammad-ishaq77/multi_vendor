@@ -43,7 +43,7 @@ function statusLabel(status = "") {
 
 const StatCard = ({ icon: Icon, label, value, hint, tone = "emerald", onClick }) => {
   const tones = {
-    emerald: "bg-[var(--color-green-bg)] text-[var(--color-primary)]",
+    emerald: "bg-(--color-green-bg) text-(--color-primary)",
     teal: "bg-teal-50 text-teal-600",
     blue: "bg-blue-50 text-blue-600",
     amber: "bg-amber-50 text-amber-600",
@@ -61,9 +61,9 @@ const StatCard = ({ icon: Icon, label, value, hint, tone = "emerald", onClick })
         <Icon className="h-5 w-5" />
       </span>
       <div>
-        <p className="text-2xl font-bold tracking-tight text-[var(--color-text)]">{value}</p>
-        <p className="mt-0.5 text-xs font-medium text-[var(--color-text-muted)]">{label}</p>
-        {hint && <p className="mt-1 text-[11px] text-[var(--color-text-muted)]">{hint}</p>}
+        <p className="text-2xl font-bold tracking-tight text-(--color-text)">{value}</p>
+        <p className="mt-0.5 text-xs font-medium text-(--color-text-muted)">{label}</p>
+        {hint && <p className="mt-1 text-[11px] text-(--color-text-muted)">{hint}</p>}
       </div>
     </motion.button>
   );
@@ -88,7 +88,7 @@ const EarningsChart = ({ data = [] }) => {
             onBlur={() => setHovered(null)}
             className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
           >
-            <span className={`text-[10px] font-semibold ${active ? "text-[var(--color-primary)]" : "text-transparent"}`}>
+            <span className={`text-[10px] font-semibold ${active ? "text-(--color-primary)" : "text-transparent"}`}>
               {formatINR(day.amount)}
             </span>
             <motion.span
@@ -96,10 +96,10 @@ const EarningsChart = ({ data = [] }) => {
               animate={{ height: `${height}%` }}
               transition={{ duration: 0.45, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
               className={`w-full max-w-10 rounded-t-lg ${
-                active ? "bg-[var(--color-primary)]" : "bg-gradient-to-t from-[var(--color-primary)] to-emerald-400"
+                active ? "bg-(--color-primary)" : "bg-gradient-to-t from-(--color-primary) to-emerald-400"
               }`}
             />
-            <span className="text-[11px] font-medium text-[var(--color-text-muted)]">{day.day}</span>
+            <span className="text-[11px] font-medium text-(--color-text-muted)">{day.day}</span>
           </button>
         );
       })}
@@ -136,7 +136,7 @@ export default function DeliveryPartnerDashboard() {
 
   const quickActions = useMemo(
     () => [
-      { label: "Available", desc: "Nearby pickups", icon: Package, path: "/delivery/available", tone: "bg-[var(--color-green-bg)] text-[var(--color-primary)]" },
+      { label: "Available", desc: "Nearby pickups", icon: Package, path: "/delivery/available", tone: "bg-(--color-green-bg) text-(--color-primary)" },
       { label: "Active", desc: "Current drop", icon: Truck, path: "/delivery/active", tone: "bg-amber-50 text-amber-600" },
       { label: "Earnings", desc: "Payouts", icon: Banknote, path: "/delivery/earnings", tone: "bg-teal-50 text-teal-600" },
       { label: "History", desc: "Past trips", icon: Clock, path: "/delivery/history", tone: "bg-blue-50 text-blue-600" },
@@ -148,7 +148,7 @@ export default function DeliveryPartnerDashboard() {
     <div className="space-y-5 sm:space-y-6">
         <section className={`overflow-hidden rounded-[20px] p-5 text-white shadow-[var(--shadow-hover)] sm:p-6 lg:p-7 ${
           isOnline
-            ? "bg-gradient-to-br from-[var(--color-primary-dark)] via-[var(--color-primary)] to-[var(--color-green)]"
+            ? "bg-gradient-to-br from-(--color-primary-dark) via-(--color-primary) to-(--color-green)"
             : "bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800"
         }`}>
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -171,7 +171,7 @@ export default function DeliveryPartnerDashboard() {
               onClick={toggleAvailability}
               className={`inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-[12px] px-5 text-sm font-semibold shadow-lg transition ${
                 isOnline
-                  ? "bg-white text-[var(--color-primary-dark)] hover:bg-emerald-50"
+                  ? "bg-white text-(--color-primary-dark) hover:bg-emerald-50"
                   : "bg-emerald-500 text-white hover:bg-emerald-400"
               }`}
             >
@@ -230,8 +230,8 @@ export default function DeliveryPartnerDashboard() {
                 <action.icon className="h-5 w-5" />
               </span>
               <span>
-                <span className="block text-sm font-semibold text-[var(--color-text)]">{action.label}</span>
-                <span className="block text-[11px] text-[var(--color-text-muted)]">{action.desc}</span>
+                <span className="block text-sm font-semibold text-(--color-text)">{action.label}</span>
+                <span className="block text-[11px] text-(--color-text-muted)">{action.desc}</span>
               </span>
             </motion.button>
           ))}
@@ -244,22 +244,22 @@ export default function DeliveryPartnerDashboard() {
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-600">Active delivery</p>
                 <h2 className="mt-1 text-lg font-bold">{activeDelivery.id}</h2>
               </div>
-              <p className="text-lg font-bold text-[var(--color-primary)]">{formatINR(activeDelivery.partnerEarning)}</p>
+              <p className="text-lg font-bold text-(--color-primary)">{formatINR(activeDelivery.partnerEarning)}</p>
             </div>
-            <p className="mb-4 text-sm text-[var(--color-text-muted)]">{statusLabel(activeDelivery.status)}</p>
+            <p className="mb-4 text-sm text-(--color-text-muted)">{statusLabel(activeDelivery.status)}</p>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="flex items-start gap-2 text-sm">
-                <Store className="mt-0.5 h-4 w-4 text-[var(--color-primary)]" />
+                <Store className="mt-0.5 h-4 w-4 text-(--color-primary)" />
                 <span>
                   <span className="block font-semibold">{activeDelivery.shopName}</span>
-                  <span className="text-xs text-[var(--color-text-muted)]">{activeDelivery.shopAddress}</span>
+                  <span className="text-xs text-(--color-text-muted)">{activeDelivery.shopAddress}</span>
                 </span>
               </div>
               <div className="flex items-start gap-2 text-sm">
-                <User className="mt-0.5 h-4 w-4 text-[var(--color-primary)]" />
+                <User className="mt-0.5 h-4 w-4 text-(--color-primary)" />
                 <span>
                   <span className="block font-semibold">{activeDelivery.customerName}</span>
-                  <span className="text-xs text-[var(--color-text-muted)]">{activeDelivery.customerAddress}</span>
+                  <span className="text-xs text-(--color-text-muted)">{activeDelivery.customerAddress}</span>
                 </span>
               </div>
             </div>
@@ -275,15 +275,15 @@ export default function DeliveryPartnerDashboard() {
             <div className="mb-4 flex items-end justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold">Earnings overview</h2>
-                <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">This week's payout trend</p>
+                <p className="mt-0.5 text-sm text-(--color-text-muted)">This week's payout trend</p>
               </div>
-              <button type="button" onClick={() => navigate("/delivery/earnings")} className="text-sm font-semibold text-[var(--color-primary)]">
+              <button type="button" onClick={() => navigate("/delivery/earnings")} className="text-sm font-semibold text-(--color-primary)">
                 View details
               </button>
             </div>
             <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
-                { label: "Today", value: earnings.today, tone: "bg-[var(--color-green-bg)] text-[var(--color-primary-dark)]" },
+                { label: "Today", value: earnings.today, tone: "bg-(--color-green-bg) text-(--color-primary-dark)" },
                 { label: "This week", value: earnings.thisWeek, tone: "bg-emerald-50 text-emerald-700" },
                 { label: "This month", value: earnings.thisMonth, tone: "bg-blue-50 text-blue-700" },
                 { label: "All time", value: earnings.total, tone: "bg-amber-50 text-amber-700" },
@@ -299,22 +299,22 @@ export default function DeliveryPartnerDashboard() {
 
           <section className="rounded-[20px] border border-[#edf3ef] bg-white p-5 shadow-[var(--shadow-card)] sm:p-6">
             <div className="mb-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-[var(--color-primary)]" />
+              <TrendingUp className="h-4 w-4 text-(--color-primary)" />
               <h2 className="text-lg font-bold">Performance</h2>
             </div>
             <div className="space-y-4">
               <div>
                 <div className="mb-1.5 flex items-center justify-between text-sm">
-                  <span className="text-[var(--color-text-muted)]">Completion rate</span>
+                  <span className="text-(--color-text-muted)">Completion rate</span>
                   <span className="font-semibold">{completionRate}%</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-[#eef4f0]">
-                  <div className="h-full rounded-full bg-[var(--color-primary)]" style={{ width: `${completionRate}%` }} />
+                  <div className="h-full rounded-full bg-(--color-primary)" style={{ width: `${completionRate}%` }} />
                 </div>
               </div>
               <div>
                 <div className="mb-1.5 flex items-center justify-between text-sm">
-                  <span className="text-[var(--color-text-muted)]">Rating</span>
+                  <span className="text-(--color-text-muted)">Rating</span>
                   <span className="font-semibold">{rating ? `${rating.toFixed(1)} / 5` : "—"}</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-[#eef4f0]">
@@ -324,11 +324,11 @@ export default function DeliveryPartnerDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-[12px] bg-[#f8fbf9] p-3 text-center">
                   <p className="text-lg font-bold">{completed}</p>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">Completed</p>
+                  <p className="text-[11px] text-(--color-text-muted)">Completed</p>
                 </div>
                 <div className="rounded-[12px] bg-[#f8fbf9] p-3 text-center">
                   <p className="text-lg font-bold">{num(profile.cancelledDeliveries)}</p>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">Cancelled</p>
+                  <p className="text-[11px] text-(--color-text-muted)">Cancelled</p>
                 </div>
               </div>
             </div>
@@ -340,11 +340,11 @@ export default function DeliveryPartnerDashboard() {
             <div className="mb-3 flex items-end justify-between">
               <div>
                 <h2 className="text-lg font-bold">Nearby pickups</h2>
-                <p className="text-sm text-[var(--color-text-muted)]">
+                <p className="text-sm text-(--color-text-muted)">
                   {isOnline ? `${availableDeliveries.length} ready for pickup` : "Go online to accept these requests"}
                 </p>
               </div>
-              <button type="button" onClick={() => navigate("/delivery/available")} className="text-sm font-semibold text-[var(--color-primary)]">
+              <button type="button" onClick={() => navigate("/delivery/available")} className="text-sm font-semibold text-(--color-primary)">
                 View all
               </button>
             </div>
@@ -359,11 +359,11 @@ export default function DeliveryPartnerDashboard() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-bold">{delivery.id}</p>
-                      <p className="mt-1 text-xs text-[var(--color-text-muted)]">{delivery.shopName}</p>
+                      <p className="mt-1 text-xs text-(--color-text-muted)">{delivery.shopName}</p>
                     </div>
-                    <p className="text-base font-bold text-[var(--color-primary)]">{formatINR(delivery.partnerEarning)}</p>
+                    <p className="text-base font-bold text-(--color-primary)">{formatINR(delivery.partnerEarning)}</p>
                   </div>
-                  <div className="mt-3 flex items-center gap-3 text-xs text-[var(--color-text-muted)]">
+                  <div className="mt-3 flex items-center gap-3 text-xs text-(--color-text-muted)">
                     <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{delivery.distance} km</span>
                     <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{delivery.estimatedTime}</span>
                   </div>
@@ -378,37 +378,37 @@ export default function DeliveryPartnerDashboard() {
             <div className="mb-4 flex items-end justify-between">
               <div>
                 <h2 className="text-lg font-bold">Recent deliveries</h2>
-                <p className="text-sm text-[var(--color-text-muted)]">Latest completed trips</p>
+                <p className="text-sm text-(--color-text-muted)">Latest completed trips</p>
               </div>
-              <button type="button" onClick={() => navigate("/delivery/history")} className="text-sm font-semibold text-[var(--color-primary)]">
+              <button type="button" onClick={() => navigate("/delivery/history")} className="text-sm font-semibold text-(--color-primary)">
                 View all
               </button>
             </div>
             <div className="divide-y divide-[#edf3ef]">
               {recent.length === 0 && (
-                <p className="py-8 text-center text-sm text-[var(--color-text-muted)]">No completed deliveries yet.</p>
+                <p className="py-8 text-center text-sm text-(--color-text-muted)">No completed deliveries yet.</p>
               )}
               {recent.map((delivery) => (
                 <button
                   key={delivery.id}
                   type="button"
                   onClick={() => navigate(`/delivery/order/${delivery.id}`)}
-                  className="flex w-full items-center justify-between gap-3 py-3.5 text-left first:pt-0 last:pb-0 hover:text-[var(--color-primary)]"
+                  className="flex w-full items-center justify-between gap-3 py-3.5 text-left first:pt-0 last:pb-0 hover:text-(--color-primary)"
                 >
                   <span className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
                       <Package className="h-4 w-4" />
                     </span>
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-semibold">{delivery.id}</span>
-                      <span className="block truncate text-xs text-[var(--color-text-muted)]">
+                      <span className="block truncate text-xs text-(--color-text-muted)">
                         {delivery.shopName} → {delivery.customerName}
                       </span>
                     </span>
                   </span>
                   <span className="shrink-0 text-right">
-                    <span className="block text-sm font-bold text-[var(--color-primary)]">{formatINR(delivery.partnerEarning)}</span>
-                    <span className="text-[11px] text-[var(--color-text-muted)]">{delivery.distance} km</span>
+                    <span className="block text-sm font-bold text-(--color-primary)">{formatINR(delivery.partnerEarning)}</span>
+                    <span className="text-[11px] text-(--color-text-muted)">{delivery.distance} km</span>
                   </span>
                 </button>
               ))}
@@ -418,36 +418,36 @@ export default function DeliveryPartnerDashboard() {
           <div className="space-y-5">
             <section className="rounded-[20px] border border-[#edf3ef] bg-white p-5 shadow-[var(--shadow-card)]">
               <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[var(--color-primary)]">
+                <div className="flex items-center gap-2 text-(--color-primary)">
                   <Bike className="h-4 w-4" />
                   <h2 className="text-sm font-bold uppercase tracking-wider">Partner details</h2>
                 </div>
-                <button type="button" onClick={() => navigate("/delivery/profile")} className="text-xs font-semibold text-[var(--color-primary)]">
+                <button type="button" onClick={() => navigate("/delivery/profile")} className="text-xs font-semibold text-(--color-primary)">
                   Edit
                 </button>
               </div>
               <dl className="space-y-2.5 text-sm">
                 <div className="flex justify-between gap-3">
-                  <dt className="text-[var(--color-text-muted)]">Name</dt>
+                  <dt className="text-(--color-text-muted)">Name</dt>
                   <dd className="font-semibold">{profile.name || "—"}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-[var(--color-text-muted)]">Vehicle</dt>
+                  <dt className="text-(--color-text-muted)">Vehicle</dt>
                   <dd className="font-semibold">{profile.vehicleType || "—"}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-[var(--color-text-muted)]">Number</dt>
+                  <dt className="text-(--color-text-muted)">Number</dt>
                   <dd className="font-mono font-semibold">{profile.vehicleNumber || "—"}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-[var(--color-text-muted)]">Phone</dt>
+                  <dt className="text-(--color-text-muted)">Phone</dt>
                   <dd className="font-semibold">{profile.phone || "—"}</dd>
                 </div>
               </dl>
             </section>
 
             <section className="rounded-[20px] border border-[#edf3ef] bg-white p-5 shadow-[var(--shadow-card)]">
-              <div className="mb-3 flex items-center gap-2 text-[var(--color-primary)]">
+              <div className="mb-3 flex items-center gap-2 text-(--color-primary)">
                 <Shield className="h-4 w-4" />
                 <h2 className="text-sm font-bold uppercase tracking-wider">On the road</h2>
               </div>
@@ -457,8 +457,8 @@ export default function DeliveryPartnerDashboard() {
                   { icon: FileText, text: "Never share the customer OTP" },
                   { icon: CheckCircle2, text: "Keep sealed packages unopened" },
                 ].map((item) => (
-                  <li key={item.text} className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
-                    <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-primary)]" />
+                  <li key={item.text} className="flex items-start gap-2 text-sm text-(--color-text-muted)">
+                    <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-(--color-primary)" />
                     {item.text}
                   </li>
                 ))}

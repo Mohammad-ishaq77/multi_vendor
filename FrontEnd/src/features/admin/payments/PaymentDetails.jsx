@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, IndianRupee, User, Store, Truck, CreditCard, CheckCircle } from "lucide-react";
+import { ArrowLeft, IndianRupee, User, Store, Truck } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 

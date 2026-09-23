@@ -40,16 +40,16 @@ const ShopApproval = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] bg-[var(--color-green-bg)] text-[var(--color-primary)]"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] bg-(--color-green-bg) text-(--color-primary)"
           >
             <Clock className="h-7 w-7" />
           </motion.div>
           <div>
             <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">Application submitted</h1>
-            <p className="mt-1 max-w-xl text-sm text-[var(--color-text-muted)]">
+            <p className="mt-1 max-w-xl text-sm text-(--color-text-muted)">
               {shop.name ? (
                 <>
-                  <span className="font-semibold text-[var(--color-text)]">{shop.name}</span> is waiting for review. We'll
+                  <span className="font-semibold text-(--color-text)">{shop.name}</span> is waiting for review. We'll
                   email you when it's live.
                 </>
               ) : (
@@ -65,35 +65,35 @@ const ShopApproval = () => {
               <div key={item.title} className="flex items-start gap-3 rounded-[16px] border border-[#edf3ef] bg-[#f8fbf9] p-4">
                 <div
                   className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] ${
-                    item.done ? "bg-[var(--color-green-bg)] text-[var(--color-primary)]" : "bg-amber-50 text-amber-600"
+                    item.done ? "bg-(--color-green-bg) text-(--color-primary)" : "bg-amber-50 text-amber-600"
                   }`}
                 >
                   {item.done ? <item.icon className="h-5 w-5" /> : <Clock className="h-5 w-5" />}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold">{item.title}</p>
-                  <p className="text-xs text-[var(--color-text-muted)]">{item.desc}</p>
+                  <p className="text-xs text-(--color-text-muted)">{item.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <aside className="rounded-[16px] border border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/60 p-5 lg:p-6">
-            <p className="text-sm font-semibold text-[var(--color-primary-dark)]">Need help?</p>
-            <p className="mt-1 text-xs text-[var(--color-text-muted)]">The review team usually replies within 24–48 hours.</p>
-            <div className="mt-4 space-y-2 text-sm text-[var(--color-text-muted)]">
+          <aside className="rounded-[16px] border border-(--color-green-soft) bg-(--color-green-bg)/60 p-5 lg:p-6">
+            <p className="text-sm font-semibold text-(--color-primary-dark)">Need help?</p>
+            <p className="mt-1 text-xs text-(--color-text-muted)">The review team usually replies within 24–48 hours.</p>
+            <div className="mt-4 space-y-2 text-sm text-(--color-text-muted)">
               <p className="inline-flex items-center gap-2">
-                <Mail className="h-4 w-4 text-[var(--color-primary)]" /> {APP_CONFIG.supportEmail}
+                <Mail className="h-4 w-4 text-(--color-primary)" /> {APP_CONFIG.supportEmail}
               </p>
               <p className="inline-flex items-center gap-2">
-                <Phone className="h-4 w-4 text-[var(--color-primary)]" /> {APP_CONFIG.supportPhone}
+                <Phone className="h-4 w-4 text-(--color-primary)" /> {APP_CONFIG.supportPhone}
               </p>
             </div>
             <button type="button" onClick={handleCheckStatus} disabled={checking} className="btn-primary mt-6 w-full">
               {checking ? "Checking status..." : "Simulate approval"}
               {!checking && <Shield className="h-4 w-4" />}
             </button>
-            <p className="mt-2 text-center text-[11px] text-[var(--color-text-muted)]">
+            <p className="mt-2 text-center text-[11px] text-(--color-text-muted)">
               In production, approval happens from the admin panel.
             </p>
           </aside>

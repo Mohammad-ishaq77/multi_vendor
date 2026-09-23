@@ -34,11 +34,6 @@ const fadeUp = {
   }),
 };
 
-function formatDate(iso) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
-}
-
 function ConfirmModal({ isOpen, onClose, onConfirm, title, message, loading }) {
   if (!isOpen) return null;
   return (

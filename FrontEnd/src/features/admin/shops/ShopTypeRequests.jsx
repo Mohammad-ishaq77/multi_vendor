@@ -7,10 +7,7 @@ import {
   XCircle,
   Clock,
   FileText,
-  User,
-  Store,
   AlertTriangle,
-  X,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
@@ -183,7 +180,7 @@ export default function ShopTypeRequests() {
               className="bg-white rounded-lg border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center text-white flex-shrink-0">
+                <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center text-white shrink-0">
                   <Tag size={20} />
                 </div>
 
@@ -198,7 +195,7 @@ export default function ShopTypeRequests() {
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize flex-shrink-0 ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize shrink-0 ${
                         statusBadge[request.status] || "bg-gray-50 text-gray-600"
                       }`}
                     >
@@ -229,7 +226,7 @@ export default function ShopTypeRequests() {
                 </div>
 
                 {request.status === "pending" && (
-                  <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => handleAction(request, "reject")}
                       className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 rounded-md text-xs font-semibold hover:bg-rose-100 transition-colors"

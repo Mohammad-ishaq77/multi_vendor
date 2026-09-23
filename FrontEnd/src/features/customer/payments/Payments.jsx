@@ -11,7 +11,7 @@ const statusStyles = {
   captured: "bg-emerald-50 text-emerald-700 border-emerald-200",
   pending: "bg-amber-50 text-amber-700 border-amber-200",
   pending_verification: "bg-amber-50 text-amber-700 border-amber-200",
-  created: "bg-emerald-50 text-[var(--color-primary-dark)] border-[var(--color-green-soft)]",
+  created: "bg-emerald-50 text-(--color-primary-dark) border-(--color-green-soft)",
   failed: "bg-rose-50 text-rose-700 border-rose-200",
   cancelled: "bg-slate-50 text-slate-600 border-slate-200",
   refunded: "bg-teal-50 text-teal-700 border-teal-200",
@@ -76,7 +76,7 @@ const Payments = () => {
             return (
               <div key={item.label} className="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-(--color-green-bg) text-(--color-primary)">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -95,7 +95,7 @@ const Payments = () => {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by order, payment ID or method"
-            className="w-full rounded-md border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[var(--color-primary)]"
+            className="w-full rounded-md border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-(--color-primary)"
           />
         </div>
 
@@ -104,7 +104,7 @@ const Payments = () => {
             <CreditCard className="mx-auto mb-3 h-10 w-10 text-gray-300" />
             <h2 className="text-lg font-bold text-[#14261f]">No payments yet</h2>
             <p className="mt-1 text-sm text-gray-500">Pay for an order at checkout to see it here.</p>
-            <Link to="/customer/products" className="mt-5 inline-flex rounded-md bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-white">
+            <Link to="/customer/products" className="mt-5 inline-flex rounded-md bg-(--color-primary) px-4 py-2.5 text-sm font-semibold text-white">
               Continue shopping
             </Link>
           </div>
@@ -132,7 +132,7 @@ const Payments = () => {
                   <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
                     <div>
                       <p className="text-xs text-gray-400">Amount</p>
-                      <p className="font-semibold text-[var(--color-primary)]">₹{Number(payment.amount || 0).toLocaleString("en-IN")}</p>
+                      <p className="font-semibold text-(--color-primary)">₹{Number(payment.amount || 0).toLocaleString("en-IN")}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">Method</p>
@@ -154,7 +154,7 @@ const Payments = () => {
                     </p>
                   )}
                   {payment.orderId && (
-                    <Link to={`/customer/orders/${payment.orderId}`} className="mt-3 inline-flex text-sm font-semibold text-[var(--color-primary)] hover:underline">
+                    <Link to={`/customer/orders/${payment.orderId}`} className="mt-3 inline-flex text-sm font-semibold text-(--color-primary) hover:underline">
                       View order
                     </Link>
                   )}

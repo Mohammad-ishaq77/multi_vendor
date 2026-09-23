@@ -9,7 +9,7 @@ export const pageHeroes = {
     highlight: "neighborhood",
     titleMid: "every",
     titleLine: ["Your local", "marketplace,"],
-    rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
+    rotating: ["In minutes", "On its way", "In no time", "Right here"],
     description:
       "Skip the mixed feed. Open grocery, fashion, electronics, beauty and more — each aisle has its own shops, products and a same-day delivery story.",
     image: HD("photo-1534723452862-4c874018d66d"),
@@ -103,7 +103,7 @@ export const pageHeroes = {
 export const homeHero = {
   eyebrow: "Srinagar's neighborhood marketplace",
   titleLine: ["Your local", "marketplace,"],
-  rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
+  rotating: ["In minutes", "On its way", "In no time", "Right here"],
   description:
     "Groceries, fashion, electronics, beauty and pharmacy from the shops you already know. Compare prices, checkout once, and get it at your door the same day.",
   image: HD("photo-1542838132-92c53300491e"),
@@ -112,7 +112,7 @@ export const homeHero = {
 export const aboutHero = {
   eyebrow: "Our story",
   titleLine: ["Your local", "marketplace,"],
-  rotating: ["Delivered", "Nearby", "Fresh", "In minutes"],
+  rotating: ["In minutes", "On its way", "In no time", "Right here"],
   description:
     "NearMart connects customers with trusted shopkeepers and delivery partners in their neighborhood — simple, reliable and built for the street around you.",
 };

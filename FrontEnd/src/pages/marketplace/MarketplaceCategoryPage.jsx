@@ -56,10 +56,10 @@ const MarketplaceCategoryPage = () => {
         secondaryLabel="All aisles"
       />
 
-      <section className="border-b border-[var(--color-green-soft)] bg-white py-3">
+      <section className="border-b border-(--color-green-soft) bg-white py-3">
         <div className="container-app flex flex-col gap-2 lg:flex-row">
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
             <input
               type="search"
               value={query}
@@ -71,7 +71,7 @@ const MarketplaceCategoryPage = () => {
           </div>
           <label className="relative lg:w-52">
             <span className="sr-only">Sort {category.name} products</span>
-            <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
             <select value={sortKey} onChange={(e) => setSortKey(e.target.value)} className="input-field !min-h-10 appearance-none pl-10">
               {SORT_OPTIONS.map((option) => (
                 <option key={option.id} value={option.id}>
@@ -84,7 +84,7 @@ const MarketplaceCategoryPage = () => {
       </section>
 
       {shops.length > 0 && (
-        <section className="bg-[var(--color-surface-tint)] py-6 lg:py-8">
+        <section className="bg-(--color-surface-tint) py-6 lg:py-8">
           <div className="container-app">
             <h2 className="mb-3 font-display text-lg font-bold">Stores</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -111,7 +111,7 @@ const MarketplaceCategoryPage = () => {
         </div>
       </section>
 
-      <section className="bg-[var(--color-green-bg)] py-6">
+      <section className="bg-(--color-green-bg) py-6">
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">More categories</h2>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
@@ -119,7 +119,7 @@ const MarketplaceCategoryPage = () => {
                 <Link key={item.slug} to={`/marketplace/${item.slug}`} className="card-surface card-shine overflow-hidden">
                   <div className="card-media relative h-20">
                     <CardImage src={item.cover} alt={item.name} category={item.name} className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-[var(--color-primary-dark)]/45" />
+                    <div className="absolute inset-0 bg-(--color-primary-dark)/45" />
                     <h3 className="absolute inset-x-0 bottom-2 z-10 px-2 text-center text-xs font-bold text-white">{item.name}</h3>
                   </div>
                 </Link>

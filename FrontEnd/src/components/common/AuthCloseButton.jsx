@@ -17,7 +17,7 @@ const AuthCloseButton = ({ className = "" }) => {
       type="button"
       aria-label="Close"
       onClick={handleClose}
-      className={`absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-green-soft)] bg-white text-[var(--color-text)] shadow-[var(--shadow-card)] hover:bg-[var(--color-green-bg)] ${className}`}
+      className={`absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-(--color-green-soft) bg-white text-(--color-text) shadow-[var(--shadow-card)] hover:bg-(--color-green-bg) ${className}`}
     >
       <X className="h-5 w-5" />
     </button>

@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { adminProfile as defaultAdminProfile } from "../data/adminData";
 import { dummyCustomers, dummyShopkeepers } from "../data/dummyUsers";
@@ -789,7 +790,7 @@ export function AdminProvider({ children }) {
       dummyShopkeepers.length ? dummyShopkeepers.map((user) => ({ ...user, role: "shopkeeper" })) : SEED_SHOPKEEPERS
     )
   );
-  const [deliveryPartners, setDeliveryPartners] = useState(() =>
+  const [deliveryPartners] = useState(() =>
     loadFromLS("deliveryPartners", dummyDeliveryPartners.length ? dummyDeliveryPartners : SEED_DELIVERY_PARTNERS)
   );
 
@@ -932,6 +933,17 @@ export function AdminProvider({ children }) {
       return sum + rev.totalToNearMart;
     }, 0);
 
+  // ── Actions: Activity Feed ──────────────────────────────────────────────────
+
+  const addActivity = useCallback((activity) => {
+    const newActivity = {
+      ...activity,
+      id: generateId("ACT"),
+      timestamp: now(),
+    };
+    setRecentActivities((prev) => [newActivity, ...prev].slice(0, 50));
+  }, []);
+
   // ── Actions: Shopkeeper Approvals ───────────────────────────────────────────
 
   const approveShopkeeper = useCallback((id) => {
@@ -939,14 +951,14 @@ export function AdminProvider({ children }) {
       prev.map((a) => (a.id === id && a.type === "shopkeeper" ? { ...a, status: "approved" } : a))
     );
     addActivity({ type: "approval", message: `Shopkeeper application ${id} approved`, icon: "check-circle" });
-  }, []);
+  }, [addActivity]);
 
   const rejectShopkeeper = useCallback((id, rejectionReason = "") => {
     setApprovals((prev) =>
       prev.map((a) => (a.id === id && a.type === "shopkeeper" ? { ...a, status: "rejected", rejectionReason } : a))
     );
     addActivity({ type: "approval", message: `Shopkeeper application ${id} rejected`, icon: "x-circle" });
-  }, []);
+  }, [addActivity]);
 
   const requestShopkeeperChanges = useCallback((id, message) => {
     setApprovals((prev) =>
@@ -965,14 +977,14 @@ export function AdminProvider({ children }) {
       prev.map((a) => (a.id === id && a.type === "delivery_partner" ? { ...a, status: "approved" } : a))
     );
     addActivity({ type: "approval", message: `Delivery partner application ${id} approved`, icon: "check-circle" });
-  }, []);
+  }, [addActivity]);
 
   const rejectDeliveryPartner = useCallback((id, rejectionReason = "") => {
     setApprovals((prev) =>
       prev.map((a) => (a.id === id && a.type === "delivery_partner" ? { ...a, status: "rejected", rejectionReason } : a))
     );
     addActivity({ type: "approval", message: `Delivery partner application ${id} rejected`, icon: "x-circle" });
-  }, []);
+  }, [addActivity]);
 
   const requestDeliveryPartnerChanges = useCallback((id, message) => {
     setApprovals((prev) =>
@@ -991,14 +1003,14 @@ export function AdminProvider({ children }) {
       prev.map((r) => (r.id === id ? { ...r, status: "approved" } : r))
     );
     addActivity({ type: "shop", message: `Shop type request ${id} approved`, icon: "check-circle" });
-  }, []);
+  }, [addActivity]);
 
   const rejectShopType = useCallback((id) => {
     setShopTypeRequests((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: "rejected" } : r))
     );
     addActivity({ type: "shop", message: `Shop type request ${id} rejected`, icon: "x-circle" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Suspend / Activate Users ───────────────────────────────────────
 
@@ -1006,37 +1018,37 @@ export function AdminProvider({ children }) {
     const setter = type === "customer" ? setCustomers : setShopkeepers;
     setter((prev) => prev.map((u) => (u.id === id ? { ...u, status: "suspended" } : u)));
     addActivity({ type: "user", message: `User ${id} suspended`, icon: "user-x" });
-  }, []);
+  }, [addActivity]);
 
   const activateUser = useCallback((id, type) => {
     const setter = type === "customer" ? setCustomers : setShopkeepers;
     setter((prev) => prev.map((u) => (u.id === id ? { ...u, status: "active" } : u)));
     addActivity({ type: "user", message: `User ${id} activated`, icon: "user-check" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Suspend / Activate Shops ───────────────────────────────────────
 
   const suspendShop = useCallback((id) => {
     setShops((prev) => prev.map((s) => (s.id === id ? { ...s, status: "suspended", isOpen: false } : s)));
     addActivity({ type: "shop", message: `Shop ${id} suspended`, icon: "store" });
-  }, []);
+  }, [addActivity]);
 
   const activateShop = useCallback((id) => {
     setShops((prev) => prev.map((s) => (s.id === id ? { ...s, status: "active", isOpen: true } : s)));
     addActivity({ type: "shop", message: `Shop ${id} activated`, icon: "store" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Disable / Enable Products ──────────────────────────────────────
 
   const disableProduct = useCallback((id) => {
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, status: "disabled" } : p)));
     addActivity({ type: "product", message: `Product ${id} disabled`, icon: "package" });
-  }, []);
+  }, [addActivity]);
 
   const enableProduct = useCallback((id) => {
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, status: "active" } : p)));
     addActivity({ type: "product", message: `Product ${id} enabled`, icon: "package" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Orders ─────────────────────────────────────────────────────────
 
@@ -1053,7 +1065,7 @@ export function AdminProvider({ children }) {
       )
     );
     addActivity({ type: "order", message: `Order ${orderId} status updated to ${status}`, icon: "refresh-cw" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Deliveries ─────────────────────────────────────────────────────
 
@@ -1071,7 +1083,7 @@ export function AdminProvider({ children }) {
       )
     );
     addActivity({ type: "delivery", message: `Delivery ${deliveryId} status updated to ${status}`, icon: "truck" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Offers ─────────────────────────────────────────────────────────
 
@@ -1084,27 +1096,27 @@ export function AdminProvider({ children }) {
     };
     setOffers((prev) => [newOffer, ...prev]);
     addActivity({ type: "offer", message: `New offer "${offer.title}" created`, icon: "tag" });
-  }, []);
+  }, [addActivity]);
 
   const updateOffer = useCallback((id, updates) => {
     setOffers((prev) => prev.map((o) => (o.id === id ? { ...o, ...updates } : o)));
     addActivity({ type: "offer", message: `Offer ${id} updated`, icon: "edit" });
-  }, []);
+  }, [addActivity]);
 
   const activateOffer = useCallback((id) => {
     setOffers((prev) => prev.map((o) => (o.id === id ? { ...o, status: "active" } : o)));
     addActivity({ type: "offer", message: `Offer ${id} activated`, icon: "play-circle" });
-  }, []);
+  }, [addActivity]);
 
   const deactivateOffer = useCallback((id) => {
     setOffers((prev) => prev.map((o) => (o.id === id ? { ...o, status: "inactive" } : o)));
     addActivity({ type: "offer", message: `Offer ${id} deactivated`, icon: "pause-circle" });
-  }, []);
+  }, [addActivity]);
 
   const deleteOffer = useCallback((id) => {
     setOffers((prev) => prev.filter((o) => o.id !== id));
     addActivity({ type: "offer", message: `Offer ${id} deleted`, icon: "trash" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Notifications ──────────────────────────────────────────────────
 
@@ -1125,7 +1137,7 @@ export function AdminProvider({ children }) {
       )
     );
     addActivity({ type: "report", message: `Report ${id} resolved`, icon: "check-circle" });
-  }, []);
+  }, [addActivity]);
 
   const rejectReport = useCallback((id) => {
     setReports((prev) =>
@@ -1134,7 +1146,7 @@ export function AdminProvider({ children }) {
       )
     );
     addActivity({ type: "report", message: `Report ${id} rejected`, icon: "x-circle" });
-  }, []);
+  }, [addActivity]);
 
   // ── Actions: Admin Profile ──────────────────────────────────────────────────
 
@@ -1146,17 +1158,6 @@ export function AdminProvider({ children }) {
 
   const updateSettings = useCallback((updates) => {
     setSettings((prev) => ({ ...prev, ...updates }));
-  }, []);
-
-  // ── Actions: Activity Feed ──────────────────────────────────────────────────
-
-  const addActivity = useCallback((activity) => {
-    const newActivity = {
-      ...activity,
-      id: generateId("ACT"),
-      timestamp: now(),
-    };
-    setRecentActivities((prev) => [newActivity, ...prev].slice(0, 50));
   }, []);
 
   // ── Sidebar persist ─────────────────────────────────────────────────────────

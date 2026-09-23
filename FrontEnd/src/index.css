@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -33,8 +33,8 @@
   --color-brand-muted: #ECFDF5;
   --color-brand-surface: #F8FAFC;
   --color-brand-text: #042F2E;
-  --font-sans: "Marcellus", Georgia, "Times New Roman", serif;
-  --font-display: "Marcellus", Georgia, "Times New Roman", serif;
+  --font-sans: "Lexend", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Lexend", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 @layer base {
@@ -51,14 +51,14 @@
   }
 
   body {
-    font-family: "Marcellus", Georgia, "Times New Roman", serif;
+    font-family: "Lexend", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color: var(--color-text);
     background: var(--color-surface);
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Marcellus", Georgia, "Times New Roman", serif;
+    font-family: "Lexend", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color: inherit;
   }
 
@@ -291,6 +291,39 @@
     min-height: 360px;
   }
 
+  .compact-home-hero {
+    width: calc(100% - 2.5rem);
+    max-width: 1240px;
+    height: 40vh;
+    min-height: 308px;
+    max-height: 440px;
+    margin: 0.75rem auto 0;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 78% 24%, rgba(167, 243, 208, 0.18), transparent 24%),
+      linear-gradient(122deg, #064e3b 0%, #087a59 54%, #059669 100%);
+    box-shadow: 0 22px 46px -28px rgba(6, 78, 59, 0.65);
+  }
+
+  .compact-home-hero .compact-hero-content {
+    grid-template-columns: minmax(0, 1fr);
+    padding: clamp(1.35rem, 3.8vh, 2.25rem) clamp(0.15rem, 2vw, 1.25rem);
+  }
+
+  .compact-home-hero .hero-title-rise {
+    margin-top: 0.6rem;
+    font-size: clamp(2rem, 4.2vw, 2.85rem);
+    line-height: 1.03;
+  }
+
+  .compact-home-hero .hero-title-rise > span:last-child {
+    margin-top: 0.2rem;
+  }
+
+  .compact-home-hero .hero-rotating-word {
+    letter-spacing: -0.04em;
+  }
+
   @media (max-width: 1023px) {
     .hero-shell {
       height: min(max(50vh, 340px), 62vh);
@@ -303,6 +336,27 @@
       min-height: max(34vh, 270px);
       max-height: min(56vh, 460px);
     }
+
+    .compact-home-hero {
+      width: calc(100% - 2rem);
+      height: 52vh;
+      min-height: 400px;
+      max-height: 470px;
+      margin-top: 0.5rem;
+    }
+
+    .compact-home-hero .compact-hero-content {
+      padding-block: 1.1rem;
+    }
+
+    .compact-home-hero h1 {
+      font-size: clamp(1.35rem, 6.6vw, 1.8rem);
+    }
+
+    .about-hero h1 {
+      font-size: clamp(1.4rem, 6.6vw, 1.9rem);
+    }
+
   }
 
   .site-header-offset {
@@ -398,6 +452,39 @@
 
   .hero-overlay a.hero-cta {
     font-size: clamp(0.88rem, 3.8vw, 1rem);
+  }
+}
+
+@media (max-width: 1023px) {
+  /* Home hero: CTAs stay as underline text links, both in one row */
+  .compact-home-hero a.hero-cta {
+    min-height: 0;
+    height: auto;
+    width: auto;
+    gap: 0.2rem;
+    padding: 0.1rem 0.3rem;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6) !important;
+    font-size: clamp(0.78rem, 3.4vw, 0.9rem);
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .compact-home-hero .hero-cta-row {
+    flex-wrap: nowrap !important;
+    gap: max(0.6rem, 2.6vw) !important;
+  }
+
+  .compact-home-hero a.hero-cta:hover,
+  .compact-home-hero a.hero-cta:active {
+    background: transparent !important;
+    opacity: 0.85;
+    transform: none;
   }
 }
 
@@ -521,7 +608,95 @@ a.hero-quick-link:active {
   cursor: pointer;
 }
 
-.hero-rotating-word::after,
+/* Graphical animated underline for the rotating hero word */
+.hero-rotating-word::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: -0.05em;
+  z-index: 1;
+  bottom: -0.1em;
+  width: auto;
+  height: 0.09em;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.85) 50%, #ffffff 100%);
+  box-shadow: 0 1px 8px -1px rgba(16, 185, 129, 0.5);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: underline-cycle 2.2s ease-in-out infinite;
+  transition: box-shadow var(--transition-fast), filter var(--transition-fast);
+}
+
+/* Sparkle "point" that rides on the end of the line */
+.hero-rotating-word::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -0.1em;
+  z-index: 2;
+  width: 0.45em;
+  height: 0.45em;
+  border-radius: 0.12em;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  box-shadow: 0 2px 12px -2px rgba(16, 185, 129, 0.7);
+  opacity: 0;
+  transform: translate(50%, 45%) rotate(45deg) scale(0.4);
+  animation: underline-point 2.2s ease-in-out infinite;
+  transition: filter var(--transition-fast);
+}
+
+.hero-rotating-word:hover::after {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.75));
+  box-shadow: 0 2px 20px -2px rgba(16, 185, 129, 0.85);
+}
+
+.hero-rotating-word:hover::before {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
+
+@keyframes underline-point {
+  0%,
+  10% {
+    opacity: 0;
+    transform: translate(50%, 45%) rotate(45deg) scale(0.4);
+  }
+  30%,
+  80% {
+    opacity: 1;
+    transform: translate(50%, 45%) rotate(45deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(50%, 45%) rotate(45deg) scale(0.4);
+  }
+}
+
+/* Circular motion for the hero corner graphics */
+@keyframes hero-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hero-corner-orbit {
+  animation: hero-orbit 32s linear infinite;
+  will-change: transform;
+}
+
+.hero-corner-orbit--reverse {
+  animation-direction: reverse;
+  animation-duration: 24s;
+}
+
+@keyframes hero-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.72; }
+  50% { transform: scale(1.16); opacity: 1; }
+}
+
+.hero-corner-breathe {
+  animation: hero-breathe 7s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
 .hero-word-underline::after {
   content: "";
   position: absolute;
@@ -535,10 +710,6 @@ a.hero-quick-link:active {
   opacity: 0.7;
   transform: scaleX(0);
   transform-origin: left;
-}
-
-.hero-rotating-word::after {
-  animation: underline-grow 0.45s ease forwards;
 }
 
 .hero-word-underline::after {

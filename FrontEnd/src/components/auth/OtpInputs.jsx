@@ -67,9 +67,9 @@ export default function OtpInputs({
               error
                 ? "border-rose-300 bg-rose-50 text-rose-700"
                 : digit
-                  ? "border-[var(--color-primary)] bg-[var(--color-green-bg)] text-[var(--color-primary-dark)]"
-                  : "border-[#dce8e2] bg-[#f8fbf9] text-[var(--color-text)]"
-            } focus:border-[var(--color-green)] focus:bg-white focus:shadow-[0_0_0_4px_rgba(16,185,129,0.12)]`}
+                  ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark)"
+                  : "border-[#dce8e2] bg-[#f8fbf9] text-(--color-text)"
+            } focus:border-(--color-green) focus:bg-white focus:shadow-[0_0_0_4px_rgba(16,185,129,0.12)]`}
           />
         ))}
       </div>

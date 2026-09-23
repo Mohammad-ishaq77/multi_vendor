@@ -462,7 +462,7 @@ const Checkout = () => {
                   whileTap={{ scale: 0.99 }}
                   className="flex items-center gap-4 border border-[#155c43] bg-[#f0f8f3] shadow-md shadow-[#155c43]/5 rounded-md p-4 cursor-default"
                 >
-                  <div className="w-5 h-5 rounded-full border-2 border-[#155c43] flex items-center justify-center flex-shrink-0">
+                  <div className="w-5 h-5 rounded-full border-2 border-[#155c43] flex items-center justify-center shrink-0">
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -488,7 +488,7 @@ const Checkout = () => {
 
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {RAZORPAY_CONFIG.methods.map((method) => (
-                  <div key={method.id} className="rounded-md border border-[var(--color-green-soft)] bg-[var(--color-green-bg)]/60 px-4 py-3">
+                  <div key={method.id} className="rounded-md border border-(--color-green-soft) bg-(--color-green-bg)/60 px-4 py-3">
                     <p className="text-sm font-semibold text-[#14261f]">{method.label}</p>
                     <p className="text-xs text-gray-500">{method.detail}</p>
                   </div>
@@ -532,7 +532,7 @@ const Checkout = () => {
                       transition={{ delay: i * 0.05 }}
                       className="flex items-center gap-4 p-3 rounded-md hover:bg-[#f8faf9] transition-colors"
                     >
-                      <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 ring-1 ring-gray-100">
+                      <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden shrink-0 ring-1 ring-gray-100">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -586,7 +586,7 @@ const Checkout = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isPlacing}
-                className="w-full mt-6 bg-gradient-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-md font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"
+                className="w-full mt-6 bg-linear-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-md font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"
               >
                 {isPlacing ? (
                   <motion.div
@@ -604,7 +604,7 @@ const Checkout = () => {
                   initial={{ x: "-100%" }}
                   animate={isPlacing ? {} : { x: "200%" }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+                  className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent skew-x-12"
                 />
               </motion.button>
 
