@@ -1,160 +1,97 @@
-import crypto from "crypto";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-import Razorpay from "razorpay";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import swaggerUi from "swagger-ui-express";
+import { createServer } from "http";
+import { config, isDevSecret } from "./config/env.js";
+import { initDb } from "./config/db.js";
+import { swaggerSpec } from "./config/swagger.js";
+import { errorHandler } from "./common/middleware/error.js";
+import { initSocket } from "./realtime/socket.js";
 
-dotenv.config();
+import authRoutes from "./modules/auth/routes.js";
+import usersRoutes from "./modules/users/routes.js";
+import categoriesRoutes from "./modules/categories/routes.js";
+import shopsRoutes from "./modules/shops/routes.js";
+import productsRoutes from "./modules/products/routes.js";
+import cartRoutes from "./modules/cart/routes.js";
+import wishlistRoutes from "./modules/wishlist/routes.js";
+import addressesRoutes from "./modules/addresses/routes.js";
+import ordersRoutes from "./modules/orders/routes.js";
+import paymentsRoutes from "./modules/payments/routes.js";
+import offersRoutes from "./modules/offers/routes.js";
+import reviewsRoutes from "./modules/reviews/routes.js";
+import deliveryRoutes from "./modules/delivery/routes.js";
+import notificationsRoutes from "./modules/notifications/routes.js";
+import approvalsRoutes from "./modules/approvals/routes.js";
+import reportsRoutes from "./modules/reports/routes.js";
+import uploadsRoutes from "./modules/uploads/routes.js";
+import adminRoutes from "./modules/admin/routes.js";
+import shopkeeperRoutes from "./modules/shopkeeper/routes.js";
+import customerRoutes from "./modules/customer/routes.js";
 
-const app = express();
-const PORT = Number(process.env.PORT) || 5000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-const KEY_ID = process.env.RAZORPAY_KEY_ID || "";
-const KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
+export function buildApp() {
+  const app = express();
+  app.disable("x-powered-by");
 
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN,
-    methods: ["GET", "POST", "OPTIONS"],
-  })
-);
-app.use(express.json({ limit: "1mb" }));
+  app.use(helmet({ crossOriginResourcePolicy: false }));
+  app.use(cors({ origin: config.clientOrigin, methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] }));
+  app.use(rateLimit({ windowMs: 60_000, max: 300, standardHeaders: true, legacyHeaders: false }));
 
-const getClient = () => {
-  if (!KEY_ID || !KEY_SECRET) return null;
-  return new Razorpay({ key_id: KEY_ID, key_secret: KEY_SECRET });
-};
-
-const toPaise = (amount) => Math.round(Number(amount) * 100);
-
-app.get("/health", (_req, res) => {
-  res.json({ ok: true, service: "nearmart-payments" });
-});
-
-app.get("/api/payments/config", (_req, res) => {
-  res.json({
-    ok: true,
-    configured: Boolean(KEY_ID && KEY_SECRET),
-    keyId: KEY_ID,
-    currency: "INR",
-    methods: ["upi", "card", "netbanking", "wallet", "emi", "paylater"],
-  });
-});
-
-app.post("/api/payments/create-order", async (req, res) => {
-  try {
-    const client = getClient();
-    if (!client) {
-      return res.status(503).json({
-        ok: false,
-        error: "Razorpay credentials are not configured on the server.",
-      });
-    }
-
-    const { amount, currency = "INR", receipt, notes = {} } = req.body || {};
-    const paise = toPaise(amount);
-
-    if (!Number.isFinite(paise) || paise < 100) {
-      return res.status(400).json({ ok: false, error: "A valid amount of at least ₹1 is required." });
-    }
-
-    const order = await client.orders.create({
-      amount: paise,
-      currency,
-      receipt: receipt || `nm_${Date.now()}`,
-      notes,
-    });
-
-    return res.json({
-      ok: true,
-      order: {
-        id: order.id,
-        amount: order.amount,
-        currency: order.currency,
-        receipt: order.receipt,
-        status: order.status,
+  // Razorpay webhook needs the raw body for signature validation
+  app.use(
+    express.json({
+      limit: "1mb",
+      verify: (req, _res, buf) => {
+        if (req.originalUrl === "/api/payments/webhook") req.rawBody = buf;
       },
-      keyId: KEY_ID,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      error: error?.error?.description || error.message || "Unable to create Razorpay order.",
-    });
+    })
+  );
+
+  app.get("/health", (_req, res) => {
+    res.json({ ok: true, service: "nearmart-api", version: "2.0.0" });
+  });
+  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
+
+  app.use("/api/auth", authRoutes);
+  app.use("/api/users", usersRoutes);
+  app.use("/api/categories", categoriesRoutes);
+  app.use("/api/shops", shopsRoutes);
+  app.use("/api/products", productsRoutes);
+  app.use("/api/cart", cartRoutes);
+  app.use("/api/wishlist", wishlistRoutes);
+  app.use("/api/addresses", addressesRoutes);
+  app.use("/api/orders", ordersRoutes);
+  app.use("/api/payments", paymentsRoutes);
+  app.use("/api/offers", offersRoutes);
+  app.use("/api/reviews", reviewsRoutes);
+  app.use("/api/delivery", deliveryRoutes);
+  app.use("/api/notifications", notificationsRoutes);
+  app.use("/api/approvals", approvalsRoutes);
+  app.use("/api/reports", reportsRoutes);
+  app.use("/api/uploads", uploadsRoutes);
+  app.use("/api/admin", adminRoutes);
+  app.use("/api/shopkeeper", shopkeeperRoutes);
+  app.use("/api/customer", customerRoutes);
+  app.use("/api", customerRoutes); // also serves GET /api/profile + PUT /api/profile
+
+  app.use("/api", (_req, res) => res.status(404).json({ ok: false, error: "Not found." }));
+  app.use(errorHandler);
+  return app;
+}
+
+const isMain = (process.argv[1] || "").replace(/\\/g, "/").endsWith("src/index.js");
+if (process.env.JEST_WORKER_ID === undefined && isMain) {
+  const app = buildApp();
+  const server = createServer(app);
+  initSocket(server, config.clientOrigin);
+  await initDb();
+  if (isDevSecret) {
+    console.warn("WARNING: using default JWT secrets — set JWT_ACCESS_SECRET/JWT_REFRESH_SECRET in .env");
   }
-});
-
-app.post("/api/payments/verify", async (req, res) => {
-  try {
-    if (!KEY_SECRET) {
-      return res.status(503).json({ ok: false, error: "Razorpay secret is not configured." });
-    }
-
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({ ok: false, error: "Missing Razorpay verification fields." });
-    }
-
-    const expected = crypto
-      .createHmac("sha256", KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-
-    const valid = expected === razorpay_signature;
-    if (!valid) {
-      return res.status(400).json({ ok: false, verified: false, error: "Payment signature mismatch." });
-    }
-
-    const client = getClient();
-    let payment = null;
-    if (client) {
-      try {
-        payment = await client.payments.fetch(razorpay_payment_id);
-      } catch {
-        payment = null;
-      }
-    }
-
-    return res.json({
-      ok: true,
-      verified: true,
-      payment: payment
-        ? {
-            id: payment.id,
-            status: payment.status,
-            method: payment.method,
-            amount: payment.amount,
-            currency: payment.currency,
-            email: payment.email,
-            contact: payment.contact,
-            vpa: payment.vpa,
-            wallet: payment.wallet,
-            bank: payment.bank,
-            captured: payment.captured,
-          }
-        : { id: razorpay_payment_id, status: "captured" },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      error: error.message || "Unable to verify payment.",
-    });
-  }
-});
-
-app.get("/api/payments/:paymentId", async (req, res) => {
-  try {
-    const client = getClient();
-    if (!client) {
-      return res.status(503).json({ ok: false, error: "Razorpay is not configured." });
-    }
-    const payment = await client.payments.fetch(req.params.paymentId);
-    return res.json({ ok: true, payment });
-  } catch (error) {
-    return res.status(404).json({ ok: false, error: "Payment not found." });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`NearMart payment API running on http://localhost:${PORT}`);
-});
+  server.listen(config.port, () => {
+    console.log(`NearMart API running on http://localhost:${config.port} (docs: /docs)`);
+  });
+}

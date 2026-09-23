@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: nearmart-db
+    environment:
+      POSTGRES_USER: nearmart
+      POSTGRES_PASSWORD: nearmart
+      POSTGRES_DB: nearmart
+    ports:
+      - "5432:5432"
+    volumes:
+      - nearmart-pgdata:/var/lib/postgresql/data
+
+volumes:
+  nearmart-pgdata:
