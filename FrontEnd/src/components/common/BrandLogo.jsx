@@ -12,7 +12,7 @@ const BrandLogo = ({
 }) => {
   return (
     <Link to={to} className={cn("flex items-center gap-3 group min-w-0", className)}>
-      <span className="relative flex-shrink-0">
+      <span className="relative shrink-0">
         <img
           src={APP_CONFIG.logo}
           alt={`${APP_CONFIG.name} logo`}
@@ -27,7 +27,7 @@ const BrandLogo = ({
           <span
             className={cn(
               "text-lg font-bold tracking-tight leading-none",
-              inverted ? "text-white" : "text-[var(--color-text)]"
+              inverted ? "text-white" : "text-(--color-text)"
             )}
           >
             {APP_CONFIG.name}
@@ -36,7 +36,7 @@ const BrandLogo = ({
             <span
               className={cn(
                 "mt-0.5 text-[10px] font-medium uppercase tracking-[0.16em]",
-                inverted ? "text-white/70" : "text-[var(--color-text-muted)]"
+                inverted ? "text-white/70" : "text-(--color-text-muted)"
               )}
             >
               {subtitle}

@@ -62,7 +62,7 @@ const MarketplaceSearch = ({
     <div ref={wrapRef} className={`relative ${hero || mobile ? "w-full" : "min-w-0 flex-1"}`}>
       <form onSubmit={handleSubmit} role="search" className="relative">
         <Search
-          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] ${
+          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-(--color-text-muted) ${
             hero ? "left-3 h-3.5 w-3.5 lg:left-4 lg:h-4 lg:w-4" : mobile ? "left-4 h-4 w-4" : "left-3.5 h-4 w-4"
           }`}
         />
@@ -81,10 +81,10 @@ const MarketplaceSearch = ({
           aria-label="Search marketplace"
           className={
             hero
-              ? "h-9 w-full rounded-xl border border-white/70 bg-white pl-9 pr-[5.4rem] text-xs text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)] focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[6.5rem] lg:text-sm"
+              ? "h-9 w-full rounded-xl border border-white/70 bg-white pl-9 pr-[5.4rem] text-xs text-(--color-text) outline-none placeholder:text-(--color-text-muted) focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[6.5rem] lg:text-sm"
               : mobile
-                ? "h-11 w-full rounded-xl border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-11 pr-[5.75rem] text-sm outline-none"
-                : "h-10 w-full rounded-full border border-[var(--color-green-soft)] bg-[var(--color-surface)] pl-10 pr-[6.25rem] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-green)] focus:bg-white focus:ring-4 focus:ring-[var(--color-green-light)]/15"
+                ? "h-11 w-full rounded-xl border border-(--color-green-soft) bg-(--color-surface) pl-11 pr-[5.75rem] text-sm outline-none"
+                : "h-10 w-full rounded-full border border-(--color-green-soft) bg-(--color-surface) pl-10 pr-[6.25rem] text-sm text-(--color-text) outline-none focus:border-(--color-green) focus:bg-white focus:ring-4 focus:ring-(--color-green-light)/15"
           }
         />
         {query && (
@@ -95,7 +95,7 @@ const MarketplaceSearch = ({
               setOpen(false);
             }}
             aria-label="Clear search"
-            className={`absolute top-1/2 -translate-y-1/2 rounded-full p-1 text-[var(--color-text-muted)] hover:bg-[var(--color-green-bg)] hover:text-[var(--color-text)] ${
+            className={`absolute top-1/2 -translate-y-1/2 rounded-full p-1 text-(--color-text-muted) hover:bg-(--color-green-bg) hover:text-(--color-text) ${
               hero ? "right-[3.85rem] lg:right-[4.6rem]" : mobile ? "right-[4.6rem]" : "right-[5.15rem]"
             }`}
           >
@@ -107,7 +107,7 @@ const MarketplaceSearch = ({
           className={
             hero
               ? "btn-on-green absolute right-1 top-1/2 !min-h-7 -translate-y-1/2 !rounded-lg !px-2.5 !text-[11px] lg:right-1.5 lg:!min-h-9 lg:!rounded-xl lg:!px-3.5 lg:!text-sm"
-              : "absolute right-1 top-1/2 inline-flex h-7 -translate-y-1/2 items-center rounded-lg bg-[var(--color-primary)] px-3 text-xs font-semibold text-white hover:bg-[var(--color-primary-dark)]"
+              : "absolute right-1 top-1/2 inline-flex h-7 -translate-y-1/2 items-center rounded-lg bg-(--color-primary) px-3 text-xs font-semibold text-white hover:bg-(--color-primary-dark)"
           }
         >
           Search
@@ -116,7 +116,7 @@ const MarketplaceSearch = ({
 
       {showPanel && (
         <div
-          className={`absolute z-50 mt-2 overflow-hidden rounded-2xl border border-[var(--color-green-soft)] bg-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.35)] ${
+          className={`absolute z-50 mt-2 overflow-hidden rounded-2xl border border-(--color-green-soft) bg-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.35)] ${
             hero ? "left-0 right-0" : "inset-x-0"
           }`}
         >
@@ -129,14 +129,14 @@ const MarketplaceSearch = ({
                       key={category.slug}
                       to={`/marketplace/${category.slug}`}
                       onClick={() => setOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-[var(--color-green-bg)]"
+                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-(--color-green-bg)"
                     >
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--color-green-bg) text-(--color-primary)">
                         <LayoutGrid className="h-4 w-4" />
                       </span>
                       <span>
-                        <span className="block font-semibold text-[var(--color-text)]">{category.name}</span>
-                        <span className="block text-[11px] text-[var(--color-text-muted)]">{category.description}</span>
+                        <span className="block font-semibold text-(--color-text)">{category.name}</span>
+                        <span className="block text-[11px] text-(--color-text-muted)">{category.description}</span>
                       </span>
                     </Link>
                   ))}
@@ -149,14 +149,14 @@ const MarketplaceSearch = ({
                       key={shop.id}
                       to={getVendorMarketplacePath(shop)}
                       onClick={() => setOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-[var(--color-green-bg)]"
+                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-(--color-green-bg)"
                     >
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--color-green-bg) text-(--color-primary)">
                         <Store className="h-4 w-4" />
                       </span>
                       <span>
-                        <span className="block font-semibold text-[var(--color-text)]">{shop.name}</span>
-                        <span className="block text-[11px] text-[var(--color-text-muted)]">
+                        <span className="block font-semibold text-(--color-text)">{shop.name}</span>
+                        <span className="block text-[11px] text-(--color-text-muted)">
                           {shop.category} · {shop.location}
                         </span>
                       </span>
@@ -171,14 +171,14 @@ const MarketplaceSearch = ({
                       key={product.id}
                       type="button"
                       onClick={() => goToSearch(product.name)}
-                      className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-[var(--color-green-bg)]"
+                      className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-(--color-green-bg)"
                     >
-                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--color-green-bg) text-(--color-primary)">
                         <Package className="h-4 w-4" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold text-[var(--color-text)]">{product.name}</span>
-                        <span className="block text-[11px] text-[var(--color-text-muted)]">
+                        <span className="block truncate font-semibold text-(--color-text)">{product.name}</span>
+                        <span className="block text-[11px] text-(--color-text-muted)">
                           {product.shop} · ₹{product.price}
                         </span>
                       </span>
@@ -188,14 +188,14 @@ const MarketplaceSearch = ({
               )}
             </div>
           ) : (
-            <p className="px-4 py-6 text-center text-sm text-[var(--color-text-muted)]">
+            <p className="px-4 py-6 text-center text-sm text-(--color-text-muted)">
               No matches for “{query.trim()}”
             </p>
           )}
           <button
             type="button"
             onClick={() => goToSearch()}
-            className="flex w-full items-center justify-center gap-2 border-t border-[var(--color-green-soft)] bg-[var(--color-surface)] px-3 py-2.5 text-xs font-semibold text-[var(--color-primary-dark)] hover:bg-[var(--color-green-bg)]"
+            className="flex w-full items-center justify-center gap-2 border-t border-(--color-green-soft) bg-(--color-surface) px-3 py-2.5 text-xs font-semibold text-(--color-primary-dark) hover:bg-(--color-green-bg)"
           >
             <Search className="h-3.5 w-3.5" />
             Search all results for “{query.trim()}”
@@ -208,7 +208,7 @@ const MarketplaceSearch = ({
 
 const SuggestionGroup = ({ title, children }) => (
   <div className="px-1 py-1">
-    <p className="px-3 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">
+    <p className="px-3 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-(--color-text-muted)">
       {title}
     </p>
     {children}

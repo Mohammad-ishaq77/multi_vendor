@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Tag, Percent, IndianRupee, Calendar, BarChart3, CheckCircle, XCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, Tag, Trash2 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 

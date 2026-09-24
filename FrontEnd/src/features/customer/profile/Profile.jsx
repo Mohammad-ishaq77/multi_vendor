@@ -72,7 +72,7 @@ const Profile = () => {
               {/* Profile Card */}
               <div className="bg-white rounded-lg border border-gray-100 overflow-hidden shadow-sm mb-4">
                 {/* Banner */}
-                <div className="h-28 bg-gradient-to-r from-emerald-600 to-teal-600 relative">
+                <div className="h-28 bg-linear-to-r from-emerald-600 to-teal-600 relative">
                   <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
                     <div className="relative w-24 h-24 rounded-lg bg-white border-4 border-white shadow-lg overflow-hidden">
                       {profile.image ? (

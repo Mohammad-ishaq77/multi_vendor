@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components */
 import { createContext, useCallback, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoutConfirmModal from "../components/common/LogoutConfirmModal";

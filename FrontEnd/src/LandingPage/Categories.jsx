@@ -7,14 +7,14 @@ import categories from "../data/categories.json";
 
 const Categories = () => {
   return (
-    <section id="categories" className="bg-white py-10 lg:py-14">
+    <section id="categories" className="bg-white py-8 lg:py-10">
       <div className="container-app">
-        <div className="mb-6 flex items-end justify-between gap-4">
+        <div className="mb-5 flex items-end justify-between gap-4">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-primary)]">Neighborhood aisles</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-(--color-primary)">Neighborhood aisles</p>
             <h2 className="mt-1 font-display text-2xl font-bold lg:text-3xl">Shop by category</h2>
           </div>
-          <Link to="/categories" className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)]">
+          <Link to="/categories" className="inline-flex items-center gap-1 text-sm font-semibold text-(--color-primary)">
             View all
             <ArrowRight className="h-4 w-4" />
           </Link>
@@ -35,10 +35,10 @@ const Categories = () => {
                   to={`/marketplace/${category.slug}`}
                   className="card-surface card-shine group relative block overflow-hidden"
                 >
-                  <div className="card-media relative h-36 sm:h-44">
+                  <div className="card-media relative h-32 sm:h-40">
                     <CardImage src={category.cover} alt={category.name} category={category.name} className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary-dark)]/85 via-[var(--color-primary-dark)]/25 to-transparent" />
-                    <span className="absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-[var(--color-primary)]">
+                    <div className="absolute inset-0 bg-gradient-to-t from-(--color-primary-dark)/85 via-(--color-primary-dark)/25 to-transparent" />
+                    <span className="absolute left-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-(--color-primary)">
                       <Icon className="h-4 w-4" />
                     </span>
                     <div className="absolute inset-x-0 bottom-0 z-10 p-3">

@@ -59,11 +59,11 @@ export default function AddressVerification() {
     <OnboardingLayout>
       <div className="space-y-5 p-5 sm:p-7 lg:p-8">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
             <MapPin className="h-6 w-6" />
           </div>
           <h1 className="font-display text-xl font-bold">Where do you stay?</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">We assign nearby pickups from this address.</p>
+          <p className="mt-1 text-sm text-(--color-text-muted)">We assign nearby pickups from this address.</p>
         </div>
 
         <button
@@ -120,7 +120,7 @@ export default function AddressVerification() {
             type="checkbox"
             checked={form.aadhaarAddressMatch}
             onChange={(e) => update("aadhaarAddressMatch", e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-[#dce8e2] accent-[var(--color-primary)]"
+            className="mt-0.5 h-4 w-4 rounded border-[#dce8e2] accent-(--color-primary)"
           />
           <span className="text-sm font-medium">This is the same as my Aadhaar address</span>
         </label>

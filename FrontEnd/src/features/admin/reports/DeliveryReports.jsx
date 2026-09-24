@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Truck, CheckCircle, XCircle, Clock, MapPin, TrendingUp } from "lucide-react";
+import { Truck, CheckCircle, XCircle, Clock, MapPin } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 
 export default function DeliveryReports() {
-  const { orders, deliveryPartners } = useAdmin();
+  const { orders } = useAdmin();
 
   const stats = useMemo(() => {
     const completed = orders.filter((o) => o.status === "delivered" || o.status === "completed");

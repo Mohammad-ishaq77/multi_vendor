@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  Filter,
   ChevronDown,
   ChevronUp,
   Store,
@@ -15,7 +14,6 @@ import {
   Package,
   ShoppingBag,
   IndianRupee,
-  X,
   AlertTriangle,
   SlidersHorizontal,
   ArrowUpDown,
@@ -43,15 +41,6 @@ const sortOptions = [
 function formatCurrency(amount) {
   if (amount == null) return "₹0";
   return `₹${Number(amount).toLocaleString("en-IN")}`;
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return "—";
-  return new Date(dateStr).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 export default function Shops() {
@@ -186,7 +175,7 @@ export default function Shops() {
             { label: "Active", value: shops.filter((s) => s.status === "active").length, color: "bg-emerald-50 text-emerald-700" },
             { label: "Suspended", value: shops.filter((s) => s.status === "suspended").length, color: "bg-rose-50 text-rose-700" },
             { label: "Pending", value: shops.filter((s) => s.status === "pending").length, color: "bg-amber-50 text-amber-700" },
-          ].map((stat, i) => (
+          ].map((stat) => (
             <div key={stat.label} className={`p-4 rounded-md ${stat.color}`}>
               <p className="text-xs font-medium opacity-70">{stat.label}</p>
               <p className="text-2xl font-bold mt-1">{stat.value}</p>
@@ -365,7 +354,7 @@ export default function Shops() {
                     >
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                          <div className="w-9 h-9 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
                             {shop.name?.charAt(0)}
                           </div>
                           <div>

@@ -89,7 +89,7 @@ export default function ActivityCard({ activities = [] }) {
               className="flex items-center gap-3 py-2.5 px-3 rounded-md hover:bg-gray-50 transition-colors"
             >
               <div
-                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm flex-shrink-0 ${config.color}`}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm shrink-0 ${config.color}`}
               >
                 {config.icon}
               </div>
@@ -99,7 +99,7 @@ export default function ActivityCard({ activities = [] }) {
                   <p className="text-xs text-gray-400 truncate">{activity.meta}</p>
                 )}
               </div>
-              <span className="text-xs text-gray-400 whitespace-nowrap flex-shrink-0">
+              <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">
                 {formatTime(activity.time)}
               </span>
             </motion.div>

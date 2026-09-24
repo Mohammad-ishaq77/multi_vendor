@@ -69,7 +69,7 @@ const ShopDetails = () => {
         >
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Shop Image */}
-            <div className="w-full sm:w-40 h-40 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div className="w-full sm:w-40 h-40 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
               <Store className="w-14 h-14 text-[#1B4332]/30" />
             </div>
 

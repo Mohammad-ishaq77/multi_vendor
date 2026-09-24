@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Check, CheckCheck, Package, ShoppingCart, CreditCard, AlertTriangle, UserPlus, Trash2, Filter } from "lucide-react";
+import { Bell, CheckCheck, Package, ShoppingCart, CreditCard, AlertTriangle, UserPlus } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 

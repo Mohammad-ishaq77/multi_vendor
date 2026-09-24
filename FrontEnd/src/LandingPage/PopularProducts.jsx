@@ -6,14 +6,14 @@ import MarketplaceProductCard from "../components/cards/MarketplaceProductCard";
 
 const PopularProducts = () => {
   return (
-    <section className="bg-white py-10 lg:py-14">
+    <section className="bg-white py-8 lg:py-10">
       <div className="container-app">
-        <div className="mb-6 flex items-end justify-between gap-4">
+        <div className="mb-5 flex items-end justify-between gap-4">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--color-primary)]">Trending this week</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-(--color-primary)">Trending this week</p>
             <h2 className="mt-1 font-display text-2xl font-bold lg:text-3xl">Popular products</h2>
           </div>
-          <Link to="/marketplace" className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-primary)]">
+          <Link to="/marketplace" className="inline-flex items-center gap-1 text-sm font-semibold text-(--color-primary)">
             View all
             <ArrowRight className="h-4 w-4" />
           </Link>

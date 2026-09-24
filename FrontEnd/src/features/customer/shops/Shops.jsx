@@ -10,7 +10,7 @@ const Shops = () => {
     <CustomerShell>
       <section>
         <h1 className="mb-2 text-3xl font-bold md:text-4xl">Shops</h1>
-        <p className="mb-8 text-[var(--color-text-muted)]">Discover trusted local stores near you.</p>
+        <p className="mb-8 text-(--color-text-muted)">Discover trusted local stores near you.</p>
         {shops.length === 0 ? (
           <EmptyState
             icon={Store}

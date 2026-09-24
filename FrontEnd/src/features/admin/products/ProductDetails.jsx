@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Package,
-  Store,
   Tag,
   IndianRupee,
   ShoppingCart,
@@ -12,7 +11,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Ban,
-  Eye,
   ExternalLink,
   Hash,
   Box,
@@ -221,7 +219,7 @@ export default function ProductDetails() {
                   { icon: Hash, label: "Product ID", value: product.id },
                 ].map((item) => (
                   <div key={item.label} className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
-                    <item.icon size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+                    <item.icon size={16} className="text-gray-400 mt-0.5 shrink-0" />
                     <div>
                       <p className="text-xs text-gray-400 font-medium">{item.label}</p>
                       <p className="text-sm font-semibold" style={{ color: "#14261f" }}>{item.value}</p>

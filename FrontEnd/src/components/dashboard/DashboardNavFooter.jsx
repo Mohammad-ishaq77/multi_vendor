@@ -13,7 +13,7 @@ const DashboardNavFooter = ({ isCollapsed = false, compact = false }) => {
       label: "View to Site",
       icon: ExternalLink,
       onClick: () => navigate("/"),
-      hover: "hover:bg-[var(--color-green-bg)] hover:text-[var(--color-primary-dark)]",
+      hover: "hover:bg-(--color-green-bg) hover:text-(--color-primary-dark)",
     },
     {
       id: "logout",
@@ -39,7 +39,7 @@ const DashboardNavFooter = ({ isCollapsed = false, compact = false }) => {
               isCollapsed ? "justify-center" : ""
             }`}
           >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-gray-50 text-gray-400">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gray-50 text-gray-400">
               <Icon className="h-[18px] w-[18px]" />
             </div>
             <AnimatePresence>
@@ -70,9 +70,9 @@ export const DashboardMobileFooter = () => {
       <button
         type="button"
         onClick={() => navigate("/")}
-        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-[var(--color-primary-dark)] hover:bg-[var(--color-green-bg)]"
+        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-(--color-primary-dark) hover:bg-(--color-green-bg)"
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--color-green-bg)] text-[var(--color-primary)]">
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-(--color-green-bg) text-(--color-primary)">
           <ExternalLink className="h-[18px] w-[18px]" />
         </div>
         View to Site

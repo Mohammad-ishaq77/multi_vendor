@@ -294,7 +294,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
           <motion.div
             whileHover={{ rotate: -8, scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center"
           >
             <img src="/logo/logo.png" alt="NearMart" className="h-10 w-10 object-contain" />
           </motion.div>
@@ -418,7 +418,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                           {/* Icon Container */}
                           <motion.div
                             animate={{ scale: active ? 1.05 : 1 }}
-                            className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
+                            className={`relative z-10 shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
                               active
                                 ? `bg-gradient-to-br ${item.accent} text-white shadow-md`
                                 : isHovered
@@ -545,7 +545,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                             key={item.name}
                             to={item.path}
                             onClick={onMobileClose}
-                            className={({ isActive: navActive }) =>
+                            className={() =>
                               `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold transition-all ${
                                 active
                                   ? "bg-emerald-50 text-emerald-700"
@@ -600,7 +600,7 @@ const AdminSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) => {
                 {active && (
                   <motion.div
                     layoutId="adminMobileNav"
-                    className="absolute -top-1 w-6 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
+                    className="absolute -top-1 w-6 h-[2px] bg-linear-to-r from-emerald-500 to-teal-500 rounded-b-full"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}

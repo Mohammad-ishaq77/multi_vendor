@@ -31,6 +31,8 @@ const About = () => {
     <MainLayout>
       <Hero
         tone="dark"
+        leftAligned
+        sectionClassName="about-hero"
         eyebrow={aboutHero.eyebrow}
         titleLine={aboutHero.titleLine}
         rotating={aboutHero.rotating}
@@ -57,7 +59,7 @@ const About = () => {
       <section className="py-16 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
               <Target className="w-6 h-6 text-[#1B4332]" />
             </div>
             <div>
@@ -69,7 +71,7 @@ const About = () => {
           </motion.div>
 
           <motion.div custom={1} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
               <Eye className="w-6 h-6 text-[#1B4332]" />
             </div>
             <div>
@@ -81,7 +83,7 @@ const About = () => {
           </motion.div>
 
           <motion.div custom={2} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
               <Heart className="w-6 h-6 text-[#1B4332]" />
             </div>
             <div>
@@ -119,7 +121,7 @@ const About = () => {
               { icon: Globe, title: "Community", desc: "We believe in strengthening local economies and building a community where everyone grows together." },
             ].map((item, idx) => (
               <motion.div key={item.title} custom={idx} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
                   <item.icon className="w-5 h-5 text-[#1B4332]" />
                 </div>
                 <div>
@@ -174,7 +176,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-gray-100 shadow-sm">
             <div className="flex gap-4 items-start">
-              <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-6 h-6 text-[#1B4332]" />
               </div>
               <div>

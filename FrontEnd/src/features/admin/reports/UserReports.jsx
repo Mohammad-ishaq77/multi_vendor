@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Users, UserCheck, UserX, Store, Truck, TrendingUp } from "lucide-react";
+import { Users, UserCheck, Store, Truck } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 

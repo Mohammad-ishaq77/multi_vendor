@@ -73,7 +73,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
           <motion.div
             whileHover={{ rotate: -8, scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
-            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center"
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center"
           >
             <img src="/logo/logo.png" alt="NearMart" className="h-10 w-10 object-contain" />
           </motion.div>
@@ -147,7 +147,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                     </AnimatePresence>
                     <motion.div
                       animate={{ scale: isActive ? 1.05 : 1 }}
-                      className={`relative z-10 flex-shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
+                      className={`relative z-10 shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-all duration-300 ${
                         isActive ? `bg-gradient-to-br ${item.accent} text-white shadow-md` : isHovered ? `${item.accentBg} ${item.accentText}` : "bg-gray-50 text-gray-400"
                       }`}
                     >
@@ -277,7 +277,7 @@ const ShopkeeperSidebar = ({ isMobileOpen = false, onMobileClose = () => {} }) =
                 {isActive && (
                   <motion.div
                     layoutId="skMobileNav"
-                    className="absolute -top-1 w-5 h-[2px] bg-gradient-to-r from-emerald-500 to-teal-500 rounded-b-full"
+                    className="absolute -top-1 w-5 h-[2px] bg-linear-to-r from-emerald-500 to-teal-500 rounded-b-full"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}

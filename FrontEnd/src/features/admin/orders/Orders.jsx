@@ -7,18 +7,6 @@ import {
   Eye,
   SlidersHorizontal,
   ArrowUpDown,
-  ChevronUp,
-  ChevronDown,
-  Calendar,
-  IndianRupee,
-  User,
-  Store,
-  Truck,
-  Package,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
@@ -74,22 +62,6 @@ function formatTime(dateStr) {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function formatTimeAgo(timestamp) {
-  if (!timestamp) return "";
-  const d = new Date(timestamp);
-  const now = new Date();
-  const diffMs = now - d;
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHrs = Math.floor(diffMins / 60);
-  if (diffHrs < 24) return `${diffHrs}h ago`;
-  const diffDays = Math.floor(diffHrs / 24);
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return formatDate(timestamp);
 }
 
 export default function Orders() {
@@ -150,15 +122,6 @@ export default function Orders() {
 
     return result;
   }, [enrichedOrders, search, statusFilter, sortBy, sortDir]);
-
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
-      setSortBy(field);
-      setSortDir("desc");
-    }
-  };
 
   return (
     <PageTransition>
@@ -353,7 +316,7 @@ export default function Orders() {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
                           {order.customerName?.charAt(0)}
                         </div>
                         <div className="min-w-0">

@@ -123,7 +123,7 @@ const TrackOrder = () => {
                 <div key={step.key} className="relative flex gap-4 mb-8 last:mb-0">
                   {/* Icon */}
                   <div
-                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all ${
+                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 transition-all ${
                       isActive
                         ? "bg-[#1B4332] border-[#1B4332] text-white"
                         : "bg-white border-gray-200 text-gray-300"

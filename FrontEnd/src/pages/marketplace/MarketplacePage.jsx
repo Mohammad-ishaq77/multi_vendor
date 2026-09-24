@@ -51,11 +51,11 @@ const MarketplacePage = () => {
         <PageHero {...pageHeroes.marketplace} />
       )}
 
-      <section className="border-b border-[var(--color-green-soft)] bg-white py-4">
+      <section className="border-b border-(--color-green-soft) bg-white py-4">
         <div className="container-app">
           <form onSubmit={handleSearch} className="flex flex-col gap-2 lg:flex-row">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
               <input
                 type="search"
                 value={draft}
@@ -68,7 +68,7 @@ const MarketplacePage = () => {
             <div className="flex gap-2">
               <label className="relative min-w-[160px] flex-1 lg:flex-none">
                 <span className="sr-only">Sort products</span>
-                <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                 <select
                   value={sortKey}
                   onChange={(e) => setSortKey(e.target.value)}
@@ -92,7 +92,7 @@ const MarketplacePage = () => {
               <Link
                 key={category.slug}
                 to={`/marketplace/${category.slug}`}
-                className="shrink-0 rounded-full bg-[var(--color-green-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--color-primary-dark)]"
+                className="shrink-0 rounded-full bg-(--color-green-bg) px-3 py-1.5 text-xs font-semibold text-(--color-primary-dark)"
               >
                 {category.name}
               </Link>
@@ -101,7 +101,7 @@ const MarketplacePage = () => {
         </div>
       </section>
 
-      <section className="bg-[var(--color-surface-tint)] py-6 lg:py-8">
+      <section className="bg-(--color-surface-tint) py-6 lg:py-8">
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{query ? "Shops" : "Shops near you"}</h2>
           {results.vendors.length ? (
@@ -125,7 +125,7 @@ const MarketplacePage = () => {
                 <Link
                   key={category.slug}
                   to={`/marketplace/${category.slug}`}
-                  className="rounded-full bg-[var(--color-green-bg)] px-4 py-2 text-sm font-semibold text-[var(--color-primary-dark)] hover:bg-[var(--color-green-soft)]"
+                  className="rounded-full bg-(--color-green-bg) px-4 py-2 text-sm font-semibold text-(--color-primary-dark) hover:bg-(--color-green-soft)"
                 >
                   {category.name}
                 </Link>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, CreditCard, IndianRupee, CheckCircle, Clock, XCircle, RotateCcw } from "lucide-react";
+import { Search, IndianRupee, CheckCircle, Clock, XCircle, RotateCcw } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 
