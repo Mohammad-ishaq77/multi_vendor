@@ -13,6 +13,8 @@ export const User = new EntitySchema({
       type: "enum",
       enum: ["customer", "shopkeeper", "delivery", "admin"],
     },
+    // Extra roles this login may assume (single multi-role test/demo user).
+    allowedRoles: { type: "text", array: true, default: [], name: "allowed_roles" },
     avatarUrl: { type: "varchar", length: 500, nullable: true, name: "avatar_url" },
     isActive: { type: "boolean", default: true, name: "is_active" },
     createdAt: { type: "timestamptz", createDate: true, name: "created_at" },
@@ -23,5 +25,6 @@ export const User = new EntitySchema({
 export function publicUser(u) {
   if (!u) return u;
   const { passwordHash, password, ...rest } = u;
-  return rest;
+  const roles = Array.from(new Set([u.role, ...(u.allowedRoles || [])]));
+  return { ...rest, roles };
 }

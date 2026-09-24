@@ -7,8 +7,9 @@ export function slugify(text = "") {
     .slice(0, 180);
 }
 
-export function pointWkt(lng, lat) {
-  return `SRID=4326;POINT(${Number(lng)} ${Number(lat)})`;
+/** GeoJSON Point for TypeORM geography columns. */
+export function pointGeoJSON(lng, lat) {
+  return { type: "Point", coordinates: [Number(lng), Number(lat)] };
 }
 
 export const hasCoords = (lat, lng) => {

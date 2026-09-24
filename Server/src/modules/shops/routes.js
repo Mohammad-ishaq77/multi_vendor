@@ -5,7 +5,7 @@ import { requireAuth } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
-import { hasCoords, pointWkt, slugify } from "../../common/utils/helpers.js";
+import { hasCoords, pointGeoJSON, slugify } from "../../common/utils/helpers.js";
 import { repo } from "../../config/db.js";
 
 const router = Router();
@@ -34,7 +34,7 @@ const shopSchema = z.object({
 function withLocation(payload) {
   const out = { ...payload };
   if (hasCoords(payload.lat, payload.lng)) {
-    out.location = () => pointWkt(payload.lng, payload.lat);
+    out.location = pointGeoJSON(payload.lng, payload.lat);
   }
   return out;
 }
@@ -113,7 +113,6 @@ router.post(
       ownerId: req.user.role === "admin" && req.body.ownerId ? req.body.ownerId : req.user.id,
       slug: `${slugify(req.body.name)}-${Date.now().toString(36)}`,
     });
-    if (typeof shop.location === "function") shop.location = shop.location();
     const saved = await shops.save(shop);
     // Approval request for admin queue
     try {
@@ -138,7 +137,6 @@ router.put(
     if (!shop) return res.status(404).json({ ok: false, error: "No shop yet." });
     const payload = withLocation(req.body);
     Object.assign(shop, payload);
-    if (typeof shop.location === "function") shop.location = shop.location();
     res.json({ ok: true, data: await shops.save(shop) });
   })
 );

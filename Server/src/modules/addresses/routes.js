@@ -3,7 +3,7 @@ import { z } from "zod";
 import { asyncHandler } from "../../common/middleware/asyncHandler.js";
 import { requireAuth } from "../../common/middleware/auth.js";
 import { validate } from "../../common/middleware/validate.js";
-import { hasCoords, pointWkt } from "../../common/utils/helpers.js";
+import { hasCoords, pointGeoJSON } from "../../common/utils/helpers.js";
 import { repo } from "../../config/db.js";
 
 const router = Router();
@@ -46,7 +46,7 @@ router.post(
     }
     const payload = { ...req.body, userId: req.user.id };
     if (hasCoords(req.body.lat, req.body.lng)) {
-      payload.location = pointWkt(req.body.lng, req.body.lat);
+      payload.location = pointGeoJSON(req.body.lng, req.body.lat);
     }
     const created = await addresses.save(addresses.create(payload));
     res.status(201).json({ ok: true, data: created });
@@ -65,7 +65,7 @@ router.put(
       await addresses.update({ userId: req.user.id }, { isDefault: false });
     }
     Object.assign(item, req.body);
-    if (hasCoords(item.lat, item.lng)) item.location = pointWkt(item.lng, item.lat);
+    if (hasCoords(item.lat, item.lng)) item.location = pointGeoJSON(item.lng, item.lat);
     res.json({ ok: true, data: await addresses.save(item) });
   })
 );

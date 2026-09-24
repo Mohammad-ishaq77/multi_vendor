@@ -20,8 +20,8 @@ export const loginSchema = z.object({
   role: z.enum(["customer", "shopkeeper", "delivery", "admin"]).optional(),
 });
 
-function signAccess(user) {
-  return jwt.sign({ role: user.role }, config.jwt.accessSecret, {
+function signAccess(user, activeRole) {
+  return jwt.sign({ role: activeRole || user.role }, config.jwt.accessSecret, {
     subject: user.id,
     expiresIn: config.jwt.accessTtl,
   });
@@ -61,23 +61,26 @@ export async function loginUser({ email, password, role }) {
     where: { email: String(email).toLowerCase().trim() },
   });
   if (!user) throw Object.assign(new Error("Invalid credentials."), { status: 401 });
-  if (role && user.role !== role) {
+  const allowed = Array.from(new Set([user.role, ...(user.allowedRoles || [])]));
+  if (role && !allowed.includes(role)) {
     throw Object.assign(new Error("Invalid credentials for this role."), { status: 401 });
   }
   if (!user.isActive) throw Object.assign(new Error("Account is disabled."), { status: 403 });
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) throw Object.assign(new Error("Invalid credentials."), { status: 401 });
-  return issueSession(user);
+  return issueSession(user, role && allowed.includes(role) ? role : user.role);
 }
 
-export async function issueSession(user) {
+export async function issueSession(user, activeRole) {
   const tokens = repo("RefreshToken");
-  const accessToken = signAccess(user);
+  const accessToken = signAccess(user, activeRole);
   const refreshToken = newRefreshToken();
   await tokens.save(
     tokens.create({ userId: user.id, token: refreshToken, expiresAt: refreshExpiry() })
   );
-  return { user: publicUser(user), accessToken, refreshToken };
+  const pub = publicUser(user);
+  if (activeRole) pub.activeRole = activeRole;
+  return { user: pub, accessToken, refreshToken };
 }
 
 export async function rotateRefresh(oldToken) {
