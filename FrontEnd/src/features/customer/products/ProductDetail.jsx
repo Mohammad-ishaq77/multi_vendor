@@ -6,6 +6,7 @@ import { normalizeProduct } from "../../../utils/normalize";
 import { useAsyncData } from "../../../hooks/useAsyncData";
 import CustomerShell from "../components/CustomerShell";
 import CardImage from "../../../components/common/CardImage";
+import ProductRecommendations from "../../../components/products/ProductRecommendations";
 import { useCart } from "../context/CartContext";
 
 const ProductDetail = () => {
@@ -158,6 +159,8 @@ const ProductDetail = () => {
             </div>
           </div>
         )}
+
+        {product?.id && <ProductRecommendations productId={product.id} />}
       </section>
     </CustomerShell>
   );

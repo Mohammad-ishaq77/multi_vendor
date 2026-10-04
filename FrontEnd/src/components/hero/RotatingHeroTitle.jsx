@@ -6,27 +6,43 @@ const RotatingHeroTitle = ({
   rotating = ["Delivered", "Nearby", "Fresh", "In minutes"],
   dark = false,
   centered = false,
+  currentIndex: externalIndex,
+  onIndexChange,
+  intervalMs = 4000,
 }) => {
-  const [wordIndex, setWordIndex] = useState(0);
+  const [internalIndex, setInternalIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const currentWord = `${rotating[wordIndex].replace(/\.$/, "")}.`;
+
+  const isControlled = typeof externalIndex === "number";
+  const wordIndex = isControlled ? externalIndex : internalIndex;
+  const currentWord = `${(rotating[wordIndex] || rotating[0]).replace(/\.$/, "")}.`;
 
   useEffect(() => {
     if (paused) return undefined;
     const timer = setInterval(() => {
-      setWordIndex((current) => (current + 1) % rotating.length);
-    }, 2000);
+      const next = (wordIndex + 1) % rotating.length;
+      if (isControlled && onIndexChange) {
+        onIndexChange(next);
+      } else {
+        setInternalIndex(next);
+      }
+    }, intervalMs);
     return () => clearInterval(timer);
-  }, [paused, rotating.length]);
+  }, [paused, wordIndex, rotating.length, isControlled, onIndexChange, intervalMs]);
 
   const cycleWord = () => {
-    setWordIndex((current) => (current + 1) % rotating.length);
+    const next = (wordIndex + 1) % rotating.length;
+    if (isControlled && onIndexChange) {
+      onIndexChange(next);
+    } else {
+      setInternalIndex(next);
+    }
   };
 
   return (
     <>
       <h1
-        className={`${centered ? "text-center lg:whitespace-nowrap" : ""} mt-[max(0.45rem,1vh)] font-display text-[clamp(2.7rem,13vw,3.45rem)] font-extrabold leading-[1.06] tracking-tight sm:text-[clamp(2.85rem,6.8vw,3.5rem)] lg:mt-2 lg:text-[3.6rem] lg:font-bold lg:leading-[1.08] ${
+        className={`${centered ? "text-center lg:whitespace-nowrap" : ""} mt-[max(0.45rem,1vh)] font-display text-[clamp(1.85rem,7vw,2.35rem)] font-bold leading-[1.12] tracking-tight sm:text-[clamp(2.1rem,4.5vw,2.6rem)] lg:mt-2 lg:text-[2.75rem] lg:font-bold lg:leading-[1.1] ${
           dark ? "text-white" : "text-(--color-text)"
         }`}
       >
@@ -44,27 +60,50 @@ const RotatingHeroTitle = ({
             {`${[...rotating].sort((a, b) => b.length - a.length)[0].replace(/\.$/, "")}.`}
           </span>
           <AnimatePresence mode="wait">
-            <motion.button
+            <motion.div
               key={currentWord}
-              type="button"
-              onClick={cycleWord}
-              onMouseEnter={() => setPaused(true)}
-              onMouseLeave={() => setPaused(false)}
-              onFocus={() => setPaused(true)}
-              onBlur={() => setPaused(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              whileHover={{ opacity: 0.86 }}
-              whileTap={{ opacity: 0.75 }}
               transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-              aria-label={`${currentWord} Click to see the next title`}
-              className={`hero-rotating-word col-start-1 row-start-1 w-max ${centered ? "justify-self-center" : "justify-self-start"} text-[1.16em] sm:text-[1.2em] lg:text-[1.24em] lg:${centered ? "justify-self-center" : "justify-self-start"} ${
-                dark ? "text-white" : "text-(--color-primary)"
-              }`}
+              className={`col-start-1 row-start-1 flex flex-col ${centered ? "items-center justify-self-center" : "items-start justify-self-start"}`}
             >
-              {currentWord}
-            </motion.button>
+              <button
+                type="button"
+                onClick={cycleWord}
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+                onFocus={() => setPaused(true)}
+                onBlur={() => setPaused(false)}
+                whileHover={{ opacity: 0.86 }}
+                whileTap={{ opacity: 0.75 }}
+                aria-label={`${currentWord} Click to see the next title`}
+                className={`hero-rotating-word w-max text-[1.16em] sm:text-[1.2em] lg:text-[1.24em] ${
+                  dark ? "text-white" : "text-white"
+                }`}
+              >
+                {currentWord}
+              </button>
+
+              {/* Stylish Dynamic Vector Wavy/Curly Underline Accent */}
+              <motion.svg
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="w-full h-2.5 mt-0.5 text-white"
+                viewBox="0 0 100 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M0 6 C 20 12, 40 0, 60 6 C 80 12, 90 2, 100 6"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </motion.svg>
+            </motion.div>
           </AnimatePresence>
         </span>
       </h1>

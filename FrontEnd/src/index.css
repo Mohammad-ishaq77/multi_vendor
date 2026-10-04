@@ -299,10 +299,8 @@
     max-height: 440px;
     margin: 0.75rem auto 0;
     border-radius: var(--radius-xl);
-    background:
-      radial-gradient(circle at 78% 24%, rgba(167, 243, 208, 0.18), transparent 24%),
-      linear-gradient(122deg, #064e3b 0%, #087a59 54%, #059669 100%);
-    box-shadow: 0 22px 46px -28px rgba(6, 78, 59, 0.65);
+    background: #090d16;
+    box-shadow: 0 20px 45px -20px rgba(0, 0, 0, 0.7);
   }
 
   .compact-home-hero .compact-hero-content {
@@ -601,48 +599,17 @@ a.hero-quick-link:active {
 .hero-rotating-word {
   border: 0;
   background: transparent;
-  font-family: inherit;
-  font-weight: 800;
-  letter-spacing: -0.045em;
+  font-family: 'Outfit', 'Plus Jakarta Sans', 'Lexend', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   line-height: 1.08;
   cursor: pointer;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
-/* Graphical animated underline for the rotating hero word */
-.hero-rotating-word::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: -0.05em;
-  z-index: 1;
-  bottom: -0.1em;
-  width: auto;
-  height: 0.09em;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.85) 50%, #ffffff 100%);
-  box-shadow: 0 1px 8px -1px rgba(16, 185, 129, 0.5);
-  transform: scaleX(0);
-  transform-origin: left;
-  animation: underline-cycle 2.2s ease-in-out infinite;
-  transition: box-shadow var(--transition-fast), filter var(--transition-fast);
-}
-
-/* Sparkle "point" that rides on the end of the line */
+.hero-rotating-word::after,
 .hero-rotating-word::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: -0.1em;
-  z-index: 2;
-  width: 0.45em;
-  height: 0.45em;
-  border-radius: 0.12em;
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-  box-shadow: 0 2px 12px -2px rgba(16, 185, 129, 0.7);
-  opacity: 0;
-  transform: translate(50%, 45%) rotate(45deg) scale(0.4);
-  animation: underline-point 2.2s ease-in-out infinite;
-  transition: filter var(--transition-fast);
+  display: none !important;
 }
 
 .hero-rotating-word:hover::after {

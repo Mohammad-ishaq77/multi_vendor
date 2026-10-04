@@ -32,6 +32,7 @@ import uploadsRoutes from "./modules/uploads/routes.js";
 import adminRoutes from "./modules/admin/routes.js";
 import shopkeeperRoutes from "./modules/shopkeeper/routes.js";
 import customerRoutes from "./modules/customer/routes.js";
+import aiRoutes from "./modules/ai/routes.js";
 
 export function buildApp() {
   const app = express();
@@ -80,6 +81,7 @@ export function buildApp() {
     "/api/admin": adminRoutes,
     "/api/shopkeeper": shopkeeperRoutes,
     "/api/customer": customerRoutes,
+    "/api/ai": aiRoutes,
   };
 
   // Malformed UUIDs must fail with 400 instead of a driver-level 500. Route params

@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, MapPin, Sparkles, Store, Truck } from "lucide-react";
 import { homeHero, homeFloatCards } from "../config/heroes";
 import { APP_CONFIG } from "../config/appConfig";
@@ -10,9 +11,10 @@ const Hero = ({
   eyebrow = homeHero.eyebrow,
   titleLine = homeHero.titleLine,
   rotating = homeHero.rotating,
+  slides = homeHero.slides || [],
   primaryTo = "/marketplace",
   primaryLabel = "Shop nearby",
-  secondaryTo = "/register",
+  secondaryTo = "/register?role=shopkeeper",
   secondaryLabel = "Sell on NearMart",
   footer,
   compactHome = false,
@@ -20,36 +22,51 @@ const Hero = ({
   sectionClassName = "",
 }) => {
   const dark = tone === "dark";
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  const currentSlide = slides[slideIndex] || { image: homeHero.image };
 
   return (
     <section
       className={`hero-shell relative flex items-end lg:items-center ${sectionClassName} ${
-        compactHome ? "compact-home-hero on-green overflow-hidden" : dark ? "on-green bg-(--color-primary-dark)" : "bg-(--color-surface-tint)"
+        compactHome ? "compact-home-hero on-green overflow-hidden relative" : dark ? "on-green bg-(--color-primary-dark) relative overflow-hidden" : "bg-(--color-surface-tint) relative overflow-hidden"
       }`}
     >
+      {/* Dynamic Background Image Slideshow synchronized with rotating title — seamless cross-fade */}
+      <div className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden">
+        {slides.map((slide, idx) => (
+          <motion.div
+            key={slide.image}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: idx === slideIndex ? 0.72 : 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="absolute inset-0 h-full w-full"
+          >
+            <img
+              src={slide.image}
+              alt=""
+              className="h-full w-full object-cover object-center"
+            />
+          </motion.div>
+        ))}
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
+
       {compactHome && (
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
           {/* Top-right corner — orbiting rings */}
-          <div className="hero-corner-orbit absolute -right-20 -top-20 h-64 w-64 rounded-full border-2 border-dashed border-white/10">
-            <span className="absolute left-0 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60" />
+          <div className="hero-corner-orbit absolute -right-20 -top-20 h-64 w-64 rounded-full border border-white/5">
+            <span className="absolute left-0 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/40" />
           </div>
-          <div className="hero-corner-orbit hero-corner-orbit--reverse absolute -right-9 -top-9 h-36 w-36 rounded-full border border-white/10">
-            <span className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-(--color-green-soft)/80" />
-            <Sparkles className="absolute -left-1.5 bottom-1 h-5 w-5 text-(--color-green-soft)/70" />
+          <div className="hero-corner-orbit hero-corner-orbit--reverse absolute -right-9 -top-9 h-36 w-36 rounded-full border border-white/5">
+            <Sparkles className="absolute -left-1.5 bottom-1 h-5 w-5 text-white/40" />
           </div>
 
-          {/* Left-bottom corner — orbiting rings + breathing glow */}
-          <div className="hero-corner-breathe absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(167,243,208,0.26),transparent_68%)] blur-xl" />
-          <div className="hero-corner-orbit hero-corner-orbit--reverse absolute -bottom-12 -left-12 h-48 w-48 rounded-full border-2 border-dashed border-white/10">
-            <span className="absolute right-0 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60" />
-            <span className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-(--color-green-soft)/80" />
-          </div>
-          <div className="absolute bottom-8 left-12">
-            <div className="h-2.5 w-2.5 rounded-full bg-(--color-green-soft)/70 animate-pulse" />
-          </div>
+          {/* Left-bottom corner — subtle dark breathing glow */}
+          <div className="hero-corner-breathe absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_68%)] blur-xl" />
         </div>
       )}
-      <div className="container-app relative h-full">
+      <div className="container-app relative h-full z-10">
         <div className={`grid h-full items-end gap-[max(0.7rem,1.6vh)] pt-[max(0.9rem,2.2vh)] pb-[max(1.6rem,4.2vh)] lg:grid-cols-[1fr_auto] lg:items-center lg:gap-8 lg:py-5 ${compactHome ? "compact-hero-content" : ""}`}>
           <div className={`relative z-10 w-full ${leftAligned ? "text-left" : "text-center"} lg:w-full ${dark || compactHome ? "text-white" : ""}`}>
             <motion.span
@@ -65,15 +82,23 @@ const Hero = ({
               {eyebrow}
             </motion.span>
 
-            <RotatingHeroTitle titleLine={titleLine} rotating={rotating} dark={dark || compactHome} centered={compactHome} />
+            <RotatingHeroTitle
+              titleLine={titleLine}
+              rotating={rotating}
+              dark={dark || compactHome}
+              centered={compactHome}
+              currentIndex={slideIndex}
+              onIndexChange={setSlideIndex}
+              intervalMs={4500}
+            />
 
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.26 }}
-              className={`hero-cta-row mt-[max(1.1rem,2.6vh)] flex flex-row flex-wrap items-center gap-x-[max(1.1rem,4vw)] gap-y-[max(0.7rem,1.6vh)] lg:mt-5 lg:gap-3 ${leftAligned ? "justify-start" : "justify-center"}`}
+              className={`hero-cta-row mt-[max(1.1rem,2.6vh)] flex flex-row flex-wrap items-center gap-x-[max(0.8rem,3vw)] gap-y-[max(0.5rem,1.2vh)] lg:mt-5 lg:gap-3 ${leftAligned ? "justify-start" : "justify-center"}`}
             >
-              <Link to={primaryTo} className={`hero-cta ${dark || compactHome ? "btn-on-green" : "btn-primary"}`}>
+              <Link to={primaryTo} className={`hero-cta ${dark || compactHome ? "btn-on-green" : "btn-primary"} !px-4 !py-2 !min-h-9 !text-xs sm:!text-sm`}>
                 {primaryLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -81,8 +106,8 @@ const Hero = ({
                 to={secondaryTo}
                 className={
                   dark || compactHome
-                    ? "hero-cta lg:inline-flex lg:min-h-11 lg:items-center lg:justify-center lg:rounded-xl lg:border lg:border-white/30 lg:px-5 lg:text-sm lg:font-semibold lg:text-white lg:hover:bg-white/10"
-                    : "hero-cta btn-secondary btn-green-border"
+                    ? "hero-cta inline-flex min-h-9 items-center justify-center rounded-xl border border-white/40 bg-white/10 px-4 py-2 text-xs sm:text-sm font-semibold text-white backdrop-blur-xs hover:bg-white/20 transition-all"
+                    : "hero-cta btn-secondary btn-green-border !px-4 !py-2 !min-h-9 !text-xs sm:!text-sm"
                 }
               >
                 {secondaryLabel}

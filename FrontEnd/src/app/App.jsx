@@ -2,6 +2,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppProviders from "./providers/AppProviders";
 import ScrollToTop from "../components/common/ScrollToTop";
 import AppRoutes from "./routes/AppRoutes";
+import ChatBotModal from "../components/common/ChatBotModal";
 import { LogoutProvider } from "../context/LogoutContext";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
           <LogoutProvider>
             <ScrollToTop />
             <AppRoutes />
+            <ChatBotModal />
           </LogoutProvider>
         </BrowserRouter>
       </div>

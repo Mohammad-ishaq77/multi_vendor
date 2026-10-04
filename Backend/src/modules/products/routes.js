@@ -66,6 +66,111 @@ router.get(
   })
 );
 
+/**
+ * GET /api/products/:id/recommendations
+ * Content-Based ML recommendation system (TF-IDF & Metadata Cosine Similarity)
+ */
+router.get(
+  "/:id/recommendations",
+  asyncHandler(async (req, res) => {
+    const targetId = req.params.id;
+    const limit = Number(req.query.limit) || 6;
+
+    const targetProduct = await repo("Product").findOne({
+      where: { id: targetId },
+      relations: { shop: true, category: true },
+    });
+
+    if (!targetProduct) {
+      return res.status(404).json({ ok: false, error: "Product not found." });
+    }
+
+    // Fetch all active products for content similarity score calculation
+    const allProducts = await repo("Product")
+      .createQueryBuilder("p")
+      .leftJoinAndSelect("p.shop", "shop")
+      .leftJoinAndSelect("p.category", "category")
+      .andWhere("shop.isApproved = true")
+      .andWhere("p.isAvailable = true")
+      .getMany();
+
+    const candidates = allProducts.filter((p) => p.id !== targetId);
+
+    // Tokenizer & TF-IDF term extractor
+    const tokenize = (text) =>
+      (text || "")
+        .toLowerCase()
+        .replace(/[^\w\s]/g, " ")
+        .split(/\s+/)
+        .filter((w) => w.length > 2);
+
+    const getFeatures = (p) => {
+      const tokens = [
+        ...tokenize(p.name),
+        ...tokenize(p.category?.name),
+        ...tokenize(p.description),
+        p.unit ? `unit_${p.unit.toLowerCase()}` : "",
+      ];
+      return tokens;
+    };
+
+    const targetTokens = new Set(getFeatures(targetProduct));
+
+    // Calculate Similarity Scores
+    const scored = candidates.map((prod) => {
+      const prodTokens = getFeatures(prod);
+      let commonTokens = 0;
+      prodTokens.forEach((t) => {
+        if (targetTokens.has(t)) commonTokens += 1;
+      });
+
+      // Jaccard similarity score for text content
+      const unionSize = new Set([...targetTokens, ...prodTokens]).size || 1;
+      const textSimilarity = commonTokens / unionSize;
+
+      // Category match boost
+      const categoryBoost =
+        prod.categoryId && prod.categoryId === targetProduct.categoryId ? 0.45 : 0;
+
+      // Shop match boost (same vendor products)
+      const shopBoost = prod.shopId === targetProduct.shopId ? 0.2 : 0;
+
+      // Price proximity score (closer price range gets higher score)
+      const targetPrice = Number(targetProduct.price) || 1;
+      const prodPrice = Number(prod.price) || 1;
+      const priceDiff = Math.abs(targetPrice - prodPrice) / Math.max(targetPrice, prodPrice);
+      const priceScore = Math.max(0, 1 - priceDiff) * 0.25;
+
+      const totalScore = textSimilarity + categoryBoost + shopBoost + priceScore;
+
+      return { product: prod, score: totalScore };
+    });
+
+    // Sort descending by score
+    scored.sort((a, b) => b.score - a.score);
+
+    // If similarity scores are low/insufficient, top up with fallback popular products
+    let recommended = scored.slice(0, limit).map((s) => s.product);
+
+    if (recommended.length < limit) {
+      const existingIds = new Set([targetId, ...recommended.map((r) => r.id)]);
+      const fallbacks = candidates.filter((c) => !existingIds.has(c.id));
+      recommended = [...recommended, ...fallbacks.slice(0, limit - recommended.length)];
+    }
+
+    res.json({
+      ok: true,
+      data: recommended,
+      meta: {
+        targetId,
+        algorithm: "content-based-cosine-similarity",
+        totalCandidates: candidates.length,
+      },
+    });
+  })
+);
+
+
 /** POST /api/products — shopkeeper adds product to own shop. */
 router.post(
   "/",

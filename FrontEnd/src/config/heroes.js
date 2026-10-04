@@ -104,6 +104,24 @@ export const homeHero = {
   eyebrow: "Srinagar's neighborhood marketplace",
   titleLine: ["Your local", "marketplace,"],
   rotating: ["In minutes", "On its way", "In no time", "Right here"],
+  slides: [
+    {
+      title: "Grocery",
+      image: HD("photo-1542838132-92c53300491e"),
+    },
+    {
+      title: "Beauty",
+      image: HD("photo-1596462502278-27bfdc403348"),
+    },
+    {
+      title: "Pharmacy",
+      image: HD("photo-1584308666744-24d5c474f2ae"),
+    },
+    {
+      title: "Fashion",
+      image: HD("photo-1441984904996-e0b6ba687e04"),
+    },
+  ],
   description:
     "Groceries, fashion, electronics, beauty and pharmacy from the shops you already know. Compare prices, checkout once, and get it at your door the same day.",
   image: HD("photo-1542838132-92c53300491e"),

@@ -75,6 +75,17 @@ export const productService = {
     return guard(() => apiClient.get(`/products/${encodeURIComponent(id)}`), null);
   },
 
+  /** GET /api/products/:id/recommendations */
+  async getRecommendations(id, limit = 6) {
+    return guard(
+      async () =>
+        (await apiClient.get(`/products/${encodeURIComponent(id)}/recommendations`, {
+          query: { limit },
+        })) || [],
+      []
+    );
+  },
+
   async create(payload) {
     return apiClient.post("/products", payload);
   },

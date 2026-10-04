@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutGrid, Package, Search, Store, X } from "lucide-react";
+import { Globe, LayoutGrid, Mic, MicOff, Package, Search, Store, X } from "lucide-react";
 import { getVendorMarketplacePath, searchCatalog } from "../../utils/marketplace";
+
+const SPEECH_LANGUAGES = [
+  { code: "en-IN", label: "English (India)" },
+  { code: "hi-IN", label: "हिंदी (Hindi)" },
+  { code: "ur-PK", label: "اردو (Urdu)" },
+  { code: "en-US", label: "English (US)" },
+];
 
 const MarketplaceSearch = ({
   variant = "nav",
@@ -11,8 +18,20 @@ const MarketplaceSearch = ({
   const location = useLocation();
   const navigate = useNavigate();
   const wrapRef = useRef(null);
+  const recognitionRef = useRef(null);
+
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [selectedLang, setSelectedLang] = useState("en-IN");
+  const [showLangMenu, setShowLangMenu] = useState(false);
+  const [speechToast, setSpeechToast] = useState(null);
+
+  const SpeechRecognition =
+    typeof window !== "undefined" &&
+    (window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  const isSpeechSupported = Boolean(SpeechRecognition);
 
   useEffect(() => {
     if (location.pathname === "/marketplace") {
@@ -24,11 +43,89 @@ const MarketplaceSearch = ({
     const onPointerDown = (event) => {
       if (wrapRef.current && !wrapRef.current.contains(event.target)) {
         setOpen(false);
+        setShowLangMenu(false);
       }
     };
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, []);
+
+  const showToast = (message, duration = 3000) => {
+    setSpeechToast(message);
+    setTimeout(() => {
+      setSpeechToast((prev) => (prev === message ? null : prev));
+    }, duration);
+  };
+
+  const startVoiceSearch = () => {
+    if (!isSpeechSupported) {
+      showToast("Voice search is not supported in your browser.");
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = selectedLang;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        const currentLangLabel = SPEECH_LANGUAGES.find((l) => l.code === selectedLang)?.label || selectedLang;
+        showToast(`Listening... Speak in ${currentLangLabel}`);
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map((result) => result[0].transcript)
+          .join("");
+        setQuery(transcript);
+        setOpen(true);
+
+        if (event.results[0].isFinal) {
+          setIsListening(false);
+          if (transcript.trim()) {
+            goToSearch(transcript);
+          }
+        }
+      };
+
+      recognition.onerror = (event) => {
+        setIsListening(false);
+        if (event.error === "no-speech") {
+          showToast("No speech detected. Please try again.");
+        } else if (event.error === "not-allowed") {
+          showToast("Microphone access denied. Please allow access.");
+        } else {
+          showToast(`Voice recognition error: ${event.error}`);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (err) {
+      setIsListening(false);
+      showToast("Could not start voice recognition.");
+    }
+  };
 
   const results = useMemo(() => {
     const term = query.trim();
@@ -77,31 +174,104 @@ const MarketplaceSearch = ({
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={placeholder}
+          placeholder={isListening ? "Listening..." : placeholder}
           aria-label="Search marketplace"
           className={
             hero
-              ? "h-9 w-full rounded-xl border border-white/70 bg-white pl-9 pr-[5.4rem] text-xs text-(--color-text) outline-none placeholder:text-(--color-text-muted) focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[6.5rem] lg:text-sm"
+              ? `h-9 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-white/70"} bg-white pl-9 pr-[7.6rem] text-xs text-(--color-text) outline-none placeholder:text-(--color-text-muted) focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[9.2rem] lg:text-sm`
               : mobile
-                ? "h-11 w-full rounded-xl border border-(--color-green-soft) bg-(--color-surface) pl-11 pr-[5.75rem] text-sm outline-none"
-                : "h-10 w-full rounded-full border border-(--color-green-soft) bg-(--color-surface) pl-10 pr-[6.25rem] text-sm text-(--color-text) outline-none focus:border-(--color-green) focus:bg-white focus:ring-4 focus:ring-(--color-green-light)/15"
+                ? `h-11 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-11 pr-[8rem] text-sm outline-none`
+                : `h-10 w-full rounded-full border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-10 pr-[8.4rem] text-sm text-(--color-text) outline-none focus:border-(--color-green) focus:bg-white focus:ring-4 focus:ring-(--color-green-light)/15`
           }
         />
-        {query && (
-          <button
-            type="button"
-            onClick={() => {
-              setQuery("");
-              setOpen(false);
-            }}
-            aria-label="Clear search"
-            className={`absolute top-1/2 -translate-y-1/2 rounded-full p-1 text-(--color-text-muted) hover:bg-(--color-green-bg) hover:text-(--color-text) ${
-              hero ? "right-[3.85rem] lg:right-[4.6rem]" : mobile ? "right-[4.6rem]" : "right-[5.15rem]"
-            }`}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+
+        {/* Action icons & Voice controls inside input */}
+        <div
+          className={`absolute top-1/2 -translate-y-1/2 flex items-center gap-1 ${
+            hero ? "right-[3.85rem] lg:right-[4.6rem]" : mobile ? "right-[4.6rem]" : "right-[5.15rem]"
+          }`}
+        >
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setOpen(false);
+              }}
+              aria-label="Clear search"
+              className="rounded-full p-1 text-(--color-text-muted) hover:bg-(--color-green-bg) hover:text-(--color-text)"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={startVoiceSearch}
+              title={
+                isSpeechSupported
+                  ? isListening
+                    ? "Listening... Click to stop"
+                    : `Voice Search (${SPEECH_LANGUAGES.find((l) => l.code === selectedLang)?.label})`
+                  : "Voice search not supported in this browser"
+              }
+              aria-label="Voice search"
+              className={`relative flex items-center justify-center rounded-full p-1.5 transition-all ${
+                isListening
+                  ? "bg-red-500 text-white animate-pulse shadow-md"
+                  : isSpeechSupported
+                    ? "text-(--color-primary) hover:bg-(--color-green-bg) hover:text-(--color-primary-dark)"
+                    : "text-gray-300 cursor-not-allowed"
+              }`}
+            >
+              {isSpeechSupported ? (
+                <Mic className={`h-4 w-4 ${isListening ? "scale-110" : ""}`} />
+              ) : (
+                <MicOff className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+
+          {isSpeechSupported && (
+            <button
+              type="button"
+              onClick={() => setShowLangMenu((prev) => !prev)}
+              title="Select Voice Language"
+              aria-label="Select voice language"
+              className="rounded-full p-1 text-(--color-text-muted) hover:bg-(--color-green-bg) hover:text-(--color-primary)"
+            >
+              <Globe className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Language selector dropdown */}
+        {showLangMenu && (
+          <div className="absolute right-12 top-full z-50 mt-1 w-44 rounded-xl border border-(--color-green-soft) bg-white p-1.5 shadow-xl text-xs">
+            <div className="px-2 py-1 font-bold text-[10px] text-(--color-text-muted) uppercase tracking-wider">
+              Speech Language
+            </div>
+            {SPEECH_LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => {
+                  setSelectedLang(lang.code);
+                  setShowLangMenu(false);
+                  showToast(`Speech language set to ${lang.label}`);
+                }}
+                className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-(--color-green-bg) ${
+                  selectedLang === lang.code ? "font-bold text-(--color-primary)" : "text-(--color-text)"
+                }`}
+              >
+                <span>{lang.label}</span>
+                {selectedLang === lang.code && <span>✓</span>}
+              </button>
+            ))}
+          </div>
         )}
+
         <button
           type="submit"
           className={
@@ -113,6 +283,16 @@ const MarketplaceSearch = ({
           Search
         </button>
       </form>
+
+      {/* Voice Status Toast */}
+      {speechToast && (
+        <div className="absolute left-0 right-0 top-full z-50 mt-1.5 flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-(--color-green-soft) bg-emerald-950/90 px-3.5 py-1 text-xs font-medium text-white shadow-lg backdrop-blur-sm">
+            <span className={`h-2 w-2 rounded-full ${isListening ? "bg-red-400 animate-ping" : "bg-emerald-400"}`} />
+            {speechToast}
+          </span>
+        </div>
+      )}
 
       {showPanel && (
         <div

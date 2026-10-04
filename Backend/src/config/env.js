@@ -57,6 +57,10 @@ export const config = {
     apiKey: process.env.CLOUDINARY_API_KEY || "",
     apiSecret: process.env.CLOUDINARY_API_SECRET || "",
   },
+  ai: {
+    ollamaHost: process.env.OLLAMA_HOST || "http://localhost:11434",
+    model: process.env.OLLAMA_MODEL || "llama3",
+  },
 };
 
 export const isDevSecret =
