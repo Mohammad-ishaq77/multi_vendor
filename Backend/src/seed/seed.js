@@ -1,6 +1,40 @@
 import bcrypt from "bcryptjs";
+import { v2 as cloudinary } from "cloudinary";
 import { initDb, isDbReady, repo } from "../config/db.js";
+import { config } from "../config/env.js";
 import { slugify } from "../common/utils/helpers.js";
+
+// Configure Cloudinary SDK
+const isCloudinaryActive = Boolean(
+  config.cloudinary.cloudName &&
+    config.cloudinary.apiKey &&
+    config.cloudinary.apiSecret
+);
+
+if (isCloudinaryActive) {
+  cloudinary.config({
+    cloud_name: config.cloudinary.cloudName,
+    api_key: config.cloudinary.apiKey,
+    api_secret: config.cloudinary.apiSecret,
+  });
+}
+
+/** Upload an image URL or fallback to original URL */
+async function uploadToCloudinary(url, folder, publicId) {
+  if (!isCloudinaryActive || !url || !url.startsWith("http")) return url;
+  try {
+    const res = await cloudinary.uploader.upload(url, {
+      folder: `nearmart/${folder}`,
+      public_id: publicId,
+      overwrite: true,
+      resource_type: "image",
+    });
+    return res.secure_url;
+  } catch (err) {
+    console.warn(`Cloudinary upload warning for ${url}: ${err.message}`);
+    return url;
+  }
+}
 
 // Mirrors FrontEnd/src/data/categories.json (name/slug/icon + cover -> image_url)
 const CATEGORIES = [
@@ -16,15 +50,14 @@ const CATEGORIES = [
 
 // Mirrors FrontEnd/src/data/vendors.json
 const SHOPS = [
-  { name: "MB Collection", category: "Fashion", rating: 4.5, reviews: 230, deliveryTime: "30-40 min", city: "Srinagar", lat: 34.0837, lng: 74.7973 },
-  { name: "Fresh Basket", category: "Grocery", rating: 4.6, reviews: 315, deliveryTime: "20-30 min", city: "Srinagar", lat: 34.0901, lng: 74.802 },
-  { name: "Kiryana Plus", category: "Grocery", rating: 4.3, reviews: 195, deliveryTime: "15-25 min", city: "Srinagar", lat: 34.075, lng: 74.789 },
-  { name: "Health Plus", category: "Pharmacy", rating: 4.7, reviews: 260, deliveryTime: "20-30 min", city: "Srinagar", lat: 34.095, lng: 74.81 },
-  { name: "Tech World", category: "Electronics", rating: 4.6, reviews: 188, deliveryTime: "25-35 min", city: "Srinagar", lat: 34.07, lng: 74.795 },
+  { name: "MB Collection", category: "Fashion", rating: 4.5, reviews: 230, deliveryTime: "30-40 min", city: "Srinagar", lat: 34.0837, lng: 74.7973, image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1200&q=80" },
+  { name: "Fresh Basket", category: "Grocery", rating: 4.6, reviews: 315, deliveryTime: "20-30 min", city: "Srinagar", lat: 34.0901, lng: 74.802, image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80" },
+  { name: "Kiryana Plus", category: "Grocery", rating: 4.3, reviews: 195, deliveryTime: "15-25 min", city: "Srinagar", lat: 34.075, lng: 74.789, image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1200&q=80" },
+  { name: "Health Plus", category: "Pharmacy", rating: 4.7, reviews: 260, deliveryTime: "20-30 min", city: "Srinagar", lat: 34.095, lng: 74.81, image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1200&q=80" },
+  { name: "Tech World", category: "Electronics", rating: 4.6, reviews: 188, deliveryTime: "25-35 min", city: "Srinagar", lat: 34.07, lng: 74.795, image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" },
 ];
 
 // Mirrors FrontEnd/src/data/products.json
-// (originalPrice -> mrp, discount -> discount_pct, image -> image_url)
 const PRODUCTS = [
   { name: "Nike Air Sneakers", category: "Fashion", shop: "MB Collection", unit: "UK 7-11", price: 2499, mrp: 4599, discount: 46, rating: 4.8, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
   { name: "Snack Combo Pack", category: "Grocery", shop: "Fresh Basket", unit: "Pack of 5", price: 99, mrp: 149, discount: 34, rating: 4.5, image: "https://images.unsplash.com/photo-1554866585-cd94860890b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
@@ -86,23 +119,29 @@ if (!testUser) {
   console.log("updated test@gmail.com with all roles");
 }
 
-// --- 2. Categories ---
+// --- 2. Categories with Cloudinary CDN Images ---
 const categories = repo("Category");
 const catByName = {};
 for (const c of CATEGORIES) {
+  const cdnUrl = await uploadToCloudinary(c.imageUrl, "categories", c.slug);
   let row = await categories.findOne({ where: { slug: c.slug } });
   if (!row) {
-    row = await categories.save(categories.create(c));
-    console.log(`seeded category ${c.name}`);
+    row = await categories.save(categories.create({ ...c, imageUrl: cdnUrl }));
+    console.log(`seeded category ${c.name} -> ${cdnUrl}`);
+  } else if (row.imageUrl !== cdnUrl) {
+    row.imageUrl = cdnUrl;
+    await categories.save(row);
+    console.log(`updated category image ${c.name} -> ${cdnUrl}`);
   }
   catByName[c.name] = row;
 }
 
-// --- 3. Shops (owned by test user acting as shopkeeper) ---
+// --- 3. Shops with Cloudinary CDN Images ---
 const shops = repo("Shop");
 const shopByName = {};
 for (const s of SHOPS) {
   const slug = `${slugify(s.name)}-seed`;
+  const cdnShopImage = await uploadToCloudinary(s.image, "shops", slug);
   let row = await shops.findOne({ where: { slug } }).catch(() => null);
   if (!row) {
     row = await shops.save(
@@ -120,22 +159,30 @@ for (const s of SHOPS) {
         rating: s.rating,
         totalReviews: s.reviews,
         deliveryTime: s.deliveryTime,
+        shopImage: cdnShopImage,
         isOpen: true,
         isApproved: true,
       })
     );
-    console.log(`seeded shop ${s.name}`);
+    console.log(`seeded shop ${s.name} -> ${cdnShopImage}`);
+  } else if (row.shopImage !== cdnShopImage) {
+    row.shopImage = cdnShopImage;
+    await shops.save(row);
+    console.log(`updated shop image ${s.name} -> ${cdnShopImage}`);
   }
   shopByName[s.name] = row;
 }
 
-// --- 4. Products (all 24 frontend mock items) ---
+// --- 4. Products with Cloudinary CDN Images ---
 const products = repo("Product");
 const productByName = {};
 for (const p of PRODUCTS) {
+  const publicId = slugify(p.name);
+  const cdnProductImage = await uploadToCloudinary(p.image, "products", publicId);
   let row = await products.findOne({
     where: { name: p.name, shopId: shopByName[p.shop].id },
   }).catch(() => null);
+
   if (!row) {
     row = await products.save(
       products.create({
@@ -147,14 +194,18 @@ for (const p of PRODUCTS) {
         mrp: p.mrp,
         stock: 50,
         unit: p.unit,
-        imageUrl: p.image,
+        imageUrl: cdnProductImage,
         isAvailable: true,
         discountPct: p.discount,
         rating: p.rating,
         reviewCount: 0,
       })
     );
-    console.log(`seeded product ${p.name}`);
+    console.log(`seeded product ${p.name} -> ${cdnProductImage}`);
+  } else if (row.imageUrl !== cdnProductImage) {
+    row.imageUrl = cdnProductImage;
+    await products.save(row);
+    console.log(`updated product image ${p.name} -> ${cdnProductImage}`);
   }
   productByName[p.name] = row;
 }
@@ -313,5 +364,5 @@ for (const type of ["shopkeeper", "delivery_partner"]) {
   }
 }
 
-console.log("Seed complete.");
+console.log("Seed & Cloudinary image upload complete!");
 process.exit(0);
