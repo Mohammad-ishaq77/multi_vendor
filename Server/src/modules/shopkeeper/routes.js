@@ -6,6 +6,9 @@ import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { repo } from "../../config/db.js";
+import { ORDER_STATUSES } from "../../entities/Order.js";
+import { canTransition } from "../orders/status.js";
+import { releaseOrderStock } from "../orders/stock.js";
 import { emitToUser } from "../../realtime/socket.js";
 
 const router = Router();
@@ -32,13 +35,21 @@ router.get(
       .andWhere("o.status NOT IN ('cancelled')")
       .getRawOne();
     const products = await repo("Product").count({ where: { shopId: shop.id } });
+    // Live aggregate: the cached Shop.rating column can drift from real reviews.
+    const reviewAgg = await repo("Review")
+      .createQueryBuilder("r")
+      .select("COALESCE(AVG(r.rating),0)", "avg")
+      .addSelect("COUNT(*)", "count")
+      .where("r.shopId = :sid", { sid: shop.id })
+      .getRawOne()
+      .catch(() => null);
     res.json({
       ok: true,
       data: {
         revenue: Number(paid?.revenue || 0),
         orders: Number(paid?.count || 0),
-        rating: Number(shop.rating || 0),
-        totalReviews: shop.totalReviews,
+        rating: Number(Number(reviewAgg?.avg || 0).toFixed(2)),
+        totalReviews: Number(reviewAgg?.count || 0),
         products,
         isOpen: shop.isOpen,
         isApproved: shop.isApproved,
@@ -146,13 +157,21 @@ router.get(
 /** PATCH /api/shopkeeper/orders/:id/status — accept / advance. */
 router.patch(
   "/orders/:id/status",
-  validate({ body: z.object({ status: z.string().max(30) }) }),
+  validate({ body: z.object({ status: z.enum(ORDER_STATUSES) }) }),
   asyncHandler(async (req, res) => {
     const shop = await myShop(req.user.id);
     const orders = repo("Order");
     const order = await orders.findOne({ where: { id: req.params.id, shopId: shop.id } });
     if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
+    if (!canTransition(order.status, req.body.status)) {
+      return res.status(400).json({ ok: false, error: `Cannot move ${order.status} to ${req.body.status}.` });
+    }
     order.status = req.body.status;
+    if (req.body.status === "cancelled") {
+      order.cancelledAt = new Date();
+      order.cancelReason = "Cancelled by shop";
+      await releaseOrderStock(order.id);
+    }
     const saved = await orders.save(order);
     emitToUser(order.customerId, "order:status_update", { orderId: order.id, status: order.status });
     res.json({ ok: true, data: saved });

@@ -289,6 +289,34 @@ router.put(
   })
 );
 
+/** POST /api/delivery/documents - record an uploaded verification document. */
+router.post(
+  "/documents",
+  validate({ body: z.object({ type: z.string().max(50), url: z.string().max(500) }) }),
+  asyncHandler(async (req, res) => {
+    const partner = await myPartner(req.user.id);
+    const documents = repo("DeliveryDocument");
+    const created = await documents.save(
+      documents.create({ partnerId: partner.id, type: req.body.type, url: req.body.url })
+    );
+    res.status(201).json({ ok: true, data: created });
+  })
+);
+
+/** GET /api/delivery/documents - the partner's own uploaded documents. */
+router.get(
+  "/documents",
+  asyncHandler(async (req, res) => {
+    const partner = await myPartner(req.user.id);
+    const documents = repo("DeliveryDocument");
+    const items = await documents.find({
+      where: { partnerId: partner.id },
+      order: { createdAt: "ASC" },
+    });
+    res.json({ ok: true, data: items });
+  })
+);
+
 /** GET /api/delivery/notifications */
 router.get(
   "/notifications",

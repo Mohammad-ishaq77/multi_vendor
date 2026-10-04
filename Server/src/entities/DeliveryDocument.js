@@ -11,4 +11,7 @@ export const DeliveryDocument = new EntitySchema({
     isVerified: { type: "boolean", default: false, name: "is_verified" },
     createdAt: { type: "timestamptz", createDate: true, name: "created_at" },
   },
+  relations: {
+    partner: { type: "many-to-one", target: "DeliveryPartner", joinColumn: { name: "partner_id" }, onDelete: "CASCADE" },
+  },
 });

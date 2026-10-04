@@ -20,6 +20,17 @@ export const loginSchema = z.object({
   role: z.enum(["customer", "shopkeeper", "delivery", "admin"]).optional(),
 });
 
+/**
+ * Which role a session should carry. Multi-role accounts pick a role at login and
+ * repeat it on refresh, so a refreshed token must not silently fall back to the
+ * account's primary role.
+ */
+export function resolveActiveRole(user, requestedRole) {
+  const allowed = Array.from(new Set([user.role, ...(user.allowedRoles || [])]));
+  if (requestedRole && allowed.includes(requestedRole)) return requestedRole;
+  return user.role;
+}
+
 function signAccess(user, activeRole) {
   return jwt.sign({ role: activeRole || user.role }, config.jwt.accessSecret, {
     subject: user.id,
@@ -61,29 +72,30 @@ export async function loginUser({ email, password, role }) {
     where: { email: String(email).toLowerCase().trim() },
   });
   if (!user) throw Object.assign(new Error("Invalid credentials."), { status: 401 });
-  const allowed = Array.from(new Set([user.role, ...(user.allowedRoles || [])]));
-  if (role && !allowed.includes(role)) {
+  const activeRole = resolveActiveRole(user, role);
+  if (role && activeRole !== role) {
     throw Object.assign(new Error("Invalid credentials for this role."), { status: 401 });
   }
   if (!user.isActive) throw Object.assign(new Error("Account is disabled."), { status: 403 });
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) throw Object.assign(new Error("Invalid credentials."), { status: 401 });
-  return issueSession(user, role && allowed.includes(role) ? role : user.role);
+  return issueSession(user, activeRole);
 }
 
 export async function issueSession(user, activeRole) {
   const tokens = repo("RefreshToken");
-  const accessToken = signAccess(user, activeRole);
+  const role = resolveActiveRole(user, activeRole);
+  const accessToken = signAccess(user, role);
   const refreshToken = newRefreshToken();
   await tokens.save(
     tokens.create({ userId: user.id, token: refreshToken, expiresAt: refreshExpiry() })
   );
   const pub = publicUser(user);
-  if (activeRole) pub.activeRole = activeRole;
+  pub.activeRole = role;
   return { user: pub, accessToken, refreshToken };
 }
 
-export async function rotateRefresh(oldToken) {
+export async function rotateRefresh(oldToken, requestedRole) {
   const tokens = repo("RefreshToken");
   const users = repo("User");
   const stored = await tokens.findOne({ where: { token: oldToken } });
@@ -95,7 +107,7 @@ export async function rotateRefresh(oldToken) {
   const user = await users.findOne({ where: { id: stored.userId } });
   if (!user || !user.isActive) throw Object.assign(new Error("Account unavailable."), { status: 401 });
   await tokens.delete({ id: stored.id });
-  return issueSession(user);
+  return issueSession(user, resolveActiveRole(user, requestedRole));
 }
 
 export async function logoutUser(oldToken) {
@@ -103,7 +115,7 @@ export async function logoutUser(oldToken) {
   try {
     await repo("RefreshToken").delete({ token: oldToken });
   } catch {
-    // DB down — nothing to revoke
+    // DB down - nothing to revoke
   }
 }
 

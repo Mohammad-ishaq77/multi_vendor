@@ -41,5 +41,7 @@ export const Shop = new EntitySchema({
   relations: {
     owner: { type: "many-to-one", target: "User", joinColumn: { name: "owner_id" }, onDelete: "CASCADE" },
     category: { type: "many-to-one", target: "Category", joinColumn: { name: "category_id" }, nullable: true, onDelete: "SET NULL" },
+    // Uploaded registration documents (shop_documents.shop_id already exists).
+    documents: { type: "one-to-many", target: "ShopDocument", inverseSide: "shop" },
   },
 });

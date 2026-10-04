@@ -11,4 +11,7 @@ export const ShopDocument = new EntitySchema({
     isVerified: { type: "boolean", default: false, name: "is_verified" },
     createdAt: { type: "timestamptz", createDate: true, name: "created_at" },
   },
+  relations: {
+    shop: { type: "many-to-one", target: "Shop", joinColumn: { name: "shop_id" }, onDelete: "CASCADE" },
+  },
 });

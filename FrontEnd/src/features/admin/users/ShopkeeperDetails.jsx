@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Mail, Phone, Calendar, Store, Star,
-  IndianRupee, ShoppingBag, Package, UserCheck, UserX, Loader2, AlertCircle, TrendingUp,
+  IndianRupee, ShoppingBag, Package, UserCheck, UserX, Loader2, AlertCircle, TrendingUp, ShieldCheck,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { adminService } from "../../../services/orderService";
+import DocumentGallery from "../components/DocumentGallery";
 
 function formatDate(iso) {
   if (!iso) return "—";
@@ -13,15 +15,42 @@ function formatDate(iso) {
 }
 
 export default function ShopkeeperDetails() {
-  const { id } = useParams();
+  const { shopkeeperId : id } = useParams();
   const navigate = useNavigate();
   const { shopkeepers, shops, products, orders, suspendUser, activateUser } = useAdmin();
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmAction, setConfirmAction] = useState("");
+  const [documents, setDocuments] = useState([]);
+  const [documentsLoading, setDocumentsLoading] = useState(true);
+  const [documentsError, setDocumentsError] = useState("");
 
   const shopkeeper = useMemo(() => shopkeepers.find((s) => s.id === id), [shopkeepers, id]);
   const shop = useMemo(() => shops.find((s) => s.ownerId === id), [shops, id]);
+
+  // Real documents the shopkeeper uploaded through their onboarding.
+  useEffect(() => {
+    let active = true;
+    if (!shop?.id) {
+      setDocumentsLoading(false);
+      return undefined;
+    }
+    setDocumentsLoading(true);
+    adminService
+      .shopDocuments(shop.id)
+      .then((items) => {
+        if (active) setDocuments(Array.isArray(items) ? items : []);
+      })
+      .catch((error) => {
+        if (active) setDocumentsError(error?.message || "Could not load documents.");
+      })
+      .finally(() => {
+        if (active) setDocumentsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [shop?.id]);
   const shopProducts = useMemo(() => products.filter((p) => p.shopId === shop?.id), [products, shop]);
   const shopOrders = useMemo(
     () => orders.filter((o) => o.shopId === shop?.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
@@ -33,7 +62,7 @@ export default function ShopkeeperDetails() {
       <div className="text-center py-20">
         <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500 font-medium">Shopkeeper not found</p>
-        <button onClick={() => navigate("/admin/users")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">Back to users</button>
+        <button onClick={() => navigate("/admin/users/shopkeepers")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">Back to users</button>
       </div>
     );
   }
@@ -62,7 +91,7 @@ export default function ShopkeeperDetails() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <button onClick={() => navigate("/admin/users")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+        <button onClick={() => navigate("/admin/users/shopkeepers")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
@@ -125,6 +154,22 @@ export default function ShopkeeperDetails() {
           </div>
         </motion.div>
       )}
+
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-[#155c43]" /> Shop Documents
+        </h3>
+        <DocumentGallery
+          documents={documents}
+          loading={documentsLoading}
+          emptyText={
+            documentsError
+              ? `Could not load documents: ${documentsError}`
+              : "This shopkeeper has not uploaded any documents yet."
+          }
+        />
+      </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
         className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">

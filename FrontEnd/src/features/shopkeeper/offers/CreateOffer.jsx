@@ -9,38 +9,37 @@ const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-
 
 const CreateOffer = () => {
   const navigate = useNavigate();
-  const { addOffer, products } = useShopkeeper();
+  const { addOffer } = useShopkeeper();
   const [form, setForm] = useState({
-    title: "", description: "", type: "percentage", value: "", minOrder: "", maxDiscount: "", validFrom: "", validTill: "", usageLimit: "", productSpecific: false, selectedProducts: [], active: true,
+    title: "", description: "", type: "percentage", value: "", minOrder: "", maxDiscount: "", validFrom: "", validTill: "",
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
-  const toggleProduct = (name) => {
-    setForm((prev) => ({
-      ...prev,
-      selectedProducts: prev.selectedProducts.includes(name)
-        ? prev.selectedProducts.filter((p) => p !== name)
-        : [...prev.selectedProducts, name],
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title || !form.value) return;
     setSaving(true);
-    setTimeout(() => {
-      addOffer({
+    setError("");
+    try {
+      const result = await addOffer({
         ...form,
         value: Number(form.value),
         minOrder: Number(form.minOrder) || 0,
         maxDiscount: Number(form.maxDiscount) || 0,
-        usageLimit: Number(form.usageLimit) || 100,
-        products: form.productSpecific ? form.selectedProducts : [],
       });
+      if (!result?.ok) {
+        setError(result?.error || "We could not save this offer.");
+        return;
+      }
       navigate("/shopkeeper/offers");
-    }, 500);
+    } catch (err) {
+      setError(err?.message || "We could not save this offer.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -92,10 +91,6 @@ const CreateOffer = () => {
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Max Discount (₹)</label>
                 <input type="number" value={form.maxDiscount} onChange={(e) => update("maxDiscount", e.target.value)} placeholder="0" className={inputClass} />
               </div>
-              <div>
-                <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Usage Limit</label>
-                <input type="number" value={form.usageLimit} onChange={(e) => update("usageLimit", e.target.value)} placeholder="100" className={inputClass} />
-              </div>
             </div>
           </div>
 
@@ -113,32 +108,8 @@ const CreateOffer = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Product Specific</h3>
-              <button type="button" onClick={() => update("productSpecific", !form.productSpecific)} className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${form.productSpecific ? "bg-emerald-500" : "bg-gray-300"}`}>
-                <motion.div animate={{ x: form.productSpecific ? 24 : 2 }} transition={{ type: "spring", stiffness: 500, damping: 30 }} className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
-              </button>
-            </div>
-            {form.productSpecific && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="flex flex-wrap gap-2">
-                {products.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => toggleProduct(p.name)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all ${
-                      form.selectedProducts.includes(p.name) ? "bg-emerald-50 border-emerald-300 text-emerald-700" : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300"
-                    }`}
-                  >
-                    {p.name}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </div>
-
           <div className="flex items-center gap-3">
+            {error && (<p className="flex-1 text-sm text-rose-600">{error}</p>)}
             <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/offers")} className="px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
               Cancel
             </motion.button>

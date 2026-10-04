@@ -7,18 +7,43 @@ const num = (v, fallback) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
+/**
+ * Never let a placeholder reach production: outside development a missing value
+ * stops the process instead of booting with a known secret.
+ */
+function required(name, value, devFallback) {
+  if (value) return value;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return devFallback;
+}
+
 export const config = {
   port: num(process.env.PORT, 5000),
-  clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-  databaseUrl:
-    process.env.DATABASE_URL ||
-    "postgres://nearmart:nearmart@localhost:5432/nearmart",
+  clientOrigin: required(
+    "CLIENT_ORIGIN",
+    process.env.CLIENT_ORIGIN,
+    "http://localhost:5173"
+  ),
+  databaseUrl: required(
+    "DATABASE_URL",
+    process.env.DATABASE_URL,
+    "postgres://nearmart:nearmart@localhost:5432/nearmart"
+  ),
   typeormSync: process.env.TYPEORM_SYNC === "true",
   typeormLogging: process.env.TYPEORM_LOGGING === "true",
   jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET || "dev-access-secret-change-me",
-    refreshSecret:
-      process.env.JWT_REFRESH_SECRET || "dev-refresh-secret-change-me",
+    accessSecret: required(
+      "JWT_ACCESS_SECRET",
+      process.env.JWT_ACCESS_SECRET,
+      "dev-access-secret-change-me"
+    ),
+    refreshSecret: required(
+      "JWT_REFRESH_SECRET",
+      process.env.JWT_REFRESH_SECRET,
+      "dev-refresh-secret-change-me"
+    ),
     accessTtl: process.env.JWT_ACCESS_TTL || "15m",
     refreshTtlDays: num(process.env.JWT_REFRESH_TTL_DAYS, 7),
   },

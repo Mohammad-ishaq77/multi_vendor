@@ -36,13 +36,17 @@ const ShopCard = ({ shop, onClick }) => {
           className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow-sm sm:top-3 sm:left-3 sm:px-2.5 sm:py-1 sm:rounded-lg sm:gap-1"
         >
           <Star className="w-3 h-3 text-(--color-green-light) fill-(--color-green-light) sm:w-3.5 sm:h-3.5" />
-          <span className="text-[10px] font-bold text-[#14261f] sm:text-xs">{shop.rating}</span>
-          <span className="text-[0.55rem] text-gray-400 hidden sm:inline">({shop.reviewCount || 120})</span>
+          <span className="text-[10px] font-bold text-[#14261f] sm:text-xs">{shop.rating || 0}</span>
+          {shop.reviewCount > 0 && (
+            <span className="text-[0.55rem] text-gray-400 hidden sm:inline">({shop.reviewCount})</span>
+          )}
         </motion.div>
 
         {/* Open Badge */}
-        <div className="absolute top-2 right-2 bg-[#155c43] text-white text-[0.55rem] font-bold px-1.5 py-0.5 rounded-md shadow-lg shadow-[#155c43]/20 sm:top-3 sm:right-3 sm:text-[0.65rem] sm:px-2.5 sm:py-1 sm:rounded-lg">
-          Open
+        <div className={`absolute top-2 right-2 text-white text-[0.55rem] font-bold px-1.5 py-0.5 rounded-md shadow-lg sm:top-3 sm:right-3 sm:text-[0.65rem] sm:px-2.5 sm:py-1 sm:rounded-lg ${
+          shop.isOpen ? "bg-[#155c43] shadow-[#155c43]/20" : "bg-gray-600 shadow-gray-600/20"
+        }`}>
+          {shop.isOpen ? "Open" : "Closed"}
         </div>
       </div>
 
@@ -74,6 +78,9 @@ const ShopCard = ({ shop, onClick }) => {
             <MapPin className="w-3 h-3 shrink-0 sm:w-3.5 sm:h-3.5" />
             <span className="truncate">{shop.location}</span>
           </span>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] font-semibold text-[#155c43] sm:text-xs">
+          <span>Min. order ₹{Number(shop.minOrder || 0).toFixed(2)}</span>
         </div>
 
         {/* CTA */}

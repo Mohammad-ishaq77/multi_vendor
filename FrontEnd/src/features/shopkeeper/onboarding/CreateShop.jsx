@@ -32,8 +32,9 @@ const fieldClass = (hasError) =>
 
 const CreateShop = () => {
   const navigate = useNavigate();
-  const { shop, setShop, setOnboardingStep, profile } = useShopkeeper();
+  const { shop, setShop, createShop, uploadImage, setOnboardingStep, profile, actionError } = useShopkeeper();
   const fileInputRef = useRef(null);
+  const [imageFile, setImageFile] = useState(null);
   const [form, setForm] = useState({
     name: shop.name || "",
     description: shop.description || "",
@@ -45,7 +46,7 @@ const CreateShop = () => {
     pincode: shop.pincode || "",
     openingTime: shop.openingTime || "09:00",
     closingTime: shop.closingTime || "21:00",
-    minOrder: shop.minOrder || 99,
+    minOrder: shop.minOrder ?? 99,
     shopImage: shop.shopImage || null,
   });
   const [errors, setErrors] = useState({});
@@ -67,9 +68,9 @@ const CreateShop = () => {
       setErrors((prev) => ({ ...prev, shopImage: "Image must be under 5MB" }));
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (ev) => update("shopImage", ev.target.result);
-    reader.readAsDataURL(file);
+    // Keep the File for upload and use an object URL for the local preview only.
+    setImageFile(file);
+    update("shopImage", URL.createObjectURL(file));
   };
 
   const validate = () => {
@@ -89,25 +90,49 @@ const CreateShop = () => {
     if (form.openingTime && form.closingTime && form.closingTime <= form.openingTime) {
       next.closingTime = "Closing time must be after opening time";
     }
-    if (Number(form.minOrder) < 0) next.minOrder = "Minimum order cannot be negative";
+    if (!Number.isFinite(Number(form.minOrder)) || form.minOrder === "" || Number(form.minOrder) < 0) {
+      next.minOrder = "Enter a valid minimum order amount";
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
     if (!validate()) return;
     setSaving(true);
-    setTimeout(() => {
-      setShop({
-        ...form,
-        minOrder: Number(form.minOrder) || 0,
-        type: shop.type,
-        typeId: shop.typeId,
-        isApproved: false,
-      });
-      setOnboardingStep("documents");
-      navigate("/shopkeeper/onboarding/documents");
-    }, 450);
+
+    // The image must exist as a URL on the server, not as a local preview.
+    let shopImage = form.shopImage && form.shopImage.startsWith("http") ? form.shopImage : null;
+    if (imageFile) {
+      const uploadedUrl = await uploadImage(imageFile, "nearmart/shops");
+      if (uploadedUrl) shopImage = uploadedUrl;
+    }
+
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim() || undefined,
+      address: form.address.trim(),
+      city: form.city.trim(),
+      state: form.state.trim(),
+      pincode: form.pincode.trim(),
+      openingTime: form.openingTime,
+      closingTime: form.closingTime,
+      minOrder: Number(form.minOrder) || 0,
+      shopImage: shopImage || undefined,
+      categoryId: shop.categoryId || undefined,
+    };
+
+    const result = shop.id
+      ? await setShop(payload)
+      : await createShop(payload);
+
+    setSaving(false);
+    if (!result?.ok) return;
+
+    setOnboardingStep("documents");
+    navigate("/shopkeeper/onboarding/documents");
   };
 
   return (
@@ -281,20 +306,29 @@ const CreateShop = () => {
                 </div>
               </div>
               <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Minimum order (₹)</label>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Minimum order (₹) *</label>
                 <div className="relative">
                   <IndianRupee className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                   <input
                     type="number"
                     min="0"
+                    step="0.01"
+                    required
                     value={form.minOrder}
                     onChange={(e) => update("minOrder", e.target.value)}
                     className={`${fieldClass(errors.minOrder)} pl-11`}
                   />
                 </div>
+                {errors.minOrder && <p className="mt-1 text-xs text-rose-600">{errors.minOrder}</p>}
               </div>
             </section>
           </div>
+
+          {actionError && (
+            <div className="mt-5 rounded-[12px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {actionError}
+            </div>
+          )}
 
           <button type="button" onClick={handleProceed} disabled={saving} className="btn-primary mt-6 w-full">
             {saving ? "Saving shop..." : "Continue to documents"}

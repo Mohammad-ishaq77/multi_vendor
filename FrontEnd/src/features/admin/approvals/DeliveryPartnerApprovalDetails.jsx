@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,8 +8,6 @@ import {
   Phone,
   Calendar,
   Truck,
-  MapPin,
-  FileText,
   CheckCircle2,
   XCircle,
   MessageSquare,
@@ -18,12 +16,11 @@ import {
   Car,
   AlertCircle,
   Clock,
-  BadgeCheck,
   ShieldCheck,
-  Eye,
-  X,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { adminService } from "../../../services/orderService";
+import DocumentGallery from "../components/DocumentGallery";
 
 const STATUS_COLORS = {
   pending: "bg-amber-50 text-amber-700 border border-amber-200",
@@ -158,101 +155,6 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
   );
 }
 
-function DocumentViewerModal({ isOpen, onClose, docType, applicantName }) {
-  if (!isOpen) return null;
-
-  const DOC_CONTENT = {
-    aadhaar: {
-      title: "Aadhaar Card",
-      fields: [
-        { label: "Name", value: applicantName },
-        { label: "DOB", value: "01/01/1995" },
-        { label: "Aadhaar No.", value: "XXXX XXXX 5678" },
-        { label: "Address", value: "DigiLocker Verified Address" },
-      ],
-    },
-    driving_license: {
-      title: "Driving License",
-      fields: [
-        { label: "Name", value: applicantName },
-        { label: "DL No.", value: "MH-12-2024-0045678" },
-        { label: "Valid From", value: "01/03/2022" },
-        { label: "Valid Until", value: "28/02/2032" },
-        { label: "Vehicle Class", value: "LMV / Two Wheeler" },
-      ],
-    },
-    rc: {
-      title: "Vehicle RC",
-      fields: [
-        { label: "Owner", value: applicantName },
-        { label: "Registration No.", value: "MH-12-XX-1234" },
-        { label: "Vehicle Class", value: "Motor Cycle" },
-        { label: "Fitness Valid Until", value: "15/08/2027" },
-      ],
-    },
-    address_proof: {
-      title: "Address Proof (DigiLocker)",
-      fields: [
-        { label: "Name", value: applicantName },
-        { label: "Address", value: "DigiLocker Verified Residential Address" },
-        { label: "PIN Code", value: "411001" },
-        { label: "Verified Source", value: "Aadhaar (UIDAI)" },
-      ],
-    },
-  };
-
-  const doc = DOC_CONTENT[docType] || DOC_CONTENT.aadhaar;
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-lg shadow-2xl w-full max-w-lg overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#155c43]/10 flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4 text-[#155c43]" />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">{doc.title}</h3>
-                <p className="text-xs text-gray-500">Fetched via DigiLocker</p>
-              </div>
-            </div>
-            <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="p-5">
-            <div className="bg-gray-50 rounded-md p-4 space-y-3">
-              {doc.fields.map((field, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">{field.label}</span>
-                  <span className="text-sm font-medium text-gray-900">{field.value}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Verified & authenticated via DigiLocker</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
 export default function DeliveryPartnerApprovalDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -262,16 +164,39 @@ export default function DeliveryPartnerApprovalDetails() {
   const [rejectModal, setRejectModal] = useState(false);
   const [changesModal, setChangesModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [viewingDoc, setViewingDoc] = useState(null);
+  const [documents, setDocuments] = useState([]);
+  const [documentsLoading, setDocumentsLoading] = useState(true);
+  const [documentsError, setDocumentsError] = useState("");
 
   const approval = useMemo(() => approvals.find((a) => a.id === id), [approvals, id]);
+
+  // Real documents uploaded by the applicant, straight from the API.
+  useEffect(() => {
+    let active = true;
+    if (!id) return undefined;
+    setDocumentsLoading(true);
+    adminService
+      .approvalDocuments(id)
+      .then((items) => {
+        if (active) setDocuments(Array.isArray(items) ? items : []);
+      })
+      .catch((error) => {
+        if (active) setDocumentsError(error?.message || "Could not load documents.");
+      })
+      .finally(() => {
+        if (active) setDocumentsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   if (!approval) {
     return (
       <div className="text-center py-20">
         <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500 font-medium">Application not found</p>
-        <button onClick={() => navigate("/admin/approvals")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">Back to approvals</button>
+        <button onClick={() => navigate("/admin/approvals/delivery-partners")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">Back to approvals</button>
       </div>
     );
   }
@@ -286,7 +211,7 @@ export default function DeliveryPartnerApprovalDetails() {
     approveDeliveryPartner(approval.id);
     setLoading(false);
     setConfirmModal({ open: false, action: "" });
-    navigate("/admin/approvals");
+    navigate("/admin/approvals/delivery-partners");
   };
 
   const confirmReject = async (reason) => {
@@ -295,7 +220,7 @@ export default function DeliveryPartnerApprovalDetails() {
     rejectDeliveryPartner(approval.id, reason);
     setLoading(false);
     setRejectModal(false);
-    navigate("/admin/approvals");
+    navigate("/admin/approvals/delivery-partners");
   };
 
   const confirmChanges = async (message) => {
@@ -304,20 +229,24 @@ export default function DeliveryPartnerApprovalDetails() {
     requestDeliveryPartnerChanges(approval.id, message);
     setLoading(false);
     setChangesModal(false);
-    navigate("/admin/approvals");
+    navigate("/admin/approvals/delivery-partners");
   };
 
-  const timeline = [
-    { date: approval.appliedAt, label: "Application submitted", done: true },
-    { date: approval.status === "approved" ? new Date().toISOString() : null, label: "Documents verified", done: ["approved", "rejected", "changes_requested"].includes(approval.status) },
-    { date: null, label: "Background check", done: approval.status === "approved" },
-    { date: null, label: "Account activated", done: approval.status === "approved" },
-  ];
+  // Only real, recorded events: submission and the admin decision. Verification and
+// account activation are the same decision, so they are not listed as separate steps.
+const timeline = [
+  { date: approval.appliedAt, label: "Application submitted", done: true },
+  {
+    date: approval.reviewedAt || null,
+    label: `Application ${approval.status === "pending" ? "awaiting review" : approval.status.replace(/_/g, " ")}`,
+    done: approval.status !== "pending",
+  },
+];
 
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <button onClick={() => navigate("/admin/approvals")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+        <button onClick={() => navigate("/admin/approvals/delivery-partners")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
@@ -351,62 +280,34 @@ export default function DeliveryPartnerApprovalDetails() {
           <div className="space-y-4">
             <InfoRow icon={Truck} label="Vehicle Type" value={approval.vehicleType} />
             <InfoRow icon={Car} label="Vehicle Number" value={approval.vehicleNumber} />
-            <InfoRow icon={Shield} label="License Status" value="Pending verification" />
+            <InfoRow
+              icon={Shield}
+              label="Documents"
+              value={
+                documentsLoading
+                  ? "Loading…"
+                  : documents.length
+                    ? `${documents.length} uploaded (${documents.filter((d) => d.isVerified).length} verified)`
+                    : "None uploaded"
+              }
+            />
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#155c43]" /> DigiLocker Verification
+            <ShieldCheck className="w-4 h-4 text-[#155c43]" /> Uploaded Documents
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
-              <BadgeCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Identity</p>
-                <p className="text-xs text-gray-500">Aadhaar verified via DigiLocker</p>
-              </div>
-              <button
-                onClick={() => setViewingDoc("aadhaar")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#155c43] bg-white border border-[#155c43]/20 rounded-lg hover:bg-[#155c43]/5 transition-colors"
-              >
-                <Eye className="w-3.5 h-3.5" /> View
-              </button>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
-              <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Address</p>
-                <p className="text-xs text-gray-500">Address verified from Aadhaar</p>
-              </div>
-              <button
-                onClick={() => setViewingDoc("address_proof")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#155c43] bg-white border border-[#155c43]/20 rounded-lg hover:bg-[#155c43]/5 transition-colors"
-              >
-                <Eye className="w-3.5 h-3.5" /> View
-              </button>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
-              <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Documents</p>
-                <p className="text-xs text-gray-500">All required documents authenticated</p>
-              </div>
-              <button
-                onClick={() => setViewingDoc("driving_license")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#155c43] bg-white border border-[#155c43]/20 rounded-lg hover:bg-[#155c43]/5 transition-colors"
-              >
-                <Eye className="w-3.5 h-3.5" /> View
-              </button>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            </div>
-          </div>
-          <div className="mt-3 p-2 bg-emerald-50/50 rounded-lg">
-            <p className="text-xs text-emerald-700 text-center font-medium">DigiLocker Verification: Completed</p>
-          </div>
+          <DocumentGallery
+            documents={documents}
+            loading={documentsLoading}
+            emptyText={
+              documentsError
+                ? `Could not load documents: ${documentsError}`
+                : "This applicant has not uploaded any documents yet."
+            }
+          />
           {approval.notes && (
             <div className="mt-4 p-3 bg-gray-50 rounded-md">
               <p className="text-xs font-medium text-gray-500 mb-1">Applicant Notes</p>
@@ -469,7 +370,7 @@ export default function DeliveryPartnerApprovalDetails() {
         confirmLabel="Approve" confirmColor="green" loading={loading} />
       <RejectModal isOpen={rejectModal} onClose={() => setRejectModal(false)} onConfirm={confirmReject} loading={loading} />
       <ChangesModal isOpen={changesModal} onClose={() => setChangesModal(false)} onConfirm={confirmChanges} loading={loading} />
-      <DocumentViewerModal isOpen={!!viewingDoc} onClose={() => setViewingDoc(null)} docType={viewingDoc} applicantName={approval.applicantName} />
     </div>
   );
 }
+

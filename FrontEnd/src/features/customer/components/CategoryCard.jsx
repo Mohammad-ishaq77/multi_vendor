@@ -16,7 +16,7 @@ const CategoryCard = ({ category, onClick }) => {
     >
       <div className="card-media relative h-32 w-full">
         <CardImage
-          src={category.cover}
+          src={category.image || category.imageUrl || category.cover}
           alt={category.name}
           category={category.name}
           className="h-full w-full object-cover"

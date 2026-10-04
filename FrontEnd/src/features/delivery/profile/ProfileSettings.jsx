@@ -31,15 +31,17 @@ export default function ProfileSettings() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validate()) return;
     setSaving(true);
-    setTimeout(() => {
-      updateProfile(form);
-      setSaving(false);
-      addToast("Profile updated successfully.", "success");
-      navigate("/delivery/profile");
-    }, 800);
+    const result = await updateProfile(form);
+    setSaving(false);
+    if (result?.ok === false) {
+      addToast(result.error || "We could not save your profile.", "error");
+      return;
+    }
+    addToast("Profile updated successfully.", "success");
+    navigate("/delivery/profile");
   };
 
   const inputClass = (field) => `w-full px-4 py-2.5 rounded-md border text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all ${errors[field] ? "border-rose-300 bg-rose-50" : "border-gray-200"}`;

@@ -5,14 +5,12 @@ export const ROLES = {
   DELIVERY: "delivery",
 };
 
-export const ROLE_META = [
-  {
-    id: ROLES.ADMIN,
-    label: "Admin",
-    description: "Manage the marketplace",
-    dashboard: "/admin/dashboard",
-    icon: "LayoutDashboard",
-  },
+/**
+ * Roles that can be picked on the public sign-in / sign-up screens.
+ * `admin` is intentionally excluded: administrator accounts are created out of
+ * band and authenticate through the dedicated `/admin` portal.
+ */
+export const PUBLIC_ROLE_META = [
   {
     id: ROLES.SHOPKEEPER,
     label: "Vendor",
@@ -34,6 +32,17 @@ export const ROLE_META = [
     dashboard: "/delivery/dashboard",
     icon: "Truck",
   },
+];
+
+export const ROLE_META = [
+  {
+    id: ROLES.ADMIN,
+    label: "Admin",
+    description: "Manage the marketplace",
+    dashboard: "/admin/dashboard",
+    icon: "LayoutDashboard",
+  },
+  ...PUBLIC_ROLE_META,
 ];
 
 export const getRoleMeta = (role) =>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -196,7 +196,7 @@ export default function Customers() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => navigate(`/admin/users/customer/${user.id}`)}
+                          <button onClick={() => navigate(`/admin/users/customers/${user.id}`)}
                             className="p-2 text-gray-400 hover:text-[#155c43] hover:bg-[#155c43]/5 rounded-lg transition-colors"><Eye className="w-4 h-4" /></button>
                           {user.status === "active" ? (
                             <button onClick={() => handleAction(user.id, "suspend")}
@@ -247,7 +247,7 @@ export default function Customers() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 mt-3">
-                    <button onClick={() => navigate(`/admin/users/customer/${user.id}`)}
+                    <button onClick={() => navigate(`/admin/users/customers/${user.id}`)}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                       <Eye className="w-3.5 h-3.5" /> View
                     </button>

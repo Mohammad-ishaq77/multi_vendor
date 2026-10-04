@@ -27,14 +27,23 @@ router.post(
   validate({ body: z.object({ productId: z.string().uuid(), quantity: z.coerce.number().int().min(1).default(1) }) }),
   asyncHandler(async (req, res) => {
     const items = repo("CartItem");
-    const product = await repo("Product").findOne({ where: { id: req.body.productId } });
-    if (!product || !product.isAvailable) {
+    const product = await repo("Product").findOne({
+      where: { id: req.body.productId },
+      relations: { shop: true },
+    });
+    if (!product || !product.isAvailable || !product.shop?.isApproved) {
       return res.status(404).json({ ok: false, error: "Product unavailable." });
+    }
+    if (product.stock < req.body.quantity) {
+      return res.status(400).json({ ok: false, error: "Requested quantity exceeds available stock." });
     }
     const existing = await items.findOne({
       where: { userId: req.user.id, productId: product.id },
     });
     if (existing) {
+      if (existing.quantity + req.body.quantity > product.stock) {
+        return res.status(400).json({ ok: false, error: "Requested quantity exceeds available stock." });
+      }
       existing.quantity += req.body.quantity;
       return res.json({ ok: true, data: await items.save(existing) });
     }
@@ -58,6 +67,16 @@ router.put(
     const items = repo("CartItem");
     const item = await items.findOne({ where: { id: req.params.id, userId: req.user.id } });
     if (!item) return res.status(404).json({ ok: false, error: "Cart item not found." });
+    const product = await repo("Product").findOne({
+      where: { id: item.productId },
+      relations: { shop: true },
+    });
+    if (!product || !product.isAvailable || !product.shop?.isApproved) {
+      return res.status(404).json({ ok: false, error: "Product unavailable." });
+    }
+    if (req.body.quantity > product.stock) {
+      return res.status(400).json({ ok: false, error: "Requested quantity exceeds available stock." });
+    }
     item.quantity = req.body.quantity;
     res.json({ ok: true, data: await items.save(item) });
   })

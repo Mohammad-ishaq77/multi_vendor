@@ -11,34 +11,19 @@ export const APP_CONFIG = {
   supportPhone: "+91 98765 43210",
 };
 
+/**
+ * Client-only storage keys.
+ *
+ * Only UI preferences and non-sensitive client state belong here. Server-backed
+ * data (cart, orders, addresses, wishlist, shop, deliveries) lives in the API —
+ * see `src/services/*` — and session tokens are owned by `tokenService`.
+ */
 export const STORAGE_KEYS = {
-  AUTH: "nearmart_auth",
-  USER: "nearmart_user",
-  ROLE: "nearmart_role",
-  SESSION: "nearmart_session",
-  PERSIST: "nearmart_persist_session",
-  SHOPKEEPER_ONBOARDING: "nearmart_sk_onboarding",
-  SHOPKEEPER_SHOP: "nearmart_sk_shop",
-  SHOPKEEPER_ORDERS: "nearmart_sk_orders",
-  ADMIN_ORDERS: "nearmart_admin_orders",
-  DELIVERY_ONBOARDING: "nearmart_dp_hasCompletedOnboarding",
-  DELIVERY_STATUS: "nearmart_dp_applicationStatus",
-  ORDERS: "nearmart_orders",
-  LAST_ORDER: "nearmart_last_order",
-  PAYMENTS: "nearmart_payments",
-};
-
-export const AUTH_STORAGE_KEYS = [
-  STORAGE_KEYS.AUTH,
-  STORAGE_KEYS.USER,
-  STORAGE_KEYS.ROLE,
-  STORAGE_KEYS.SESSION,
-];
-
-export const TEST_CREDENTIALS = {
-  email: "test@gmail.com",
-  aliases: ["test@gmail", "test@gmail.com"],
-  password: "1122",
+  THEME: "nearmart_theme",
+  ADMIN_SIDEBAR_COLLAPSED: "nearmart_admin_sidebar_collapsed",
+  SHOPKEEPER_SETTINGS: "nearmart_sk_settings",
+  FAVORITE_SHOPS: "nearmart_favorite_shops",
+  READ_NOTIFICATIONS: "nearmart_read_notifications",
 };
 
 export default APP_CONFIG;

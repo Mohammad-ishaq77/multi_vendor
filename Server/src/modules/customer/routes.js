@@ -1,10 +1,19 @@
 import { Router } from "express";
+import { z } from "zod";
 import { asyncHandler } from "../../common/middleware/asyncHandler.js";
-import { requireAuth } from "../../common/middleware/auth.js";
+import { requireAuth, invalidateActiveCache } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
+import { validate } from "../../common/middleware/validate.js";
 import { repo } from "../../config/db.js";
+import { publicUser } from "../../entities/User.js";
 
 const router = Router();
+
+const profileSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  phone: z.string().max(15).optional(),
+  avatarUrl: z.string().max(500).nullable().optional(),
+});
 
 /** GET /api/customer/stats — orders, cart count, wishlist count. */
 router.get(
@@ -30,14 +39,14 @@ router.get(
   asyncHandler(async (req, res) => {
     const user = await repo("User").findOne({ where: { id: req.user.id } });
     if (!user) return res.status(404).json({ ok: false, error: "User not found." });
-    const { passwordHash, password, ...rest } = user;
-    res.json({ ok: true, data: rest });
+    res.json({ ok: true, data: publicUser(user) });
   })
 );
 
 router.put(
   "/profile",
   requireAuth,
+  validate({ body: profileSchema }),
   asyncHandler(async (req, res) => {
     const users = repo("User");
     const user = await users.findOne({ where: { id: req.user.id } });
@@ -47,8 +56,8 @@ router.put(
     if (phone !== undefined) user.phone = phone;
     if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
     const saved = await users.save(user);
-    const { passwordHash, password, ...rest } = saved;
-    res.json({ ok: true, data: rest });
+    invalidateActiveCache(saved.id);
+    res.json({ ok: true, data: publicUser(saved) });
   })
 );
 

@@ -32,5 +32,7 @@ export const DeliveryPartner = new EntitySchema({
   },
   relations: {
     user: { type: "many-to-one", target: "User", joinColumn: { name: "user_id" }, onDelete: "CASCADE" },
+    // Uploaded verification documents (delivery_documents.partner_id already exists).
+    documents: { type: "one-to-many", target: "DeliveryDocument", inverseSide: "partner" },
   },
 });

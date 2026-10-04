@@ -39,6 +39,7 @@ describe("helpers", () => {
     expect(slugify("Fresh Basket!")).toBe("fresh-basket");
   });
 
+
   test("hasCoords", () => {
     expect(hasCoords(34.08, 74.79)).toBe(true);
     expect(hasCoords(null, 74.79)).toBe(false);

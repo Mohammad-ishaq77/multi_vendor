@@ -1,13 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation, Outlet } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, X } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
+import { useAdmin } from "../context/AdminContext";
 import { DASHBOARD_INSET } from "../../../components/dashboard/DashboardHeader";
 
 const AdminShell = () => {
   const location = useLocation();
+  const { error, actionError, refresh } = useAdmin();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dismissed, setDismissed] = useState([]);
 
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
@@ -16,6 +20,9 @@ const AdminShell = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  const message = error || actionError;
+  const showMessage = message && !dismissed.includes(message);
 
   return (
     <div className="flex h-screen min-h-screen overflow-hidden bg-[#f7faf8] font-sans selection:bg-[#155c43]/20 selection:text-[#155c43]">
@@ -39,6 +46,29 @@ const AdminShell = () => {
         />
 
         <main className={`${DASHBOARD_INSET} flex-1 overflow-x-hidden overflow-y-auto py-2 pb-12 sm:py-5 sm:pb-24 lg:py-6 lg:pb-8`}>
+          {showMessage && (
+            <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <p className="flex-1">{message}</p>
+              {error && (
+                <button
+                  type="button"
+                  onClick={refresh}
+                  className="text-xs font-semibold text-amber-900 underline"
+                >
+                  Retry
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setDismissed((prev) => [...prev, message])}
+                className="text-amber-700 hover:text-amber-900"
+                aria-label="Dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={location.pathname}

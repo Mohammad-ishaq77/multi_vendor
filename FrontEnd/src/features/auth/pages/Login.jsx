@@ -5,26 +5,15 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  LayoutDashboard,
   Lock,
   Mail,
-  ShoppingBag,
-  Store,
-  Truck,
 } from "lucide-react";
 import BrandLogo from "../../../components/common/BrandLogo";
 import AuthCloseButton from "../../../components/common/AuthCloseButton";
 import { useAuth } from "../../../hooks/useAuth";
 import { useToast } from "../../../components/common/Toast";
 import { APP_CONFIG } from "../../../config/appConfig";
-import { ROLE_META } from "../../../config/roles";
-
-const roleIcons = {
-  LayoutDashboard,
-  Store,
-  ShoppingBag,
-  Truck,
-};
+import RoleSelector from "../components/RoleSelector";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -43,8 +32,7 @@ const Login = () => {
     setError("");
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const result = login({ email, password, role, remember });
+    const result = await login({ email, password, role, remember });
     setIsLoading(false);
 
     if (!result.ok) {
@@ -95,37 +83,11 @@ const Login = () => {
           </div>
           <h1 className="font-display text-[1.8rem] font-bold tracking-tight">Welcome back</h1>
           <p className="mt-1 text-sm text-(--color-text-muted)">
-            Sign in with the test account and choose a role to continue.
+            Sign in to your {APP_CONFIG.name} account and choose where you want to continue.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-5" noValidate>
-            <fieldset>
-              <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-(--color-text)">
-                Login as
-              </legend>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {ROLE_META.map((item) => {
-                  const Icon = roleIcons[item.icon] || ShoppingBag;
-                  const active = role === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setRole(item.id)}
-                      className={`flex min-h-[78px] flex-col items-center justify-center gap-1 rounded-[12px] border px-2 py-3 text-center text-xs font-semibold transition-all ${
-                        active
-                          ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark) shadow-[var(--shadow-card)]"
-                          : "border-[#dce8e2] bg-white text-(--color-text-muted) hover:border-(--color-green-soft)"
-                      }`}
-                      aria-pressed={active}
-                    >
-                      <Icon className="h-4 w-4" />
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </fieldset>
+            <RoleSelector legend="Login as" selectedRole={role} onSelect={setRole} />
 
             <div>
               <label htmlFor="login-email" className="mb-2 block text-xs font-semibold uppercase tracking-wider">

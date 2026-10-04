@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { asyncHandler } from "../../common/middleware/asyncHandler.js";
 import { requireAuth } from "../../common/middleware/auth.js";
+import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { repo } from "../../config/db.js";
@@ -36,9 +37,10 @@ router.patch(
   })
 );
 
-/** POST /api/notifications — internal/system (admin or self). */
+/** POST /api/notifications — admin-only system notification. */
 router.post(
   "/",
+  requireRole("admin"),
   validate({
     body: z.object({
       userId: z.string().uuid().optional(),
@@ -49,7 +51,7 @@ router.post(
     }),
   }),
   asyncHandler(async (req, res) => {
-    const target = req.user.role === "admin" && req.body.userId ? req.body.userId : req.user.id;
+    const target = req.body.userId || req.user.id;
     const notifications = repo("Notification");
     const created = await notifications.save(
       notifications.create({ ...req.body, userId: target })

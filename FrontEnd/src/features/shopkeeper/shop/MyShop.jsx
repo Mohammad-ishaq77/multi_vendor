@@ -1,30 +1,15 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Store, Edit3, Star, Clock, MapPin, Phone, Mail, Truck } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
-
-const defaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-L.Marker.prototype.options.icon = defaultIcon;
 
 const MyShop = () => {
   const navigate = useNavigate();
   const { shop } = useShopkeeper();
 
-  const lat = shop.latitude || 34.0837;
-  const lng = shop.longitude || 74.7973;
+  const lat = shop.latitude;
+  const lng = shop.longitude;
 
   return (
     <ShopkeeperShell>
@@ -101,32 +86,6 @@ const MyShop = () => {
             <p className="text-sm text-gray-600 leading-relaxed">{shop.description}</p>
           </motion.div>
 
-          {/* Shop Location Map */}
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm sm:col-span-2">
-            <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" /> Shop Location
-            </h3>
-            <div className="rounded-md overflow-hidden border border-gray-200" style={{ height: "300px" }}>
-              <MapContainer
-                center={[lat, lng]}
-                zoom={14}
-                scrollWheelZoom={false}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[lat, lng]}>
-                  <Popup>
-                    <strong>{shop.name}</strong><br />
-                    {shop.address}, {shop.city}
-                  </Popup>
-                </Marker>
-              </MapContainer>
-            </div>
-            <p className="text-xs text-gray-400 mt-2">Lat: {lat}, Lng: {lng} — <button onClick={() => navigate("/shopkeeper/shop/edit")} className="text-emerald-600 font-medium hover:underline">Update location</button></p>
-          </motion.div>
         </div>
       </div>
     </ShopkeeperShell>

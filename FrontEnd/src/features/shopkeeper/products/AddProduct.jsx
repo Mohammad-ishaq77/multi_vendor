@@ -1,20 +1,35 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import { uploadService } from "../../../services/catalogService";
 
 const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
 const AddProduct = () => {
   const navigate = useNavigate();
-  const { addProduct } = useShopkeeper();
+  const { addProduct, shopTypes, shop } = useShopkeeper();
   const [form, setForm] = useState({
-    name: "", category: "Vegetables", description: "", price: "", discount: "", stock: "", unit: "kg", image: "", available: true,
+    name: "", categoryId: "", description: "", price: "", discount: "", stock: "", unit: "kg", image: "", available: true,
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const categories = useMemo(
+    () => shopTypes || [],
+    [shopTypes]
+  );
+
+  // The API keys products by category id, so the picker uses the real categories.
+  useEffect(() => {
+    if (form.categoryId || !categories.length) return;
+    const shopCategory = categories.find((c) => c.id === shop?.categoryId);
+    const initial = shopCategory || categories[0];
+    setForm((prev) => ({ ...prev, categoryId: initial?.id || "" }));
+  }, [categories, form.categoryId, shop?.categoryId]);
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -22,21 +37,47 @@ const AddProduct = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => { setImagePreview(reader.result); update("image", reader.result); };
+    reader.onload = () => { setImagePreview(reader.result); update("image", file); };
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.price) return;
     setSaving(true);
-    setTimeout(() => {
-      addProduct({ ...form, price: Number(form.price), discount: Number(form.discount) || 0, stock: Number(form.stock) || 0 });
+    setError("");
+    try {
+      let imageUrl = null;
+      if (form.image instanceof File) {
+        const uploaded = await uploadService.image(form.image, "nearmart/products");
+        imageUrl = uploaded?.url || null;
+      }
+      const result = await addProduct({
+        ...form,
+        categoryId: form.categoryId || null,
+        imageUrl,
+        price: Number(form.price),
+        discount: Number(form.discount) || 0,
+        stock: Number(form.stock) || 0,
+      });
+      if (!result?.ok) {
+        const validationDetails = result?.issues
+          ?.map((issue) => `${issue.path}: ${issue.message}`)
+          .join(" ");
+        setError(validationDetails || result?.error || "We could not save this product.");
+        return;
+      }
       navigate("/shopkeeper/products");
-    }, 500);
+    } catch (err) {
+      const validationDetails = err?.issues
+        ?.map((issue) => `${issue.path}: ${issue.message}`)
+        .join(" ");
+      setError(validationDetails || err?.message || "We could not save this product.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const categories = ["Vegetables", "Fruits", "Dairy", "Bakery", "Grocery", "Snacks", "Beverages", "Meat", "Other"];
   const units = ["kg", "g", "ml", "L", "pcs", "Pack", "Dozen", "Box", "Bottle"];
 
   return (
@@ -60,8 +101,9 @@ const AddProduct = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
-                  <select value={form.category} onChange={(e) => update("category", e.target.value)} className={inputClass}>
-                    {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                  <select value={form.categoryId} onChange={(e) => update("categoryId", e.target.value)} className={inputClass}>
+                    {!categories.length && <option value="">No categories available</option>}
+                    {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
@@ -83,15 +125,15 @@ const AddProduct = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Price (₹) *</label>
-                <input type="number" value={form.price} onChange={(e) => update("price", e.target.value)} placeholder="0" className={inputClass} required />
+                <input type="number" min="0.01" step="0.01" value={form.price} onChange={(e) => update("price", e.target.value)} placeholder="0" className={inputClass} required />
               </div>
               <div>
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Discount (%)</label>
-                <input type="number" value={form.discount} onChange={(e) => update("discount", e.target.value)} placeholder="0" className={inputClass} />
+                <input type="number" min="0" max="100" step="0.01" value={form.discount} onChange={(e) => update("discount", e.target.value)} placeholder="0" className={inputClass} />
               </div>
               <div>
                 <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Stock</label>
-                <input type="number" value={form.stock} onChange={(e) => update("stock", e.target.value)} placeholder="0" className={inputClass} />
+                <input type="number" min="0" step="1" value={form.stock} onChange={(e) => update("stock", e.target.value)} placeholder="0" className={inputClass} />
               </div>
             </div>
           </div>
@@ -116,6 +158,9 @@ const AddProduct = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {error && (
+              <p className="flex-1 text-sm text-rose-600">{error}</p>
+            )}
             <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/products")} className="px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
               Cancel
             </motion.button>

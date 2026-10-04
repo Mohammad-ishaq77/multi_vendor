@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle, MapPin, Clock, Package, ArrowRight } from "lucide-react";
@@ -6,12 +5,10 @@ import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 
 export default function DeliveryCompleted() {
   const navigate = useNavigate();
-  const { activeDelivery, deliveryHistory, completeDelivery } = useDeliveryPartner();
+  const { deliveryHistory } = useDeliveryPartner();
 
-  useEffect(() => {
-    if (activeDelivery?.status === "otp_verified") completeDelivery();
-  }, [activeDelivery, completeDelivery]);
-
+  // The delivery is already marked delivered by DeliveryVerification, so this
+  // screen only renders the latest entry from GET /delivery/history.
   const delivery = deliveryHistory[0];
 
   return (

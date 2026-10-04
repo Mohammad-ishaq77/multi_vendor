@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -163,7 +163,7 @@ export default function DeliveryPartners() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => navigate(`/admin/users/delivery-partner/${user.id}`)}
+                          <button onClick={() => navigate(`/admin/users/delivery-partners/${user.id}`)}
                             className="p-2 text-gray-400 hover:text-[#155c43] hover:bg-[#155c43]/5 rounded-lg transition-colors"><Eye className="w-4 h-4" /></button>
                           {user.status === "active" ? (
                             <button onClick={() => handleAction(user.id, "suspend")} className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Deactivate"><UserX className="w-4 h-4" /></button>
@@ -194,7 +194,7 @@ export default function DeliveryPartners() {
                     <div className="bg-gray-50 rounded-md p-2"><IndianRupee className="w-3.5 h-3.5 text-gray-400 mx-auto mb-0.5" /><p className="text-xs font-medium text-gray-900">₹{user.earnings?.toLocaleString()}</p><p className="text-[10px] text-gray-500">Earnings</p></div>
                   </div>
                   <div className="flex items-center gap-1 mt-3">
-                    <button onClick={() => navigate(`/admin/users/delivery-partner/${user.id}`)}
+                    <button onClick={() => navigate(`/admin/users/delivery-partners/${user.id}`)}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"><Eye className="w-3.5 h-3.5" /> View</button>
                     {user.status === "active" ? (
                       <button onClick={() => handleAction(user.id, "suspend")}

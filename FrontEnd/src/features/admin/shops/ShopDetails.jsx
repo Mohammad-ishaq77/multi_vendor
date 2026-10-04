@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -220,7 +220,6 @@ export default function ShopDetails() {
                   { icon: Phone, label: "Phone", value: shop.phone || "—" },
                   { icon: Mail, label: "Email", value: shop.email || "—" },
                   { icon: Clock, label: "Operating Hours", value: shop.operatingHours || (shop.openTime && shop.closeTime ? `${shop.openTime} - ${shop.closeTime}` : "—") },
-                  { icon: Truck, label: "Delivery Radius", value: shop.deliveryRadius ? `${shop.deliveryRadius} km` : "—" },
                   { icon: Calendar, label: "Joined", value: formatDate(shop.joinedDate || shop.createdAt) },
                 ].map((item) => (
                   <div key={item.label} className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
@@ -407,7 +406,7 @@ export default function ShopDetails() {
               {shopkeeper ? (
                 <div
                   className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => navigate(`/admin/shopkeepers/${shopkeeper.id}`)}
+                  onClick={() => navigate(`/admin/users/shopkeepers/${shopkeeper.id}`)}
                 >
                   <div className="w-11 h-11 rounded-md bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white font-bold">
                     {shopkeeper.name?.charAt(0)}
@@ -437,12 +436,6 @@ export default function ShopDetails() {
                 Delivery Settings
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
-                  <span className="text-sm text-gray-500">Delivery Radius</span>
-                  <span className="text-sm font-semibold" style={{ color: "#14261f" }}>
-                    {shop.deliveryRadius ? `${shop.deliveryRadius} km` : "—"}
-                  </span>
-                </div>
                 <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
                   <span className="text-sm text-gray-500">Minimum Order</span>
                   <span className="text-sm font-semibold" style={{ color: "#14261f" }}>

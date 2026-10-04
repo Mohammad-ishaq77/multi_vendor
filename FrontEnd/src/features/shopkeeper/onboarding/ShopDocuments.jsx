@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -11,39 +11,63 @@ import {
   Loader2,
   Shield,
   Store,
+  Upload,
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 import ShopOnboardingLayout from "./ShopOnboardingLayout";
 
-const docs = [
-  { title: "Aadhaar Card", desc: "Identity of the shop owner", icon: Contact },
-  { title: "PAN Card", desc: "Tax identity for payouts", icon: CreditCard },
-  { title: "GST Certificate", desc: "Optional if your shop is GST registered", icon: Building2 },
-  { title: "Shop / Trade License", desc: "Local municipal or trade license", icon: Store },
+const DOC_TYPES = [
+  { type: "aadhaar", title: "Aadhaar Card", desc: "Identity of the shop owner", icon: Contact, required: true },
+  { type: "pan", title: "PAN Card", desc: "Tax identity for payouts", icon: CreditCard, required: true },
+  { type: "gst", title: "GST Certificate", desc: "Optional if your shop is GST registered", icon: Building2, required: false },
+  { type: "license", title: "Shop / Trade License", desc: "Local municipal or trade license", icon: Store, required: true },
 ];
+
+const MAX_BYTES = 8 * 1024 * 1024;
 
 const ShopDocuments = () => {
   const navigate = useNavigate();
-  const { shop, setShop, setOnboardingStep, digilockerVerified, verifyWithDigiLocker } = useShopkeeper();
-  const [verifying, setVerifying] = useState(false);
-  const [verified, setVerified] = useState(digilockerVerified);
-  const [submitting, setSubmitting] = useState(false);
+  const { shop, setOnboardingStep, documents, uploadDocument, actionError } = useShopkeeper();
+  const inputs = useRef({});
 
-  const handleVerify = async () => {
-    setVerifying(true);
-    await verifyWithDigiLocker();
-    setVerified(true);
-    setVerifying(false);
+  const [uploading, setUploading] = useState({});
+  const [localError, setLocalError] = useState(null);
+
+  const uploadedByType = useMemo(() => {
+    const map = {};
+    documents.forEach((doc) => {
+      map[doc.type] = doc;
+    });
+    return map;
+  }, [documents]);
+
+  const missingRequired = DOC_TYPES.filter((doc) => doc.required && !uploadedByType[doc.type]);
+
+  const handleFile = async (docType, file) => {
+    setLocalError(null);
+    if (!file) return;
+    if (!/^(image\/|application\/pdf)/.test(file.type)) {
+      setLocalError("Upload a PDF or an image file.");
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      setLocalError("Each file must be 8 MB or smaller.");
+      return;
+    }
+
+    setUploading((prev) => ({ ...prev, [docType]: true }));
+    await uploadDocument(docType, file);
+    setUploading((prev) => ({ ...prev, [docType]: false }));
+    if (inputs.current[docType]) inputs.current[docType].value = "";
   };
 
   const handleSubmit = () => {
-    if (!verified) return;
-    setSubmitting(true);
-    setTimeout(() => {
-      setShop({ documents: { digilockerVerified: true }, digilockerVerified: true });
-      setOnboardingStep("approval");
-      navigate("/shopkeeper/onboarding/approval");
-    }, 450);
+    if (missingRequired.length) {
+      setLocalError(`Still required: ${missingRequired.map((d) => d.title).join(", ")}.`);
+      return;
+    }
+    setOnboardingStep("approval");
+    navigate("/shopkeeper/onboarding/approval");
   };
 
   return (
@@ -61,86 +85,126 @@ const ShopDocuments = () => {
           </div>
           <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">Verify documents</h1>
           <p className="mt-1 text-sm text-(--color-text-muted)">
-            Confirm identity for {shop.name || "your shop"} with DigiLocker.
+            Upload the documents an admin reviews before {shop.name || "your shop"} goes live.
           </p>
         </div>
 
+        {(localError || actionError) && (
+          <div className="mb-4 rounded-[12px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {localError || actionError}
+          </div>
+        )}
+
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-3">
-            {verified ? (
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-                <div className="flex items-center gap-3 rounded-[16px] border border-(--color-green-soft) bg-(--color-green-bg) p-4">
-                  <CheckCircle2 className="h-5 w-5 text-(--color-primary)" />
+            {DOC_TYPES.map((doc) => {
+              const record = uploadedByType[doc.type];
+              const isBusy = Boolean(uploading[doc.type]);
+              const Icon = doc.icon;
+              return (
+                <div key={doc.type} className="flex items-center gap-3 rounded-[16px] border border-(--color-border-soft) bg-(--color-surface-soft) p-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-white text-(--color-primary)">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">
+                      {doc.title}
+                      {doc.required ? "" : " (optional)"}
+                    </p>
+                    <p className="truncate text-xs text-(--color-text-muted)">
+                      {record ? `Uploaded: ${record.url}` : doc.desc}
+                    </p>
+                  </div>
+                  <input
+                    ref={(el) => {
+                      inputs.current[doc.type] = el;
+                    }}
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="hidden"
+                    onChange={(event) => handleFile(doc.type, event.target.files?.[0])}
+                  />
+                  <button
+                    type="button"
+                    className="btn-outline btn-sm shrink-0"
+                    disabled={isBusy}
+                    onClick={() => inputs.current[doc.type]?.click()}
+                  >
+                    {isBusy ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Uploading
+                      </>
+                    ) : record ? (
+                      <>
+                        <Upload className="h-4 w-4" />
+                        Replace
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4" />
+                        Upload
+                      </>
+                    )}
+                  </button>
+                  {record && <CheckCircle2 className="h-5 w-5 shrink-0 text-(--color-primary)" />}
+                </div>
+              );
+            })}
+
+            {documents.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-3 rounded-[16px] border border-(--color-green-soft) bg-(--color-green-bg) p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <FileCheck className="h-5 w-5 text-(--color-primary)" />
                   <div>
-                    <p className="text-sm font-semibold">DigiLocker verification complete</p>
-                    <p className="text-xs text-(--color-text-muted)">Identity, business and documents are ready for review.</p>
+                    <p className="text-sm font-semibold">{documents.length} document(s) recorded</p>
+                    <p className="text-xs text-(--color-text-muted)">
+                      An admin reviews these before your shop is approved.
+                    </p>
                   </div>
                 </div>
                 {[
-                  { icon: BadgeCheck, title: "Identity verified", desc: "Aadhaar and PAN matched" },
-                  { icon: Building2, title: "Business verified", desc: "GST and shop license confirmed" },
-                  { icon: FileCheck, title: "Documents authenticated", desc: "Files pulled from DigiLocker" },
+                  { icon: BadgeCheck, title: "Identity documents", desc: "Aadhaar and PAN attached" },
+                  { icon: Building2, title: "Business proof", desc: "GST certificate and trade license attached" },
                 ].map((item) => (
-                  <div key={item.title} className="flex items-center gap-3 rounded-[16px] border border-[#edf3ef] bg-[#f8fbf9] p-4">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white text-(--color-primary)">
-                      <item.icon className="h-5 w-5" />
+                  <div key={item.title} className="flex items-center gap-3 rounded-[12px] bg-white/70 p-3">
+                    <item.icon className="h-4 w-4 text-(--color-primary)" />
+                    <div>
+                      <p className="text-xs font-semibold">{item.title}</p>
+                      <p className="text-[11px] text-(--color-text-muted)">{item.desc}</p>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold">{item.title}</p>
-                      <p className="text-xs text-(--color-text-muted)">{item.desc}</p>
-                    </div>
-                    <CheckCircle2 className="h-5 w-5 text-(--color-primary)" />
                   </div>
                 ))}
               </motion.div>
-            ) : (
-              docs.map((doc) => (
-                <div key={doc.title} className="flex items-center gap-3 rounded-[16px] border border-[#edf3ef] bg-[#f8fbf9] p-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white text-(--color-primary)">
-                    <doc.icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">{doc.title}</p>
-                    <p className="text-xs text-(--color-text-muted)">{doc.desc}</p>
-                  </div>
-                </div>
-              ))
             )}
           </div>
 
           <aside className="rounded-[16px] border border-(--color-green-soft) bg-(--color-green-bg)/60 p-5 lg:p-6">
-            <p className="text-sm font-semibold">Secure verification</p>
+            <p className="text-sm font-semibold">Review process</p>
             <p className="mt-1 text-xs leading-relaxed text-(--color-text-muted)">
-              DigiLocker pulls government documents so you don't need to upload scans.
+              Documents are stored on the server and shown to NearMart admins with your application. Keep them
+              clear and unexpired so approval is not delayed.
             </p>
-            {!verified && (
-              <>
-                <button type="button" onClick={handleVerify} disabled={verifying} className="btn-primary mt-5 w-full">
-                  {verifying ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Connecting...
-                    </>
-                  ) : (
-                    <>
-                      <Shield className="h-4 w-4" />
-                      Verify with DigiLocker
-                    </>
-                  )}
-                </button>
-                <p className="mt-3 text-center text-[11px] text-(--color-text-muted)">
-                  Demo only. No real DigiLocker account is used.
-                </p>
-              </>
-            )}
+            <p className="mt-3 text-xs leading-relaxed text-(--color-text-muted)">
+              Accepted formats: JPG, PNG or PDF, up to 8 MB each.
+            </p>
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!verified || submitting}
-              className="btn-primary mt-4 w-full"
+              disabled={missingRequired.length > 0}
+              className="btn-primary mt-5 w-full"
             >
-              {submitting ? "Submitting..." : "Submit for approval"}
+              Continue to approval status
             </button>
+            {missingRequired.length > 0 && (
+              <p className="mt-3 text-center text-[11px] text-(--color-text-muted)">
+                Upload {missingRequired.map((d) => d.title).join(", ")} to continue.
+              </p>
+            )}
           </aside>
         </div>
       </div>

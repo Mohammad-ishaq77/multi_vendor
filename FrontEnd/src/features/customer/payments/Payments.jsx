@@ -1,10 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CreditCard, CheckCircle2, Clock, XCircle, RotateCcw, Search, ShieldCheck } from "lucide-react";
+import {
+  CreditCard,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  AlertCircle,
+} from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
-import orderService, { PAYMENTS_CHANGE_EVENT } from "../../../services/orderService";
-import { RAZORPAY_CONFIG } from "../../../config/razorpay";
+import { paymentApi } from "../../../services/orderService";
+import { normalizePayments } from "../../../utils/normalize";
+import { APP_CONFIG } from "../../../config/appConfig";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 
 const statusStyles = {
   paid: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -29,18 +40,13 @@ const statusIcons = {
 };
 
 const Payments = () => {
-  const [payments, setPayments] = useState(() => orderService.getPayments());
+  // Real payment records from GET /api/payments/my (Razorpay-verified only).
+  const { data, loading, error, reload } = useAsyncData(
+    () => paymentApi.myPayments({ limit: 50 }).then(({ items }) => normalizePayments(items)),
+    []
+  );
+  const payments = useMemo(() => data || [], [data]);
   const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    const refresh = () => setPayments(orderService.getPayments());
-    window.addEventListener(PAYMENTS_CHANGE_EVENT, refresh);
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener(PAYMENTS_CHANGE_EVENT, refresh);
-      window.removeEventListener("storage", refresh);
-    };
-  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -99,7 +105,26 @@ const Payments = () => {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {error ? (
+          <div className="rounded-lg border border-rose-100 bg-rose-50/40 px-6 py-14 text-center" role="alert">
+            <AlertCircle className="mx-auto mb-3 h-10 w-10 text-rose-400" />
+            <h2 className="text-lg font-bold text-[#14261f]">We could not load your payments</h2>
+            <p className="mt-1 text-sm text-gray-600">{error}</p>
+            <button
+              type="button"
+              onClick={reload}
+              className="mt-5 rounded-md bg-(--color-primary) px-4 py-2.5 text-sm font-semibold text-white"
+            >
+              Try again
+            </button>
+          </div>
+        ) : loading ? (
+          <div className="space-y-3">
+            {[0, 1, 2].map((key) => (
+              <div key={key} className="h-32 animate-pulse rounded-lg border border-gray-100 bg-gray-50" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="rounded-lg border border-gray-100 bg-white px-6 py-16 text-center">
             <CreditCard className="mx-auto mb-3 h-10 w-10 text-gray-300" />
             <h2 className="text-lg font-bold text-[#14261f]">No payments yet</h2>
@@ -140,7 +165,7 @@ const Payments = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">Gateway</p>
-                      <p className="font-medium">{payment.verified ? "Verified" : RAZORPAY_CONFIG.companyName}</p>
+                      <p className="font-medium">{payment.verified === false ? "Unverified" : APP_CONFIG.name}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">Date</p>

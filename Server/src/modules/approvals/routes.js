@@ -29,6 +29,36 @@ router.get(
   })
 );
 
+/** GET /api/approvals/:id/documents — the applicant's real uploaded documents. */
+router.get(
+  "/:id/documents",
+  asyncHandler(async (req, res) => {
+    const approvals = repo("Approval");
+    const approval = await approvals.findOne({ where: { id: req.params.id } });
+    if (!approval) return res.status(404).json({ ok: false, error: "Approval not found." });
+
+    if (approval.type === "shopkeeper") {
+      const shop = await repo("Shop").findOne({ where: { ownerId: approval.applicantId } });
+      if (!shop) return res.json({ ok: true, data: [] });
+      const items = await repo("ShopDocument").find({
+        where: { shopId: shop.id },
+        order: { createdAt: "ASC" },
+      });
+      return res.json({ ok: true, data: items });
+    }
+
+    const partner = await repo("DeliveryPartner").findOne({
+      where: { userId: approval.applicantId },
+    });
+    if (!partner) return res.json({ ok: true, data: [] });
+    const items = await repo("DeliveryDocument").find({
+      where: { partnerId: partner.id },
+      order: { createdAt: "ASC" },
+    });
+    res.json({ ok: true, data: items });
+  })
+);
+
 /** PATCH /api/approvals/:id — approve/reject, cascades to shop/partner. */
 router.patch(
   "/:id",

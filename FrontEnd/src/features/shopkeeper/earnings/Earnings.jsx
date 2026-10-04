@@ -73,7 +73,7 @@ const Earnings = () => {
           </div>
           <div className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm">
             <p className="text-xs text-gray-500">Last Month</p>
-            <p className="text-xl font-bold text-gray-900 mt-1">₹{earnings.lastMonth.toLocaleString()}</p>
+            <p className="text-xl font-bold text-gray-900 mt-1">₹{earnings.lastMonth ?? 0}</p>
           </div>
         </div>
 

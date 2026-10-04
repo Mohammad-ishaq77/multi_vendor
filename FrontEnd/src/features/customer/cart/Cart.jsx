@@ -8,7 +8,6 @@ import {
   Trash2,
   Truck,
   ShieldCheck,
-  Tag,
   ArrowRight,
   ShoppingCart,
   PackageOpen,
@@ -18,6 +17,7 @@ import CustomerShell from "../components/CustomerShell";
 
 const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
   const [removing, setRemoving] = useState(false);
+  const unavailable = !item.available || item.stock < 1 || item.quantity > item.stock;
 
   const handleRemove = () => {
     setRemoving(true);
@@ -36,7 +36,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
       <div className="flex gap-4">
         {/* Image */}
         <Link
-          to={`/customer/product/${item.id}`}
+          to={`/customer/product/${item.productId}`}
           className="w-24 h-24 sm:w-28 sm:h-28 rounded-md overflow-hidden bg-gray-50 shrink-0 border border-gray-100"
         >
           <img
@@ -57,6 +57,11 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
                 {item.name}
               </h3>
               <p className="text-xs text-gray-400 mt-0.5">{item.unit}</p>
+              {unavailable && (
+                <p className="mt-1 text-xs font-medium text-rose-600">
+                  Unavailable or insufficient stock — remove this item to continue.
+                </p>
+              )}
             </div>
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -115,24 +120,15 @@ const Cart = () => {
     cart,
     cartCount,
     cartTotal,
+    unavailableItems,
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
     clearCart,
   } = useCart();
 
-  const [promoCode, setPromoCode] = useState("");
-  const [promoApplied, setPromoApplied] = useState(false);
-
-  const deliveryFee = cartTotal > 100 ? 0 : 30;
-  const discount = promoApplied ? Math.round(cartTotal * 0.1) : 0;
-  const total = cartTotal + deliveryFee - discount;
-
-  const handleApplyPromo = () => {
-    if (promoCode.toLowerCase() === "near10") {
-      setPromoApplied(true);
-    }
-  };
+  const deliveryFee = cartTotal > 0 ? 40 : 0;
+  const total = cartTotal + deliveryFee;
 
   return (
     <CustomerShell>
@@ -211,44 +207,6 @@ const Cart = () => {
                   <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm sticky top-24">
                     <h2 className="text-base font-bold text-gray-900 mb-5">Order Summary</h2>
 
-                    {/* Promo Code */}
-                    <div className="mb-5">
-                      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">
-                        Promo Code
-                      </label>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            value={promoCode}
-                            onChange={(e) => setPromoCode(e.target.value)}
-                            placeholder="Enter code"
-                            disabled={promoApplied}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-md py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-50 disabled:opacity-50"
-                          />
-                        </div>
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={handleApplyPromo}
-                          disabled={promoApplied || !promoCode}
-                          className="px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-md hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          {promoApplied ? "Applied" : "Apply"}
-                        </motion.button>
-                      </div>
-                      {promoApplied && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1"
-                        >
-                          <span className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center text-[0.55rem]">✓</span>
-                          10% discount applied!
-                        </motion.p>
-                      )}
-                    </div>
-
                     {/* Summary Lines */}
                     <div className="space-y-3 pb-4 border-b border-gray-100">
                       <div className="flex justify-between text-sm">
@@ -261,13 +219,13 @@ const Cart = () => {
                           {deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}
                         </span>
                       </div>
-                      {discount > 0 && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Discount</span>
-                          <span className="font-semibold text-emerald-600">-₹{discount}</span>
-                        </div>
-                      )}
                     </div>
+
+                    {unavailableItems.length > 0 && (
+                      <p role="alert" className="mb-4 text-sm text-rose-700">
+                        Remove unavailable or out-of-stock items before checkout.
+                      </p>
+                    )}
 
                     {/* Total */}
                     <div className="flex justify-between items-baseline pt-4 mb-5">
@@ -276,13 +234,23 @@ const Cart = () => {
                     </div>
 
                     {/* Checkout Button */}
-                    <Link
-                      to="/customer/checkout"
-                      className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white py-3.5 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-emerald-600/30 transition-all"
-                    >
-                      Proceed to Checkout
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {unavailableItems.length ? (
+                      <button
+                        type="button"
+                        disabled
+                        className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-md bg-gray-300 py-3.5 text-sm font-semibold text-gray-600"
+                      >
+                        Remove unavailable items to continue
+                      </button>
+                    ) : (
+                      <Link
+                        to="/customer/checkout"
+                        className="flex items-center justify-center gap-2 w-full bg-emerald-600 text-white py-3.5 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-emerald-600/30 transition-all"
+                      >
+                        Proceed to Checkout
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    )}
 
                     {/* Trust Badges */}
                     <div className="mt-5 pt-4 border-t border-gray-100 space-y-3">
@@ -290,7 +258,7 @@ const Cart = () => {
                         <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
                           <Truck className="w-3.5 h-3.5" />
                         </div>
-                        <span>{deliveryFee === 0 ? "Free delivery on orders above ₹100" : "Delivery fee: ₹30"}</span>
+                        <span>Delivery fee: ₹40</span>
                       </div>
                       <div className="flex items-center gap-2.5 text-xs text-gray-500">
                         <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">

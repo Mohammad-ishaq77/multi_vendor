@@ -12,23 +12,36 @@ const router = Router();
 
 const shopSchema = z.object({
   name: z.string().min(2).max(150),
-  description: z.string().optional(),
-  categoryId: z.string().uuid().optional(),
-  phone: z.string().max(15).optional(),
-  email: z.string().email().optional(),
-  address: z.string().optional(),
-  city: z.string().max(100).optional(),
-  state: z.string().max(100).optional(),
-  pincode: z.string().max(10).optional(),
-  lat: z.coerce.number().optional(),
-  lng: z.coerce.number().optional(),
-  openingTime: z.string().optional(),
-  closingTime: z.string().optional(),
-  deliveryTime: z.string().max(50).optional(),
-  minOrder: z.coerce.number().optional(),
-  shopImage: z.string().max(500).optional(),
-  bannerImage: z.string().max(500).optional(),
-  logoImage: z.string().max(500).optional(),
+  description: z.string().nullable().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
+  phone: z.string().max(15).nullable().optional(),
+  email: z.string().email().nullable().optional(),
+  address: z.string().nullable().optional(),
+  city: z.string().max(100).nullable().optional(),
+  state: z.string().max(100).nullable().optional(),
+  pincode: z.string().max(10).nullable().optional(),
+  lat: z.coerce.number().min(-90).max(90).optional(),
+  lng: z.coerce.number().min(-180).max(180).optional(),
+  openingTime: z.string().nullable().optional(),
+  closingTime: z.string().nullable().optional(),
+  deliveryTime: z.string().max(50).nullable().optional(),
+  minOrder: z.coerce.number().min(0).optional(),
+  shopImage: z.string().max(500).nullable().optional(),
+  bannerImage: z.string().max(500).nullable().optional(),
+  logoImage: z.string().max(500).nullable().optional(),
+});
+
+const createShopSchema = shopSchema.extend({
+  minOrder: z.coerce.number().min(0),
+});
+
+const updateShopSchema = shopSchema.partial().superRefine((body, context) => {
+  if ((body.lat === undefined) !== (body.lng === undefined)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Shop latitude and longitude must be updated together.",
+    });
+  }
 });
 
 function withLocation(payload) {
@@ -75,18 +88,21 @@ router.get(
       where: { id: req.params.id },
       relations: { category: true },
     });
-    if (!shop) return res.status(404).json({ ok: false, error: "Shop not found." });
+    if (!shop || !shop.isApproved) return res.status(404).json({ ok: false, error: "Shop not found." });
     res.json({ ok: true, data: shop });
   })
 );
 
-/** GET /api/shops/:id/products — products of a shop (public). */
+/** GET /api/shops/:id/products — products of an approved shop (public). */
 router.get(
   "/:id/products",
   asyncHandler(async (req, res) => {
     const { page, limit, skip, take } = getPagination(req.query);
+    const shop = await repo("Shop").findOne({ where: { id: req.params.id, isApproved: true } });
+    if (!shop) return res.status(404).json({ ok: false, error: "Shop not found." });
     const [items, total] = await repo("Product").findAndCount({
-      where: { shopId: req.params.id },
+      where: { shopId: req.params.id, isAvailable: true },
+      relations: { shop: true, category: true },
       skip,
       take,
       order: { createdAt: "DESC" },
@@ -100,7 +116,7 @@ router.post(
   "/",
   requireAuth,
   requireRole("shopkeeper", "admin"),
-  validate({ body: shopSchema }),
+  validate({ body: createShopSchema }),
   asyncHandler(async (req, res) => {
     const shops = repo("Shop");
     const existing = await shops.findOne({ where: { ownerId: req.user.id } });
@@ -130,14 +146,19 @@ router.put(
   "/my",
   requireAuth,
   requireRole("shopkeeper", "admin"),
-  validate({ body: shopSchema.partial() }),
+  validate({ body: updateShopSchema }),
   asyncHandler(async (req, res) => {
     const shops = repo("Shop");
     const shop = await shops.findOne({ where: { ownerId: req.user.id } });
     if (!shop) return res.status(404).json({ ok: false, error: "No shop yet." });
     const payload = withLocation(req.body);
     Object.assign(shop, payload);
-    res.json({ ok: true, data: await shops.save(shop) });
+    const saved = await shops.save(shop);
+    const refreshed = await shops.findOne({
+      where: { id: saved.id },
+      relations: { category: true },
+    });
+    res.json({ ok: true, data: refreshed || saved });
   })
 );
 
@@ -162,11 +183,15 @@ router.patch(
   requireAuth,
   requireRole("admin"),
   validate({
-    body: z.object({
-      isApproved: z.boolean().optional(),
-      isOpen: z.boolean().optional(),
-      name: z.string().min(2).max(150).optional(),
-    }),
+    body: z
+      .object({
+        isApproved: z.boolean().optional(),
+        isOpen: z.boolean().optional(),
+        name: z.string().min(2).max(150).optional(),
+      })
+      .refine((body) => Object.keys(body).length > 0, {
+        message: "Provide at least one field to update.",
+      }),
   }),
   asyncHandler(async (req, res) => {
     const shops = repo("Shop");

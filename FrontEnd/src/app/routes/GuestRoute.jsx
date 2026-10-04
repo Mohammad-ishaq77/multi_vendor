@@ -1,12 +1,19 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import authService from "../../services/authService";
 
+/** Keeps signed-in users away from /login and /register. */
 const GuestRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) return null;
 
   if (isAuthenticated && user) {
-    return <Navigate to={authService.getPostAuthPath(user)} replace />;
+    const from = location.state?.from;
+    return (
+      <Navigate to={from || authService.getPostAuthPath(user)} replace />
+    );
   }
 
   return children || <Outlet />;

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,12 +17,11 @@ import {
   Loader2,
   Building2,
   AlertCircle,
-  BadgeCheck,
   ShieldCheck,
-  Eye,
-  X,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { adminService } from "../../../services/orderService";
+import DocumentGallery from "../components/DocumentGallery";
 
 const STATUS_COLORS = {
   pending: "bg-amber-50 text-amber-700 border border-amber-200",
@@ -193,100 +192,6 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
   );
 }
 
-function DocumentViewerModal({ isOpen, onClose, docType, applicantName }) {
-  if (!isOpen) return null;
-
-  const DOC_CONTENT = {
-    aadhaar: {
-      title: "Aadhaar Card",
-      fields: [
-        { label: "Name", value: applicantName },
-        { label: "DOB", value: "01/01/1990" },
-        { label: "Aadhaar No.", value: "XXXX XXXX 1234" },
-        { label: "Address", value: "DigiLocker Verified Address" },
-      ],
-    },
-    pan: {
-      title: "PAN Card",
-      fields: [
-        { label: "Name", value: applicantName },
-        { label: "PAN No.", value: "ABCDE1234F" },
-        { label: "Father's Name", value: "— (DigiLocker)" },
-        { label: "DOB", value: "01/01/1990" },
-      ],
-    },
-    gst: {
-      title: "GST Certificate",
-      fields: [
-        { label: "Trade Name", value: applicantName + "'s Shop" },
-        { label: "GSTIN", value: "27ABCDE1234F1Z5" },
-        { label: "Registration Date", value: "15/06/2022" },
-        { label: "Status", value: "Active" },
-      ],
-    },
-    shop_license: {
-      title: "Shop License",
-      fields: [
-        { label: "License No.", value: "SL-2024-00123" },
-        { label: "Issued To", value: applicantName },
-        { label: "Valid Until", value: "31/12/2026" },
-        { label: "Authority", value: "Municipal Corporation" },
-      ],
-    },
-  };
-
-  const doc = DOC_CONTENT[docType] || DOC_CONTENT.aadhaar;
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-lg shadow-2xl w-full max-w-lg overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between p-4 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#155c43]/10 flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4 text-[#155c43]" />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900">{doc.title}</h3>
-                <p className="text-xs text-gray-500">Fetched via DigiLocker</p>
-              </div>
-            </div>
-            <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="p-5">
-            <div className="bg-gray-50 rounded-md p-4 space-y-3">
-              {doc.fields.map((field, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">{field.label}</span>
-                  <span className="text-sm font-medium text-gray-900">{field.value}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Verified & authenticated via DigiLocker</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
 function InfoRow({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-3">
@@ -308,16 +213,39 @@ export default function ShopkeeperApprovalDetails() {
   const [rejectModal, setRejectModal] = useState(false);
   const [changesModal, setChangesModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [viewingDoc, setViewingDoc] = useState(null);
+  const [documents, setDocuments] = useState([]);
+  const [documentsLoading, setDocumentsLoading] = useState(true);
+  const [documentsError, setDocumentsError] = useState("");
 
   const approval = useMemo(() => approvals.find((a) => a.id === id), [approvals, id]);
+
+  // Real documents uploaded by the applicant, straight from the API.
+  useEffect(() => {
+    let active = true;
+    if (!id) return undefined;
+    setDocumentsLoading(true);
+    adminService
+      .approvalDocuments(id)
+      .then((items) => {
+        if (active) setDocuments(Array.isArray(items) ? items : []);
+      })
+      .catch((error) => {
+        if (active) setDocumentsError(error?.message || "Could not load documents.");
+      })
+      .finally(() => {
+        if (active) setDocumentsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   if (!approval) {
     return (
       <div className="text-center py-20">
         <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500 font-medium">Application not found</p>
-        <button onClick={() => navigate("/admin/approvals")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">
+        <button onClick={() => navigate("/admin/approvals/shopkeepers")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">
           Back to approvals
         </button>
       </div>
@@ -334,7 +262,7 @@ export default function ShopkeeperApprovalDetails() {
     approveShopkeeper(approval.id);
     setLoading(false);
     setConfirmModal({ open: false, action: "" });
-    navigate("/admin/approvals");
+    navigate("/admin/approvals/shopkeepers");
   };
 
   const confirmReject = async (reason) => {
@@ -343,7 +271,7 @@ export default function ShopkeeperApprovalDetails() {
     rejectShopkeeper(approval.id, reason);
     setLoading(false);
     setRejectModal(false);
-    navigate("/admin/approvals");
+    navigate("/admin/approvals/shopkeepers");
   };
 
   const confirmChanges = async (message) => {
@@ -352,14 +280,14 @@ export default function ShopkeeperApprovalDetails() {
     requestShopkeeperChanges(approval.id, message);
     setLoading(false);
     setChangesModal(false);
-    navigate("/admin/approvals");
+    navigate("/admin/approvals/shopkeepers");
   };
 
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate("/admin/approvals")}
+          onClick={() => navigate("/admin/approvals/shopkeepers")}
           className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -405,8 +333,24 @@ export default function ShopkeeperApprovalDetails() {
           <div className="space-y-4">
             <InfoRow icon={Building2} label="Shop Name" value={approval.shopName} />
             <InfoRow icon={Store} label="Shop Type" value={approval.shopType} />
-            <InfoRow icon={Clock} label="Operating Hours" value="8:00 AM - 10:00 PM" />
-            <InfoRow icon={MapPin} label="Address" value="Application address pending verification" />
+            <InfoRow
+              icon={Clock}
+              label="Operating Hours"
+              value={
+                approval.shop?.openingTime || approval.shop?.closingTime
+                  ? `${approval.shop.openingTime || "—"} - ${approval.shop.closingTime || "—"}`
+                  : "Not set"
+              }
+            />
+            <InfoRow
+              icon={MapPin}
+              label="Address"
+              value={
+                [approval.shop?.address, approval.shop?.city, approval.shop?.state]
+                  .filter(Boolean)
+                  .join(", ") || "Not provided"
+              }
+            />
           </div>
         </motion.div>
 
@@ -418,57 +362,18 @@ export default function ShopkeeperApprovalDetails() {
         >
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#155c43]" />
-            DigiLocker Verification
+            Uploaded Documents
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
-              <BadgeCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Identity</p>
-                <p className="text-xs text-gray-500">Aadhaar & PAN verified</p>
-              </div>
-              <button
-                onClick={() => setViewingDoc("aadhaar")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#155c43] bg-white border border-[#155c43]/20 rounded-lg hover:bg-[#155c43]/5 transition-colors"
-              >
-                <Eye className="w-3.5 h-3.5" /> View
-              </button>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
-              <Building2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Business/GST</p>
-                <p className="text-xs text-gray-500">GST & Shop License verified</p>
-              </div>
-              <button
-                onClick={() => setViewingDoc("gst")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#155c43] bg-white border border-[#155c43]/20 rounded-lg hover:bg-[#155c43]/5 transition-colors"
-              >
-                <Eye className="w-3.5 h-3.5" /> View
-              </button>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-emerald-50 rounded-md">
-              <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Documents</p>
-                <p className="text-xs text-gray-500">All required documents authenticated</p>
-              </div>
-              <button
-                onClick={() => setViewingDoc("shop_license")}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#155c43] bg-white border border-[#155c43]/20 rounded-lg hover:bg-[#155c43]/5 transition-colors"
-              >
-                <Eye className="w-3.5 h-3.5" /> View
-              </button>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            </div>
-          </div>
-          <div className="mt-3 p-2 bg-emerald-50/50 rounded-lg">
-            <p className="text-xs text-emerald-700 text-center font-medium">DigiLocker Verification: Completed</p>
-          </div>
+          <DocumentGallery
+            documents={documents}
+            loading={documentsLoading}
+            emptyText={
+              documentsError
+                ? `Could not load documents: ${documentsError}`
+                : "This applicant has not uploaded any documents yet."
+            }
+          />
         </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -544,7 +449,7 @@ export default function ShopkeeperApprovalDetails() {
 
       <RejectModal isOpen={rejectModal} onClose={() => setRejectModal(false)} onConfirm={confirmReject} loading={loading} />
       <ChangesModal isOpen={changesModal} onClose={() => setChangesModal(false)} onConfirm={confirmChanges} loading={loading} />
-      <DocumentViewerModal isOpen={!!viewingDoc} onClose={() => setViewingDoc(null)} docType={viewingDoc} applicantName={approval.applicantName} />
     </div>
   );
 }
+

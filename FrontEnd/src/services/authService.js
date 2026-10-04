@@ -1,6 +1,16 @@
-import { APP_CONFIG, AUTH_STORAGE_KEYS, STORAGE_KEYS, TEST_CREDENTIALS } from "../config/appConfig";
-import { ROLES, getDashboardPath, getRoleMeta, isValidRole } from "../config/roles";
-import storageService from "./storageService";
+import apiClient, { ApiError } from "./apiClient";
+import tokenService from "./tokenService";
+import { getDashboardPath, getRoleMeta, isValidRole } from "../config/roles";
+
+/**
+ * Real authentication against the NearMart API.
+ *
+ * Flow:  login/register -> { accessToken, refreshToken, user }
+ *        API client attaches the access token and rotates it on 401
+ *        logout revokes the refresh token server-side, then clears local state
+ *
+ * There is no demo account, no hardcoded credential and no simulated latency.
+ */
 
 const AUTH_EVENT = "nearmart-auth-change";
 
@@ -12,217 +22,83 @@ const emitAuthChange = () => {
 
 export const AUTH_CHANGE_EVENT = AUTH_EVENT;
 
-const matchesTestEmail = (email = "") => {
-  const normalized = email.trim().toLowerCase();
-  return TEST_CREDENTIALS.aliases.includes(normalized);
+const friendlyError = (error, fallback) => {
+  if (error instanceof ApiError) {
+    if (error.status === 401 || error.status === 403) {
+      return error.status === 403
+        ? error.message
+        : "Invalid email or password. Please try again.";
+    }
+    if (error.isNetworkError) return error.message;
+    if (error.isValidationError) {
+      const detail = error.issues?.map((i) => i.message).filter(Boolean).join(" ");
+      return detail || error.message;
+    }
+    return error.message;
+  }
+  return fallback;
 };
 
-const buildUser = (role, extras = {}) => {
+/** Attach the display metadata the UI expects without faking identity. */
+export const decorateUser = (user) => {
+  if (!user) return null;
+  const role = user.activeRole || user.role;
   const meta = getRoleMeta(role);
   return {
-    id: extras.id || `user-${role}-${Date.now()}`,
-    name: extras.name || `NearMart ${meta.label}`,
-    email: extras.email || TEST_CREDENTIALS.email,
-    phone: extras.phone || "",
+    ...user,
     role,
     roleLabel: meta.label,
-    avatar: extras.avatar || APP_CONFIG.logo,
-    loggedInAt: new Date().toISOString(),
+    avatar: user.avatarUrl || null,
   };
 };
 
-const prepareRoleWorkspace = (role) => {
-  if (role === ROLES.SHOPKEEPER) {
-    storageService.setJSON(STORAGE_KEYS.SHOPKEEPER_ONBOARDING, "approved");
-    const shop = storageService.getJSON(STORAGE_KEYS.SHOPKEEPER_SHOP);
-    if (shop) {
-      storageService.setJSON(STORAGE_KEYS.SHOPKEEPER_SHOP, { ...shop, isApproved: true });
-    }
-  }
-
-  if (role === ROLES.DELIVERY) {
-    storageService.setJSON(STORAGE_KEYS.DELIVERY_ONBOARDING, true);
-    storageService.setJSON(STORAGE_KEYS.DELIVERY_STATUS, "approved");
-  }
+const storeSession = ({ user, accessToken, refreshToken }) => {
+  tokenService.setTokens({ accessToken, refreshToken });
+  const decorated = decorateUser(user);
+  tokenService.setActiveRole(decorated?.activeRole || decorated?.role);
+  emitAuthChange();
+  return decorated;
 };
 
 export const authService = {
-  getCurrentUser() {
-    return storageService.getJSON(STORAGE_KEYS.USER);
-  },
-
-  getRole() {
-    return storageService.get(STORAGE_KEYS.ROLE) || this.getCurrentUser()?.role || null;
-  },
-
-  isAuthenticated() {
-    const auth = storageService.getJSON(STORAGE_KEYS.AUTH);
-    const user = this.getCurrentUser();
-    return Boolean(auth?.authenticated && user);
-  },
-
-  saveSession(user, persist = true) {
-    const session = {
-      authenticated: true,
-      role: user.role,
-      userId: user.id,
-      persist,
-      savedAt: new Date().toISOString(),
-    };
-    storageService.setJSON(STORAGE_KEYS.AUTH, session, persist);
-    storageService.setJSON(STORAGE_KEYS.USER, user, persist);
-    storageService.set(STORAGE_KEYS.ROLE, user.role, persist);
-    storageService.setJSON(STORAGE_KEYS.SESSION, session, persist);
-    storageService.set(STORAGE_KEYS.PERSIST, persist ? "1" : "0", persist);
-    emitAuthChange();
-  },
-
-  clearSession() {
-    storageService.removeMany([...AUTH_STORAGE_KEYS, STORAGE_KEYS.PERSIST]);
-    emitAuthChange();
-  },
-
-  login({ email, password, role, remember = true }) {
+  /**
+   * Sign in. Returns `{ ok, user, error }` — `ok` is true only when the
+   * backend accepted the credentials.
+   */
+  async login({ email, password, role, remember = true } = {}) {
     if (!email?.trim() || !password) {
       return { ok: false, error: "Please enter your email and password." };
     }
 
-    if (!isValidRole(role)) {
+    if (role !== undefined && role !== null && !isValidRole(role)) {
       return { ok: false, error: "Please select a valid role to continue." };
     }
 
-    if (!matchesTestEmail(email) || password !== TEST_CREDENTIALS.password) {
+    try {
+      const session = await apiClient.post(
+        "/auth/login",
+        {
+          email: email.trim(),
+          password,
+          ...(role ? { role } : {}),
+        },
+        { auth: false, retry: false }
+      );
+
+      const user = storeSession(session);
       return {
-        ok: false,
-        error: `Invalid credentials. Use ${TEST_CREDENTIALS.email} / ${TEST_CREDENTIALS.password} for testing.`,
+        ok: true,
+        user,
+        remember,
+        redirectTo: this.getPostAuthPath(user),
       };
+    } catch (error) {
+      return { ok: false, error: friendlyError(error, "Unable to sign in right now.") };
     }
-
-    prepareRoleWorkspace(role);
-    const user = buildUser(role, { email: TEST_CREDENTIALS.email });
-    this.saveSession(user, remember !== false);
-
-    return {
-      ok: true,
-      user,
-      redirectTo: this.getPostAuthPath(user),
-    };
   },
 
-  getPostAuthPath(user = this.getCurrentUser()) {
-    if (!user?.role) return "/";
-
-    if (user.role === ROLES.SHOPKEEPER) {
-      const shop = storageService.getJSON(STORAGE_KEYS.SHOPKEEPER_SHOP);
-      if (!shop?.isApproved) {
-        const step = storageService.getJSON(STORAGE_KEYS.SHOPKEEPER_ONBOARDING) || "type_selection";
-        return (
-          {
-            type_selection: "/shopkeeper/onboarding",
-            create_shop: "/shopkeeper/onboarding/create-shop",
-            documents: "/shopkeeper/onboarding/documents",
-            approval: "/shopkeeper/onboarding/approval",
-            approved: "/shopkeeper/dashboard",
-          }[step] || "/shopkeeper/onboarding"
-        );
-      }
-    }
-
-    if (user.role === ROLES.DELIVERY) {
-      const done = storageService.getJSON(STORAGE_KEYS.DELIVERY_ONBOARDING);
-      if (!done) {
-        const step = storageService.getJSON("nearmart_dp_onboardingStep") || "guidelines";
-        return (
-          {
-            guidelines: "/delivery/onboarding/guidelines",
-            contact: "/delivery/onboarding/contact",
-            identity: "/delivery/onboarding/identity",
-            address: "/delivery/onboarding/address",
-            documents: "/delivery/onboarding/documents",
-            verification: "/delivery/onboarding/verification",
-            approved: "/delivery/dashboard",
-          }[step] || "/delivery/onboarding/guidelines"
-        );
-      }
-    }
-
-    return getDashboardPath(user.role);
-  },
-
-  resetShopkeeperWorkspace(user) {
-    storageService.setJSON(STORAGE_KEYS.SHOPKEEPER_ONBOARDING, "type_selection");
-    storageService.setJSON(STORAGE_KEYS.SHOPKEEPER_SHOP, {
-      id: `shop_${Date.now()}`,
-      name: "",
-      description: "",
-      type: "",
-      typeId: null,
-      phone: user.phone || "",
-      email: user.email || "",
-      address: "",
-      city: "",
-      state: "",
-      pincode: "",
-      openingTime: "09:00",
-      closingTime: "21:00",
-      isOpen: false,
-      isApproved: false,
-      rating: 0,
-      totalReviews: 0,
-      deliveryTime: "30–45 mins",
-      minOrder: 99,
-      shopImage: null,
-      bannerImage: null,
-      logoImage: null,
-      createdAt: new Date().toISOString(),
-    });
-    storageService.setJSON("nearmart_sk_products", []);
-    storageService.setJSON("nearmart_sk_digilocker", false);
-    storageService.setJSON("nearmart_sk_profile", {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone || "",
-      image: null,
-      joinedDate: new Date().toISOString().split("T")[0],
-      role: ROLES.SHOPKEEPER,
-    });
-  },
-
-  resetDeliveryWorkspace(user) {
-    storageService.setJSON(STORAGE_KEYS.DELIVERY_ONBOARDING, false);
-    storageService.setJSON(STORAGE_KEYS.DELIVERY_STATUS, "draft");
-    storageService.setJSON("nearmart_dp_hasCompletedOnboarding", false);
-    storageService.setJSON("nearmart_dp_applicationStatus", "draft");
-    storageService.setJSON("nearmart_dp_onboardingStep", "guidelines");
-    storageService.setJSON("nearmart_dp_agreedToGuidelines", false);
-    storageService.setJSON("nearmart_dp_identityData", null);
-    storageService.setJSON("nearmart_dp_addressData", null);
-    storageService.setJSON("nearmart_dp_documentsData", null);
-    storageService.setJSON("nearmart_dp_digilockerVerified", false);
-    storageService.setJSON("nearmart_dp_contactData", {
-      fullName: user.name || "",
-      email: user.email || "",
-      phone: user.phone || "",
-      vehicleType: "",
-      vehicleNumber: "",
-      phoneVerified: false,
-      emailVerified: false,
-    });
-    storageService.setJSON("nearmart_dp_profile", {
-      ...storageService.getJSON("nearmart_dp_profile"),
-      name: user.name,
-      email: user.email,
-      phone: user.phone || "",
-      verificationStatus: "pending",
-      applicationStatus: "draft",
-      onboardingStep: "guidelines",
-      vehicleType: "",
-      vehicleNumber: "",
-    });
-  },
-
-  register({ name, email, password, phone, role, remember = true }) {
+  /** Create an account and sign in immediately (backend returns a session). */
+  async register({ name, email, password, phone, role, remember = true } = {}) {
     if (!name?.trim() || !email?.trim() || !password) {
       return { ok: false, error: "Please complete all required fields." };
     }
@@ -231,32 +107,104 @@ export const authService = {
       return { ok: false, error: "Please select a valid role." };
     }
 
-    const user = buildUser(role, {
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone?.trim() || "",
-    });
+    if (String(password).length < 4) {
+      return { ok: false, error: "Password must be at least 4 characters long." };
+    }
 
-    if (role === ROLES.SHOPKEEPER) this.resetShopkeeperWorkspace(user);
-    if (role === ROLES.DELIVERY) this.resetDeliveryWorkspace(user);
+    try {
+      const session = await apiClient.post(
+        "/auth/register",
+        {
+          name: name.trim(),
+          email: email.trim(),
+          password,
+          role,
+          ...(phone?.trim() ? { phone: phone.trim() } : {}),
+        },
+        { auth: false, retry: false }
+      );
 
-    this.saveSession(user, remember !== false);
-
-    return {
-      ok: true,
-      user,
-      redirectTo: this.getPostAuthPath(user),
-    };
+      const user = storeSession(session);
+      return {
+        ok: true,
+        user,
+        remember,
+        redirectTo: this.getPostAuthPath(user),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: friendlyError(error, "Unable to create your account right now."),
+      };
+    }
   },
 
-  logout() {
-    this.clearSession();
+  /** Current user straight from the API (source of truth for the session). */
+  async me() {
+    const user = await apiClient.get("/auth/me");
+    return decorateUser(user?.user || user);
+  },
+
+  /**
+   * Restore a session on app boot. Uses the stored refresh token when the
+   * access token is gone or expired. Returns the user or null.
+   */
+  async restore() {
+    if (!tokenService.hasSession()) return null;
+    try {
+      if (!tokenService.getAccessToken()) {
+        await apiClient.post(
+          "/auth/refresh",
+          {
+            refreshToken: tokenService.getRefreshToken(),
+            ...(tokenService.getActiveRole() ? { role: tokenService.getActiveRole() } : {}),
+          },
+          { auth: false, retry: false }
+        ).then((session) => {
+          tokenService.setTokens({
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken,
+          });
+          if (session.user?.activeRole) tokenService.setActiveRole(session.user.activeRole);
+        });
+      }
+      return await this.me();
+    } catch {
+      tokenService.clear();
+      return null;
+    }
+  },
+
+  async logout() {
+    const refreshToken = tokenService.getRefreshToken();
+    tokenService.clear();
+    emitAuthChange();
+    if (!refreshToken) return { ok: true };
+    try {
+      await apiClient.post("/auth/logout", { refreshToken }, { auth: false, retry: false });
+      return { ok: true };
+    } catch {
+      // The local session is already gone; a failed revoke is not user-facing.
+      return { ok: true };
+    }
+  },
+
+  /**
+   * Where to send a freshly authenticated user.
+   *
+   * Onboarding gating is intentionally not duplicated here: the shopkeeper and
+   * delivery Entry routes already redirect to onboarding using live backend
+   * data, so this returns the role's dashboard.
+   */
+  getPostAuthPath(user) {
+    const role = user?.activeRole || user?.role;
+    return role ? getDashboardPath(role) : "/";
   },
 };
 
-export const logoutAndRedirect = (navigate) => {
+export const logoutAndRedirect = async (navigate) => {
+  await authService.logout();
   navigate("/", { replace: true });
-  authService.logout();
 };
 
 export default authService;

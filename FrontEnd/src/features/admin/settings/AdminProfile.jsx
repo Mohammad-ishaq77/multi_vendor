@@ -13,9 +13,25 @@ export default function AdminProfile() {
     phone: adminProfile?.phone || "+91 9876543210",
   });
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSave = () => {
-    updateAdminProfile(form);
+  const handleSave = async () => {
+    if (!form.name?.trim()) {
+      setError("Name is required.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    const result = await updateAdminProfile({
+      name: form.name.trim(),
+      phone: form.phone?.trim(),
+    });
+    setSaving(false);
+    if (result?.ok === false) {
+      setError(result.error || "Could not save your profile.");
+      return;
+    }
     setEditMode(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -71,7 +87,7 @@ export default function AdminProfile() {
           <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
             {editMode ? (
               <>
-                <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2.5 bg-[#155c43] text-white text-sm font-semibold rounded-md hover:bg-[#155c43]/90 transition-colors"><Save className="w-4 h-4" /> Save Changes</button>
+                <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-5 py-2.5 bg-[#155c43] text-white text-sm font-semibold rounded-md hover:bg-[#155c43]/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"><Save className="w-4 h-4" /> {saving ? "Saving..." : "Save Changes"}</button>
                 <button onClick={() => setEditMode(false)} className="px-5 py-2.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
               </>
             ) : (
@@ -83,6 +99,12 @@ export default function AdminProfile() {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-700 font-medium">
               <CheckCircle className="w-4 h-4" /> Profile updated successfully.
             </motion.div>
+          )}
+
+          {error && (
+            <div className="flex items-center gap-2 mt-4 p-3 bg-rose-50 border border-rose-200 rounded-md text-sm text-rose-700 font-medium">
+              {error}
+            </div>
           )}
         </motion.div>
       </div>

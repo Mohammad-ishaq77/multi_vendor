@@ -16,6 +16,7 @@ const MarketplaceCategoryPage = lazy(() => import("../../pages/marketplace/Marke
 
 const Login = lazy(() => import("../../features/auth/pages/Login"));
 const Register = lazy(() => import("../../features/auth/pages/Register"));
+const AdminLogin = lazy(() => import("../../features/auth/pages/AdminLogin"));
 
 const CustomerDashboard = lazy(() => import("../../features/customer/pages/Dashboard"));
 const Cart = lazy(() => import("../../features/customer/cart/Cart"));
@@ -74,6 +75,9 @@ const AppRoutes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
+
+        {/* Administrator portal: public sign-in screen for admin accounts only. */}
+        <Route path="/admin" element={<AdminLogin />} />
 
         <Route element={<RoleRoute allowedRoles={[ROLES.CUSTOMER]} />}>
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -138,7 +142,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/*"
           element={
-            <RoleRoute allowedRoles={[ROLES.ADMIN]}>
+            <RoleRoute allowedRoles={[ROLES.ADMIN]} guestRedirectTo="/admin">
               <AdminEntry />
             </RoleRoute>
           }

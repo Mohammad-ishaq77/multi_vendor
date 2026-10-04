@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Star, ShoppingCart, Check } from "lucide-react";
 import CardImage from "../../../components/common/CardImage";
+import { useCart } from "../context/CartContext";
 
 const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [saved, setSaved] = useState(() =>
     JSON.parse(localStorage.getItem("nearmart_wishlist") || "[]").includes(product.id)
   );
   const [imageLoaded, setImageLoaded] = useState(false);
   const [added, setAdded] = useState(false);
+  const [addError, setAddError] = useState("");
 
   const toggleWishlist = (e) => {
     e.stopPropagation();
@@ -21,16 +24,20 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
     setSaved(!saved);
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.stopPropagation();
-    onAddToCart?.(product);
+    setAddError("");
+    const result = await (onAddToCart || addToCart)(product);
+    if (result?.ok === false) {
+      setAddError(result.error || "Could not add this product to your cart.");
+      return;
+    }
     setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
 
     if (redirectToCartOnAdd) {
       navigate("/customer/cart");
     }
-
-    setTimeout(() => setAdded(false), 1500);
   };
 
   const goToDetail = () => {
@@ -136,10 +143,11 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleAddToCart}
+          disabled={!product.available || product.stock < 1}
           className={`w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg font-semibold text-[10px] transition-all duration-300 overflow-hidden sm:gap-1.5 sm:px-3 sm:py-2.5 sm:rounded-md sm:text-xs ${
             added
               ? "bg-green-100 text-green-700 border border-green-200"
-              : "bg-[#155c43] text-white shadow-lg shadow-[#155c43]/25 hover:bg-[#104b36] hover:shadow-xl hover:shadow-[#155c43]/30"
+              : "bg-[#155c43] text-white shadow-lg shadow-[#155c43]/25 hover:bg-[#104b36] hover:shadow-xl hover:shadow-[#155c43]/30 disabled:cursor-not-allowed disabled:opacity-50"
           }`}
         >
           <AnimatePresence mode="wait">
@@ -161,11 +169,13 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
                 exit={{ opacity: 0, y: -10 }}
                 className="flex items-center gap-1.5"
               >
-                <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+                <ShoppingCart className="w-3.5 h-3.5" />
+                {product.available && product.stock > 0 ? "Add to Cart" : "Unavailable"}
               </motion.span>
             )}
           </AnimatePresence>
         </motion.button>
+        {addError && <p role="alert" className="mt-1 text-xs text-rose-600">{addError}</p>}
       </div>
     </motion.div>
   );

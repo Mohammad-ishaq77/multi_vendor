@@ -19,12 +19,7 @@ import { useShopkeeper } from "../context/ShopkeeperContext";
 
 const ShopkeeperDashboard = () => {
   const navigate = useNavigate();
-  const { shop, orders, products, earnings, reviews, updateOrderStatus, getNextStatus, onboardingStep } = useShopkeeper();
-
-  if (onboardingStep !== "approved") {
-    navigate("/shopkeeper/onboarding");
-    return null;
-  }
+  const { shop, orders, products, earnings, reviews, updateOrderStatus, getNextStatus } = useShopkeeper();
 
   const recentOrders = orders.slice(0, 5);
   const totalProducts = products.length;
@@ -146,7 +141,7 @@ const ShopkeeperDashboard = () => {
               </div>
               <div>
                 <p className="text-[9px] text-gray-500 sm:text-xs">Last Month</p>
-                <p className="text-xs font-bold text-gray-900 sm:text-lg">₹{earnings.lastMonth.toLocaleString()}</p>
+                <p className="text-xs font-bold text-gray-900 sm:text-lg">₹{Number(earnings.lastMonth || 0).toLocaleString()}</p>
               </div>
               <div>
                 <p className="text-[9px] text-gray-500 sm:text-xs">Avg. Order</p>

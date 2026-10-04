@@ -9,7 +9,7 @@ import { repo } from "../../config/db.js";
 const router = Router();
 router.use(requireAuth);
 
-const addressSchema = z.object({
+const addressFields = z.object({
   label: z.string().max(50).optional(),
   fullName: z.string().max(100).optional(),
   phone: z.string().max(15).optional(),
@@ -18,9 +18,27 @@ const addressSchema = z.object({
   city: z.string().max(100).optional(),
   state: z.string().max(100).optional(),
   pincode: z.string().max(10).optional(),
-  lat: z.coerce.number().optional(),
-  lng: z.coerce.number().optional(),
+  lat: z.coerce.number().min(-90).max(90).optional(),
+  lng: z.coerce.number().min(-180).max(180).optional(),
   isDefault: z.boolean().optional(),
+});
+
+const addressSchema = addressFields.superRefine((body, context) => {
+  if ((body.lat === undefined) !== (body.lng === undefined)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Address latitude and longitude must be provided together.",
+    });
+  }
+});
+
+const addressUpdateSchema = addressFields.partial().superRefine((body, context) => {
+  if ((body.lat === undefined) !== (body.lng === undefined)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Address latitude and longitude must be updated together.",
+    });
+  }
 });
 
 /** GET /api/addresses */
@@ -56,7 +74,7 @@ router.post(
 /** PUT /api/addresses/:id */
 router.put(
   "/:id",
-  validate({ body: addressSchema.partial() }),
+  validate({ body: addressUpdateSchema }),
   asyncHandler(async (req, res) => {
     const addresses = repo("Address");
     const item = await addresses.findOne({ where: { id: req.params.id, userId: req.user.id } });

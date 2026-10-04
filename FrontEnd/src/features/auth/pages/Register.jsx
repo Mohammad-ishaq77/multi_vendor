@@ -1,64 +1,45 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   ArrowRight,
-  Bike,
   Check,
   Eye,
   EyeOff,
-  LayoutDashboard,
   Lock,
   Mail,
   Phone,
-  ShieldCheck,
-  ShoppingBag,
-  Store,
   User,
 } from "lucide-react";
 import BrandLogo from "../../../components/common/BrandLogo";
 import AuthCloseButton from "../../../components/common/AuthCloseButton";
-import OtpInputs from "../../../components/auth/OtpInputs";
 import { useAuth } from "../../../hooks/useAuth";
 import { useToast } from "../../../components/common/Toast";
 import { APP_CONFIG } from "../../../config/appConfig";
-import { ROLES } from "../../../config/roles";
+import { PUBLIC_ROLE_META, ROLES } from "../../../config/roles";
+import RoleSelector from "../components/RoleSelector";
 
-const DUMMY_OTP = "123456";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^(\+91[\s-]?)?[6-9]\d{9}$/;
 
-const roleOptions = [
-  {
-    id: ROLES.CUSTOMER,
-    label: "Customer",
+const roleDetails = {
+  [ROLES.CUSTOMER]: {
     desc: "Shop nearby stores",
-    icon: ShoppingBag,
-    next: "Start shopping from local stores right away.",
   },
-  {
-    id: ROLES.SHOPKEEPER,
-    label: "Shopkeeper",
+  [ROLES.SHOPKEEPER]: {
     desc: "Sell from your shop",
-    icon: Store,
     next: "Next you'll create your shop and submit documents.",
   },
-  {
-    id: ROLES.DELIVERY,
-    label: "Delivery Agent",
+  [ROLES.DELIVERY]: {
     desc: "Deliver and earn",
-    icon: Bike,
     next: "Next you'll complete partner verification.",
   },
-  {
-    id: ROLES.ADMIN,
-    label: "Admin",
-    desc: "Manage the platform",
-    icon: LayoutDashboard,
-    next: "You'll enter the admin dashboard.",
-  },
-];
+};
+
+const roleOptions = PUBLIC_ROLE_META.map((item) => ({
+  ...item,
+  ...roleDetails[item.id],
+}));
 
 const emptyForm = {
   name: "",
@@ -92,7 +73,6 @@ const Register = () => {
     ? requestedRole
     : ROLES.CUSTOMER;
 
-  const [step, setStep] = useState("form");
   const [selectedRole, setSelectedRole] = useState(initialRole);
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
@@ -100,27 +80,10 @@ const Register = () => {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [otpError, setOtpError] = useState("");
-  const [otpSuccess, setOtpSuccess] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [resendIn, setResendIn] = useState(30);
+  const [submitError, setSubmitError] = useState("");
 
   const activeRole = roleOptions.find((item) => item.id === selectedRole) || roleOptions[0];
   const passwordScore = getPasswordScore(formData.password);
-  const phoneRequired = selectedRole === ROLES.SHOPKEEPER || selectedRole === ROLES.DELIVERY;
-
-  useEffect(() => {
-    if (requestedRole && roleOptions.some((item) => item.id === requestedRole)) {
-      setSelectedRole(requestedRole);
-    }
-  }, [requestedRole]);
-
-  useEffect(() => {
-    if (step !== "otp" || otpSuccess || resendIn <= 0) return undefined;
-    const timer = setTimeout(() => setResendIn((value) => value - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [step, otpSuccess, resendIn]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -135,9 +98,7 @@ const Register = () => {
     if (!EMAIL_RE.test(formData.email.trim())) {
       next.email = "Enter a valid email address";
     }
-    if (phoneRequired && !PHONE_RE.test(formData.phone.trim())) {
-      next.phone = "Enter a valid 10-digit mobile number";
-    } else if (formData.phone.trim() && !PHONE_RE.test(formData.phone.trim())) {
+    if (!PHONE_RE.test(formData.phone.trim())) {
       next.phone = "Enter a valid 10-digit mobile number";
     }
     if (!formData.password || formData.password.length < 4) {
@@ -153,62 +114,32 @@ const Register = () => {
     return Object.keys(next).length === 0;
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
+    setSubmitError("");
     if (!validate()) {
       showToast("Please fix the highlighted fields", "error");
       return;
     }
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setStep("otp");
-      setOtp(["", "", "", "", "", ""]);
-      setOtpError("");
-      setOtpSuccess(false);
-      setResendIn(30);
-      showToast("Verification code sent to your email");
-    }, 700);
-  };
 
-  const completeRegistration = () => {
-    const result = register({
+    setIsLoading(true);
+    const result = await register({
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       password: formData.password,
       role: selectedRole,
     });
+    setIsLoading(false);
 
     if (!result.ok) {
-      setOtpSuccess(false);
-      setOtpError(result.error);
+      setSubmitError(result.error);
       showToast(result.error, "error");
       return;
     }
 
     showToast(`Welcome to ${APP_CONFIG.name}, ${result.user.name}`);
     navigate(result.redirectTo, { replace: true });
-  };
-
-  const handleVerifyOtp = (code = otp.join("")) => {
-    if (isVerifying || otpSuccess) return;
-    if (code.length !== 6) {
-      setOtpError("Enter all 6 digits");
-      return;
-    }
-    setIsVerifying(true);
-    setOtpError("");
-    setTimeout(() => {
-      setIsVerifying(false);
-      if (code !== DUMMY_OTP) {
-        setOtpError("Invalid code. Use 123456 in demo mode.");
-        setOtp(["", "", "", "", "", ""]);
-        return;
-      }
-      setOtpSuccess(true);
-      setTimeout(completeRegistration, 900);
-    }, 800);
   };
 
   const inputErrorClass = (field) =>
@@ -248,7 +179,9 @@ const Register = () => {
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">Create account</p>
             <h2 className="mt-3 font-display text-3xl font-bold leading-tight">{activeRole.desc}.</h2>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/80">{activeRole.next}</p>
+            {activeRole.next && (
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/80">{activeRole.next}</p>
+            )}
             <div className="mt-6 space-y-2.5">
               {["Takes about 2 minutes", "No listing fees to start", "Built for nearby shops & riders"].map((item) => (
                 <div key={item} className="flex items-center gap-2 text-sm text-white/85">
@@ -267,49 +200,23 @@ const Register = () => {
             <BrandLogo />
           </div>
 
-          <AnimatePresence mode="wait">
-            {step === "form" ? (
-              <motion.div
-                key="form"
-                initial={{ opacity: 0, x: 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -16 }}
-              >
+          <motion.div
+            key="form"
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
                 <h1 className="font-display text-[1.8rem] font-bold tracking-tight">Create your account</h1>
                 <p className="mt-1 text-sm text-(--color-text-muted)">
                   Choose how you want to join {APP_CONFIG.name}.
                 </p>
 
                 <form onSubmit={handleFormSubmit} className="mt-6 space-y-4" noValidate>
-                  <fieldset>
-                    <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-(--color-text)">
-                      Join as
-                    </legend>
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                      {roleOptions.map((item) => {
-                        const Icon = item.icon;
-                        const active = selectedRole === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setSelectedRole(item.id)}
-                            aria-pressed={active}
-                            className={`flex min-h-[86px] flex-col items-center justify-center gap-1 rounded-[12px] border px-2 py-3 text-center transition-all ${
-                              active
-                                ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark) shadow-[var(--shadow-card)]"
-                                : "border-[#dce8e2] bg-white text-(--color-text-muted) hover:border-(--color-green-soft)"
-                            }`}
-                          >
-                            <Icon className="h-4 w-4" />
-                            <span className="text-xs font-semibold">{item.label}</span>
-                            <span className="hidden text-[10px] leading-tight sm:block">{item.desc}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="mt-2 text-xs text-(--color-text-muted)">{activeRole.next}</p>
-                  </fieldset>
+                  <div>
+                    <RoleSelector legend="Join as" selectedRole={selectedRole} onSelect={setSelectedRole} />
+                    {activeRole.next && (
+                      <p className="mt-2 text-xs text-(--color-text-muted)">{activeRole.next}</p>
+                    )}
+                  </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="sm:col-span-1">
@@ -352,7 +259,7 @@ const Register = () => {
 
                   <div>
                     <label htmlFor="register-phone" className="mb-2 block text-xs font-semibold uppercase tracking-wider">
-                      Mobile number {phoneRequired ? "" : <span className="normal-case tracking-normal text-(--color-text-muted)">(optional)</span>}
+                      Mobile number
                     </label>
                     <div className="relative">
                       <Phone className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
@@ -459,107 +366,28 @@ const Register = () => {
                   </label>
                   {errors.terms && <p className="text-xs text-rose-600">{errors.terms}</p>}
 
+{submitError && (
+                    <p
+                      className="rounded-[12px] border border-(--color-green-soft) bg-(--color-green-bg) px-3 py-2 text-sm text-(--color-primary-dark)"
+                      role="alert"
+                    >
+                      {submitError}
+                    </p>
+                  )}
+
                   <button type="submit" disabled={isLoading} className="btn-primary w-full">
-                    {isLoading ? "Sending code..." : nextLabel}
+                    {isLoading ? "Creating account..." : nextLabel}
                     {!isLoading && <ArrowRight className="h-4 w-4" />}
                   </button>
                 </form>
               </motion.div>
-            ) : (
-              <motion.div
-                key="otp"
-                initial={{ opacity: 0, x: 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -16 }}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep("form");
-                    setOtp(["", "", "", "", "", ""]);
-                    setOtpError("");
-                    setOtpSuccess(false);
-                  }}
-                  className="mb-5 inline-flex items-center gap-1.5 text-sm text-(--color-text-muted) hover:text-(--color-primary)"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to details
-                </button>
 
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-(--color-green-bg) text-(--color-primary)">
-                  {otpSuccess ? <Check className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6" />}
-                </div>
-                <h1 className="font-display text-[1.8rem] font-bold tracking-tight">
-                  {otpSuccess ? "Email verified" : "Verify your email"}
-                </h1>
-                <p className="mt-1 text-sm text-(--color-text-muted)">
-                  {otpSuccess
-                    ? activeRole.next
-                    : `We sent a 6-digit code to ${formData.email}`}
-                </p>
-
-                {otpSuccess ? (
-                  <div className="mt-8 flex flex-col items-center gap-3 py-6">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-(--color-green-soft) border-t-(--color-primary)" />
-                    <p className="text-sm text-(--color-text-muted)">Setting up your account...</p>
-                  </div>
-                ) : (
-                  <div className="mt-6 space-y-4">
-                    <OtpInputs
-                      value={otp}
-                      onChange={(next) => {
-                        setOtp(next);
-                        setOtpError("");
-                      }}
-                      error={otpError}
-                      disabled={isVerifying}
-                      onComplete={(code) => handleVerifyOtp(code)}
-                    />
-
-                    <div className="rounded-[12px] border border-amber-200 bg-amber-50 px-3 py-2.5 text-center text-xs text-amber-800">
-                      Demo code: <span className="font-mono font-bold">123456</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleVerifyOtp()}
-                      disabled={isVerifying || otp.join("").length !== 6}
-                      className="btn-primary w-full"
-                    >
-                      {isVerifying ? "Verifying..." : "Verify and create account"}
-                      {!isVerifying && <ShieldCheck className="h-4 w-4" />}
-                    </button>
-
-                    <p className="text-center text-sm text-(--color-text-muted)">
-                      Didn't get the code?{" "}
-                      <button
-                        type="button"
-                        disabled={resendIn > 0}
-                        onClick={() => {
-                          setOtp(["", "", "", "", "", ""]);
-                          setOtpError("");
-                          setResendIn(30);
-                          showToast("A new code was sent");
-                        }}
-                        className="font-semibold text-(--color-primary) disabled:text-(--color-text-muted)"
-                      >
-                        {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend"}
-                      </button>
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {step === "form" && (
-            <p className="mt-6 text-center text-sm text-(--color-text-muted)">
-              Already have an account?{" "}
-              <Link to="/login" className="font-semibold text-(--color-primary)">
-                Sign in
-              </Link>
-            </p>
-          )}
+<p className="mt-6 text-center text-sm text-(--color-text-muted)">
+            Already have an account?{" "}
+            <Link to="/login" className="font-semibold text-(--color-primary)">
+              Sign in
+            </Link>
+          </p>
         </div>
       </motion.div>
     </div>

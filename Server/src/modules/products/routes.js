@@ -9,16 +9,16 @@ import { repo } from "../../config/db.js";
 
 const router = Router();
 
-const productSchema = z.object({
+export const productSchema = z.object({
   shopId: z.string().uuid().optional(),
-  categoryId: z.string().uuid().optional(),
+  categoryId: z.string().uuid().nullable().optional(),
   name: z.string().min(2).max(200),
   description: z.string().optional(),
   price: z.coerce.number().positive(),
   mrp: z.coerce.number().positive().optional(),
   stock: z.coerce.number().int().min(0).optional(),
   unit: z.string().max(30).optional(),
-  imageUrl: z.string().max(500).optional(),
+  imageUrl: z.string().max(500).nullable().optional(),
   images: z.array(z.string()).optional(),
   isAvailable: z.boolean().optional(),
   discountPct: z.coerce.number().min(0).max(100).optional(),
@@ -31,12 +31,16 @@ async function ownShopId(userId, bodyShopId, role) {
   return shop.id;
 }
 
-/** GET /api/products — public browse. */
+/** GET /api/products — public browse of products from approved shops. */
 router.get(
   "/",
   asyncHandler(async (req, res) => {
     const { page, limit, skip, take } = getPagination(req.query);
-    const qb = repo("Product").createQueryBuilder("p").leftJoinAndSelect("p.shop", "shop");
+    const qb = repo("Product")
+      .createQueryBuilder("p")
+      .leftJoinAndSelect("p.shop", "shop")
+      .leftJoinAndSelect("p.category", "category")
+      .andWhere("shop.isApproved = true");
     if (req.query.shopId) qb.andWhere("p.shopId = :sid", { sid: req.query.shopId });
     if (req.query.categoryId) qb.andWhere("p.categoryId = :cid", { cid: req.query.categoryId });
     if (req.query.search) qb.andWhere("p.name ILIKE :q", { q: `%${req.query.search}%` });
@@ -53,9 +57,11 @@ router.get(
   asyncHandler(async (req, res) => {
     const item = await repo("Product").findOne({
       where: { id: req.params.id },
-      relations: { shop: true },
+      relations: { shop: true, category: true },
     });
-    if (!item) return res.status(404).json({ ok: false, error: "Product not found." });
+    if (!item || !item.isAvailable || !item.shop?.isApproved) {
+      return res.status(404).json({ ok: false, error: "Product not found." });
+    }
     res.json({ ok: true, data: item });
   })
 );

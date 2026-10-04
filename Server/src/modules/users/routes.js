@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { asyncHandler } from "../../common/middleware/asyncHandler.js";
-import { requireAuth } from "../../common/middleware/auth.js";
+import { requireAuth, invalidateActiveCache } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
@@ -43,20 +43,26 @@ router.get(
 router.patch(
   "/:id",
   requireRole("admin"),
-  validate({
-    body: z.object({
-      isActive: z.boolean().optional(),
-      role: z.enum(["customer", "shopkeeper", "delivery", "admin"]).optional(),
-      name: z.string().min(2).max(100).optional(),
-      phone: z.string().max(15).optional(),
+validate({
+      // `.strict()` so an unsupported field (e.g. `allowedRoles`, `email`) fails
+      // loudly instead of being silently stripped and reported as a success.
+      body: z
+        .object({
+          isActive: z.boolean().optional(),
+          role: z.enum(["customer", "shopkeeper", "delivery", "admin"]).optional(),
+          name: z.string().min(2).max(100).optional(),
+          phone: z.string().max(15).optional(),
+        })
+        .strict(),
     }),
-  }),
   asyncHandler(async (req, res) => {
     const users = repo("User");
     const user = await users.findOne({ where: { id: req.params.id } });
     if (!user) return res.status(404).json({ ok: false, error: "User not found." });
     Object.assign(user, req.body);
-    res.json({ ok: true, data: publicUser(await users.save(user)) });
+    const saved = await users.save(user);
+    invalidateActiveCache(saved.id);
+    res.json({ ok: true, data: publicUser(saved) });
   })
 );
 

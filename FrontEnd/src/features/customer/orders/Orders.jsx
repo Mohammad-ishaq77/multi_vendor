@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,9 +11,13 @@ import {
   Search,
   Calendar,
   IndianRupee,
+  AlertCircle,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
-import orderService, { ORDERS_CHANGE_EVENT } from "../../../services/orderService";
+import { orderService } from "../../../services/orderService";
+import { normalizeOrders, ordersInGroup } from "../../../utils/normalize";
+import { formatDate } from "../../../utils/helpers";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 
 const statusConfig = {
   Placed: {
@@ -63,28 +67,21 @@ const statusConfig = {
 const tabs = ["All", "Processing", "Shipped", "Delivered", "Cancelled"];
 
 const Orders = () => {
-  const [orders, setOrders] = useState(() => orderService.getCustomerOrders());
+  // Real orders from GET /api/orders/my — no local copy.
+  const { data, loading, error, reload } = useAsyncData(
+    () => orderService.myOrders({ limit: 50 }).then(normalizeOrders),
+    []
+  );
+  const orders = data || [];
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const refresh = () => setOrders(orderService.getCustomerOrders());
-    window.addEventListener(ORDERS_CHANGE_EVENT, refresh);
-    window.addEventListener("storage", refresh);
-    return () => {
-      window.removeEventListener(ORDERS_CHANGE_EVENT, refresh);
-      window.removeEventListener("storage", refresh);
-    };
-  }, []);
-
   const filtered = orders.filter((order) => {
-    const matchesTab =
-      activeTab === "All" ||
-      order.status === activeTab ||
-      (activeTab === "Processing" && order.status === "Placed");
+    const matchesTab = activeTab === "All" || ordersInGroup([order], activeTab).length > 0;
     const matchesSearch =
       !searchQuery ||
       order.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.shopName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.items?.some((item) =>
         item.name?.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -93,10 +90,10 @@ const Orders = () => {
 
   const statusCounts = {
     All: orders.length,
-    Processing: orders.filter((o) => o.status === "Processing" || o.status === "Placed").length,
-    Shipped: orders.filter((o) => o.status === "Shipped").length,
-    Delivered: orders.filter((o) => o.status === "Delivered").length,
-    Cancelled: orders.filter((o) => o.status === "Cancelled").length,
+    Processing: ordersInGroup(orders, "Processing").length,
+    Shipped: ordersInGroup(orders, "Shipped").length,
+    Delivered: ordersInGroup(orders, "Delivered").length,
+    Cancelled: ordersInGroup(orders, "Cancelled").length,
   };
 
   return (
@@ -113,7 +110,35 @@ const Orders = () => {
               </Link>
             </div>
 
-          {orders.length === 0 ? (
+          {error ? (
+            /* Error State — the API is the source of truth, so we never show a fake list */
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center rounded-lg border border-rose-100 bg-rose-50/40 py-14 text-center"
+              role="alert"
+            >
+              <AlertCircle className="w-10 h-10 text-rose-400 mb-3" />
+              <h2 className="text-base font-bold text-gray-900">We could not load your orders</h2>
+              <p className="mt-1.5 max-w-sm text-sm text-gray-600">{error}</p>
+              <button
+                type="button"
+                onClick={reload}
+                className="mt-5 rounded-md bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+              >
+                Try again
+              </button>
+            </motion.div>
+          ) : loading ? (
+            <div className="space-y-3">
+              {[0, 1, 2].map((key) => (
+                <div
+                  key={key}
+                  className="h-28 animate-pulse rounded-lg border border-gray-100 bg-gray-50"
+                />
+              ))}
+            </div>
+          ) : orders.length === 0 ? (
             /* Empty State */
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -185,7 +210,7 @@ const Orders = () => {
               <div className="space-y-3">
                 <AnimatePresence mode="popLayout">
                   {filtered.map((order, index) => {
-                    const config = statusConfig[order.status] || statusConfig.Processing;
+                    const config = statusConfig[order.uiStatus] || statusConfig.Processing;
                     const StatusIcon = config.icon;
 
                     return (
@@ -209,13 +234,13 @@ const Orders = () => {
                                 <h3 className="font-bold text-gray-900 text-sm sm:text-base">{order.id}</h3>
                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6rem] font-bold uppercase tracking-wider ${config.bg} ${config.color} border ${config.border}`}>
                                   <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-                                  {order.status}
+                                  {order.statusLabel}
                                 </span>
                               </div>
                               <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="w-3 h-3" />
-                                  {order.date || "Recently"}
+                                  {order.createdAt ? formatDate(order.createdAt) : "Recently"}
                                 </span>
                                 <span className="flex items-center gap-1">
                                   <IndianRupee className="w-3 h-3" />

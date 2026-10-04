@@ -60,9 +60,14 @@ router.post(
  */
 router.post(
   "/refresh",
-  validate({ body: z.object({ refreshToken: z.string().min(1) }) }),
+  validate({
+    body: z.object({
+      refreshToken: z.string().min(1),
+      role: z.enum(["customer", "shopkeeper", "delivery", "admin"]).optional(),
+    }),
+  }),
   asyncHandler(async (req, res) => {
-    const session = await rotateRefresh(req.body.refreshToken);
+    const session = await rotateRefresh(req.body.refreshToken, req.body.role);
     res.json({ ok: true, ...session });
   })
 );
@@ -96,7 +101,10 @@ router.get(
   "/me",
   requireAuth,
   asyncHandler(async (req, res) => {
-    res.json({ ok: true, user: await getMe(req.user.id) });
+    const user = await getMe(req.user.id);
+    // The role carried by the token is the session's active role; a multi-role
+    // account must not fall back to its primary role after a page reload.
+    res.json({ ok: true, user: { ...user, activeRole: req.user.role } });
   })
 );
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,13 +17,19 @@ import {
   ShoppingBag,
   Sparkles,
   Plus,
+  AlertCircle,
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import CustomerShell from "../components/CustomerShell";
 import { useToast } from "../../../components/common/Toast";
-import orderService from "../../../services/orderService";
+import { useAuth } from "../../../hooks/useAuth";
+import { orderService, paymentApi } from "../../../services/orderService";
 import paymentService from "../../../services/paymentService";
-import { RAZORPAY_CONFIG, isRazorpayConfigured } from "../../../config/razorpay";
+import { addressService } from "../../../services/accountService";
+import { shopService } from "../../../services/catalogService";
+import { normalizeAddresses, normalizeOrder, normalizeShop } from "../../../utils/normalize";
+import { hasRazorpayPublicKey } from "../../../config/env";
+import { RAZORPAY_CONFIG } from "../../../config/razorpay";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -52,45 +58,116 @@ const EMPTY_ADDRESS = {
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cart, cartCount, cartTotal, clearCart } = useCart();
+  const { cart, cartCount, cartTotal, shops, unavailableItems, reload: reloadCart } = useCart();
   const { showToast } = useToast();
+  const { user } = useAuth();
   const [isPlacing, setIsPlacing] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
   const [address, setAddress] = useState(EMPTY_ADDRESS);
-  const [savedAddresses, setSavedAddresses] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("nearmart_addresses") || "[]");
-    } catch {
-      return [];
-    }
-  });
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [addressId, setAddressId] = useState(null);
+  const [addressesLoading, setAddressesLoading] = useState(true);
+  const [addressesError, setAddressesError] = useState("");
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(null);
   const [isNewAddress, setIsNewAddress] = useState(false);
+  const [checkoutShop, setCheckoutShop] = useState(null);
+  const [shopDetailsError, setShopDetailsError] = useState("");
+
+  /** Whether the SERVER is actually able to take a payment right now. */
+  const [paymentsConfigured, setPaymentsConfigured] = useState(null);
+
+  // Addresses live on the server (GET /api/addresses).
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const list = normalizeAddresses(await addressService.list());
+        if (!active) return;
+        setSavedAddresses(list);
+        const defaultIndex = list.findIndex((item) => item.isDefault);
+        const index = defaultIndex >= 0 ? defaultIndex : 0;
+        const saved = list[index];
+        if (saved) {
+          setSelectedAddressIndex(index);
+          setAddressId(saved.id);
+          setAddress({
+            fullName: saved.fullName || "",
+            email: user?.email || "",
+            phone: saved.phone || "",
+            address: saved.line1 || "",
+            city: saved.city || "",
+            state: saved.state || "",
+            pincode: saved.pincode || "",
+          });
+        }
+      } catch (error) {
+        if (active) setAddressesError(error?.message || "We could not load your saved addresses.");
+      } finally {
+        if (active) setAddressesLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user?.email]);
+
+  const singleShop = shops.length === 1 ? shops[0] : null;
 
   useEffect(() => {
-    const defaultIndex = Number(localStorage.getItem("nearmart_default_address"));
-    const index = Number.isInteger(defaultIndex) && defaultIndex < savedAddresses.length
-      ? defaultIndex
-      : 0;
-    const saved = savedAddresses[index];
-    if (saved) {
-      setSelectedAddressIndex(index);
-      setAddress({
-        fullName: saved.fullName || "",
-        email: saved.email || "",
-        phone: saved.phone || "",
-        address: saved.street || "",
-        city: saved.city || "",
-        state: saved.state || "",
-        pincode: saved.pincode || "",
-      });
+    if (!singleShop?.shopId) {
+      setCheckoutShop(null);
+      setShopDetailsError("");
+      return undefined;
     }
-  }, [savedAddresses]);
 
-  const deliveryFee = cartTotal > 0 ? 30 : 0;
-  const total = cartTotal + deliveryFee;
+    let active = true;
+    setCheckoutShop(null);
+    setShopDetailsError("");
+    shopService
+      .get(singleShop.shopId)
+      .then((shop) => {
+        if (!active) return;
+        if (!shop) {
+          setShopDetailsError("Shop details could not be loaded. Please refresh and try again.");
+          return;
+        }
+        setCheckoutShop(normalizeShop(shop));
+      })
+      .catch((error) => {
+        if (active) setShopDetailsError(error?.message || "Shop details could not be loaded.");
+      });
 
+    return () => {
+      active = false;
+    };
+  }, [singleShop?.shopId]);
+
+  // Ask the server whether Razorpay is configured before showing the payment UI.
+  useEffect(() => {
+    let active = true;
+    paymentApi
+      .config()
+      .then((config) => {
+        if (active) setPaymentsConfigured(Boolean(config?.configured));
+      })
+      .catch(() => {
+        if (active) setPaymentsConfigured(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  /**
+   * Orders belong to exactly one shop, so a cart that spans several shops has to
+   * be checked out shop by shop. Saying so is better than silently splitting it.
+   */
+  const multiShop = shops.length > 1;
+
+  // Shown as an estimate; the amount actually charged is the server's total.
+  const estimatedDeliveryFee = cartTotal > 0 ? 40 : 0;
+  const estimatedTotal = cartTotal + estimatedDeliveryFee;
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAddress((prev) => ({ ...prev, [name]: value }));
@@ -100,11 +177,12 @@ const Checkout = () => {
     const saved = savedAddresses[index];
     setSelectedAddressIndex(index);
     setIsNewAddress(false);
+    setAddressId(saved.id);
     setAddress({
       fullName: saved.fullName || "",
-      email: saved.email || "",
+      email: user?.email || "",
       phone: saved.phone || "",
-      address: saved.street || "",
+      address: saved.line1 || "",
       city: saved.city || "",
       state: saved.state || "",
       pincode: saved.pincode || "",
@@ -113,118 +191,112 @@ const Checkout = () => {
 
   const startNewAddress = () => {
     setSelectedAddressIndex(null);
+    setAddressId(null);
     setIsNewAddress(true);
-    setAddress(EMPTY_ADDRESS);
+    setAddress({ ...EMPTY_ADDRESS, email: user?.email || "" });
   };
 
-  const saveNewAddress = () => {
-    if (!address.fullName || !address.phone || !address.address || !address.city || !address.state || !address.pincode) {
+  const isAddressComplete = Boolean(
+    address.fullName && address.phone && address.address && address.city && address.pincode
+  );
+
+  /** Persist a newly typed address through POST /api/addresses. */
+  const saveNewAddress = async () => {
+    if (!isAddressComplete) {
       return showToast("Please fill in all address details before saving.", "error");
     }
+    try {
+      const created = await addressService.create({
+        fullName: address.fullName.trim(),
+        phone: address.phone.trim(),
+        line1: address.address.trim(),
+        line2: "",
+        city: address.city.trim(),
+        state: address.state.trim(),
+        pincode: address.pincode.trim(),
+        label: "Home",
+        isDefault: savedAddresses.length === 0,
+      });
 
-    const savedAddress = {
-      fullName: address.fullName,
-      email: address.email,
-      phone: address.phone,
-      street: address.address,
-      city: address.city,
-      state: address.state,
-      pincode: address.pincode,
-      type: "home",
-    };
-    const nextAddresses = [...savedAddresses, savedAddress];
-    const nextIndex = nextAddresses.length - 1;
-    setSavedAddresses(nextAddresses);
-    setSelectedAddressIndex(nextIndex);
-    setIsNewAddress(false);
-    localStorage.setItem("nearmart_addresses", JSON.stringify(nextAddresses));
-    if (nextAddresses.length === 1) {
-      localStorage.setItem("nearmart_default_address", "0");
+      const normalized = normalizeAddresses([created])[0];
+      const next = [...savedAddresses, normalized];
+      setSavedAddresses(next);
+      setSelectedAddressIndex(next.length - 1);
+      setAddressId(normalized.id);
+      setIsNewAddress(false);
+      showToast("Address saved");
+    } catch (error) {
+      showToast(error?.message || "We could not save that address.", "error");
     }
   };
-
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (cart.length === 0) return showToast("Your cart is empty.", "error");
-    if (!address.fullName || !address.phone || !address.address || !address.city || !address.pincode) {
-      return showToast("Please fill in all delivery details.", "error");
+    if (unavailableItems.length > 0) {
+      return showToast("Remove unavailable or out-of-stock items before placing your order.", "error");
     }
-
+    if (multiShop) {
+      return showToast("Please check out one shop at a time.", "error");
+    }
+    if (!singleShop?.shopId) {
+      return showToast("Your cart items are not linked to a shop yet. Refresh and try again.", "error");
+    }
+    if (!addressId) {
+      return showToast("Please select or save a delivery address.", "error");
+    }
     setIsPlacing(true);
     setPaymentError("");
-    const orderId = `NM-${Date.now()}`;
-    const shopName = cart.find((item) => item.shopName)?.shopName || cart[0]?.shop || "NearMart Shop";
-
-    const draftOrder = {
-      id: orderId,
-      items: cart,
-      customer: address,
-      customerName: address.fullName,
-      shopName,
-      paymentMethod: "Razorpay",
-      subtotal: cartTotal,
-      deliveryFee,
-      platformFee: 10,
-      total,
-      status: "Placed",
-      shopStatus: "New",
-      adminStatus: "confirmed",
-      paymentStatus: "pending",
-      createdAt: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    };
 
     try {
-      if (isRazorpayConfigured()) {
-        const result = await paymentService.checkout({
-          amount: total,
-          orderId,
-          customer: address,
-          description: `NearMart order ${orderId}`,
-        });
-        const paidOrder = {
-          ...draftOrder,
-          paymentStatus: result.verified || result.ok ? "Paid" : "Pending verification",
-          paymentMethod: result.payment?.method || "Razorpay",
-          razorpay: result.razorpay,
-          payment: result.payment,
-        };
-        orderService.placeOrder(paidOrder);
-        clearCart();
-        showToast("Payment successful. Your order has been placed.");
-        navigate("/customer/orders");
-        return;
-      }
-
-      const sandboxPayment = {
-        id: `PAY-${orderId}`,
-        orderId,
-        amount: total,
-        currency: "INR",
-        status: "pending",
-        method: "razorpay",
-        createdAt: new Date().toISOString(),
-        note: "Add VITE_RAZORPAY_KEY_ID and start the payment API to capture live Razorpay payments.",
-      };
-      orderService.placeOrder({
-        ...draftOrder,
-        paymentStatus: "Pending",
-        payment: sandboxPayment,
+      // 1. The server prices the order and reserves stock.
+      const created = await orderService.create({
+        shopId: singleShop.shopId,
+        addressId,
+        items: singleShop.items,
+        paymentMethod: "razorpay",
       });
-      clearCart();
-      showToast("Order saved. Add Razorpay credentials to collect live payments.");
-      navigate("/customer/orders");
+      const order = normalizeOrder(created);
+
+      // 2. Pay that exact, server-computed amount.
+      const payment = await paymentService.checkout({
+        amount: order.total,
+        orderId: order.id,
+        customer: {
+          fullName: address.fullName,
+          email: user?.email || address.email,
+          phone: address.phone,
+        },
+        description: `NearMart order ${order.id.slice(0, 8)}`,
+      });
+
+      await reloadCart();
+      showToast("Payment successful. Your order has been placed.");
+      navigate(`/customer/orders/${order.id}`);
+      void payment;
     } catch (error) {
       const message = error?.cancelled
-        ? "Payment was cancelled before completion."
-        : error.message || "Payment failed. Please try again.";
+        ? "Payment was cancelled before completion. The order is saved with a pending payment."
+        : error?.message || "Payment failed. Please try again.";
       setPaymentError(message);
       showToast(message, "error");
+      // The server already consumed the cart rows when it created the order,
+      // so the local cart has to be re-read whatever the payment outcome was.
+      await reloadCart();
     } finally {
       setIsPlacing(false);
     }
   };
+
+  const paymentHint = useMemo(() => {
+    if (paymentsConfigured === null) return "Checking payment availability...";
+    return paymentsConfigured
+      ? null
+      : "Payments are not available right now: the server has no Razorpay credentials configured.";
+  }, [paymentsConfigured]);
+
+  /** The server must confirm Razorpay before the pay button can work. */
+  const isRazorpayAvailable = paymentsConfigured === true && hasRazorpayPublicKey();
 
   if (cart.length === 0) {
     return (
@@ -277,6 +349,23 @@ const Checkout = () => {
           <p className="text-gray-500 mt-2">Complete your order from NearMart.</p>
         </motion.div>
 
+        {multiShop && (
+          <div className="mb-6 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="alert">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              Your cart has items from {shops.length} different shops. Orders are placed per shop, so please
+              check out one shop at a time.
+            </span>
+          </div>
+        )}
+
+        {addressesError && (
+          <div className="mb-6 flex items-start gap-2 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{addressesError} You can still type a new address below.</span>
+          </div>
+        )}
+
         <form onSubmit={handlePlaceOrder} className="grid lg:grid-cols-3 gap-8">
           {/* LEFT SIDE */}
           <div className="lg:col-span-2 space-y-6">
@@ -306,11 +395,18 @@ const Checkout = () => {
                 )}
               </div>
 
+              {addressesLoading ? (
+                <div className="space-y-3">
+                  <div className="h-24 animate-pulse rounded-md bg-gray-50" />
+                  <div className="h-24 animate-pulse rounded-md bg-gray-50" />
+                </div>
+              ) : (
+                <>
               {savedAddresses.length > 0 && !isNewAddress && (
                 <div className="space-y-3">
                   {savedAddresses.map((saved, index) => (
                     <button
-                      key={`${saved.email || saved.phone}-${index}`}
+                      key={saved.id}
                       type="button"
                       onClick={() => selectSavedAddress(index)}
                       className={`w-full text-left border rounded-md p-4 transition-all ${
@@ -322,7 +418,7 @@ const Checkout = () => {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-semibold text-[#14261f]">{saved.fullName}</p>
-                          <p className="text-sm text-gray-500 mt-1">{saved.street}</p>
+                          <p className="text-sm text-gray-500 mt-1">{saved.line1}</p>
                           <p className="text-sm text-gray-500">
                             {saved.city}, {saved.state} - {saved.pincode}
                           </p>
@@ -422,7 +518,10 @@ const Checkout = () => {
                     {savedAddresses.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setIsNewAddress(false)}
+                        onClick={() => {
+                          const defaultIndex = savedAddresses.findIndex((item) => item.isDefault);
+                          selectSavedAddress(defaultIndex >= 0 ? defaultIndex : 0);
+                        }}
                         className="text-sm font-semibold text-gray-500 hover:text-gray-700"
                       >
                         Cancel
@@ -439,7 +538,25 @@ const Checkout = () => {
                 </div>
               </div>
               )}
+                </>
+              )}
             </motion.section>
+
+            {checkoutShop && (
+              <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm" aria-live="polite">
+                <h2 className="font-bold text-[#14261f]">Shop minimum order</h2>
+                <p className="mt-2 text-sm text-gray-600">
+                  Minimum order: ₹{checkoutShop.minOrder.toFixed(2)}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">Shown for reference only; checkout does not enforce this yet.</p>
+              </section>
+            )}
+
+            {shopDetailsError && (
+              <p className="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
+                {shopDetailsError}
+              </p>
+            )}
 
             {/* Payment Method */}
             <motion.section
@@ -494,9 +611,10 @@ const Checkout = () => {
                   </div>
                 ))}
               </div>
-              {!isRazorpayConfigured() && (
+              {!isRazorpayAvailable && (
                 <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                  Razorpay key is not configured yet. Add `VITE_RAZORPAY_KEY_ID` and start the payment API to collect live payments. Your order will still be saved so dashboards keep working.
+                  {paymentHint} Ask an administrator to add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to the
+                  server environment before checkout can complete.
                 </p>
               )}
               {paymentError && (
@@ -566,26 +684,35 @@ const Checkout = () => {
                   <span className="flex items-center gap-1.5">
                     <Truck className="w-3.5 h-3.5" /> Delivery Fee
                   </span>
-                  <span className="font-medium">₹{deliveryFee}</span>
+                  <span className="font-medium">₹{estimatedDeliveryFee}</span>
                 </div>
                 <div className="border-t border-gray-100 pt-4 flex justify-between items-center">
-                  <span className="font-bold text-[#14261f]">Total</span>
+                  <span className="font-bold text-[#14261f]">Estimated Total</span>
                   <motion.span
-                    key={total}
+                    key={estimatedTotal}
                     initial={{ scale: 1.2, color: "#155c43" }}
                     animate={{ scale: 1, color: "#155c43" }}
                     className="font-bold text-xl"
                   >
-                    ₹{total}
+                    ₹{estimatedTotal}
                   </motion.span>
                 </div>
+                <p className="text-[0.65rem] leading-relaxed text-gray-400">
+                  The final amount is calculated and confirmed by the server when you place the order.
+                </p>
               </div>
 
               <motion.button
                 whileHover={{ scale: 1.02, boxShadow: "0 20px 40px -10px rgba(21,92,67,0.35)" }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                disabled={isPlacing}
+                disabled={
+                  isPlacing ||
+                  multiShop ||
+                  unavailableItems.length > 0 ||
+                  !addressId ||
+                  !isRazorpayAvailable
+                }
                 className="w-full mt-6 bg-linear-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-md font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"
               >
                 {isPlacing ? (

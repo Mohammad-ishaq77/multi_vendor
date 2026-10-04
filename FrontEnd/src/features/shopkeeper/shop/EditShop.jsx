@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import { useToast } from "../../../components/common/Toast";
 
 const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
@@ -30,25 +31,55 @@ const updateTimePeriod = (time, period) => {
 
 const EditShop = () => {
   const navigate = useNavigate();
-  const { shop, setShop } = useShopkeeper();
+  const { shop, setShop, uploadImage } = useShopkeeper();
+  const { showToast } = useToast();
   const fileInputRef = useRef(null);
-  const [form, setForm] = useState({ ...shop });
+  const [form, setForm] = useState({
+    ...shop,
+    minOrder: shop.minOrder ?? 0,
+  });
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setForm((current) => ({
+      ...current,
+      minOrder: shop.minOrder ?? 0,
+    }));
+  }, [shop.id, shop.minOrder]);
 
   const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => update("shopImage", ev.target.result);
-    reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Please choose an image smaller than 5 MB.", "error");
+      return;
+    }
+    try {
+      const url = await uploadImage(file, "nearmart/shops");
+      update("shopImage", url);
+      showToast("Image uploaded — save to apply it");
+    } catch (error) {
+      showToast(error?.message || "Could not upload that image.", "error");
+    }
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    setShop(form);
+    if (form.minOrder === "" || !Number.isFinite(Number(form.minOrder)) || Number(form.minOrder) < 0) {
+      showToast("Minimum order must be zero or more.", "error");
+      return;
+    }
+    setSaving(true);
+    const result = await setShop(form);
+    setSaving(false);
+    if (result?.ok === false) {
+      showToast(result.error || "Could not save your shop.", "error");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -156,6 +187,24 @@ const EditShop = () => {
             </div>
           </div>
 
+          <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Order Requirements</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Minimum Order (₹)</label>
+                <input
+                  type="number"
+                  min="0"
+                  required
+                  step="0.01"
+                  value={form.minOrder}
+                  onChange={(e) => update("minOrder", e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Business Hours */}
           <div className="bg-white rounded-lg border border-gray-100 p-5 sm:p-6 shadow-sm">
             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Business Hours</h3>
@@ -187,9 +236,10 @@ const EditShop = () => {
             <motion.button
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+              disabled={saving}
+              className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {saved ? <><CheckCircle2 className="w-4 h-4" /> Saved Successfully</> : <><Save className="w-4 h-4" /> Save Changes</>}
+              {saving ? "Saving…" : saved ? <><CheckCircle2 className="w-4 h-4" /> Saved Successfully</> : <><Save className="w-4 h-4" /> Save Changes</>}
             </motion.button>
             {saved && <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="text-sm text-emerald-600 font-medium">Changes saved!</motion.span>}
           </div>

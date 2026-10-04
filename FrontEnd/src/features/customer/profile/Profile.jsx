@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,42 +15,75 @@ import {
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
 import { useLogoutConfirm } from "../../../context/LogoutContext";
+import { useAuth } from "../../../context/AuthContext";
+import { useToast } from "../../../components/common/Toast";
+import { customerService, uploadService } from "../../../services/catalogService";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { requestLogout } = useLogoutConfirm();
-  const [profile, setProfile] = useState(() =>
-    JSON.parse(
-      localStorage.getItem("nearmart_profile") ||
-        '{"name":"NearMart Customer","email":"customer@example.com","phone":"+91 98765 43210","address":"Srinagar, Jammu & Kashmir"}'
-    )
-  );
-  const [saved, setSaved] = useState(false);
+  const { user, reloadUser } = useAuth();
+  const { showToast } = useToast();
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "", avatarUrl: "" });
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
   const [activeSection, setActiveSection] = useState("personal");
 
-  const handleImageChange = (event) => {
+  // The profile comes from the authenticated user, never from local state.
+  useEffect(() => {
+    if (!user) return;
+    setProfile({
+      name: user.name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      avatarUrl: user.avatarUrl || "",
+    });
+  }, [user]);
+
+  const handleImageChange = async (event) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      alert("Please select an image file.");
+      showToast("Please select an image file.", "error");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      alert("Please select an image smaller than 2 MB.");
-      return;
+    setUploading(true);
+    try {
+      const uploaded = await uploadService.image(file, "nearmart/avatars");
+      await customerService.updateProfile({ avatarUrl: uploaded.url });
+      await reloadUser();
+      showToast("Profile photo updated");
+    } catch (uploadError) {
+      showToast(uploadError.message || "Could not upload that image.", "error");
+    } finally {
+      setUploading(false);
     }
-    const reader = new FileReader();
-    reader.onload = () => setProfile((c) => ({ ...c, image: reader.result }));
-    reader.readAsDataURL(file);
   };
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault();
-    localStorage.setItem("nearmart_profile", JSON.stringify(profile));
-    localStorage.setItem("nearmart_user", JSON.stringify(profile));
-    window.dispatchEvent(new Event("nearmart-profile-change"));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    if (!profile.name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      await customerService.updateProfile({
+        name: profile.name.trim(),
+        phone: profile.phone?.trim() || null,
+      });
+      await reloadUser();
+      showToast("Profile updated");
+    } catch (saveError) {
+      const message = saveError.message || "Could not save your profile.";
+      setError(message);
+      showToast(message, "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const menuItems = [
@@ -75,8 +108,12 @@ const Profile = () => {
                 <div className="h-28 bg-linear-to-r from-emerald-600 to-teal-600 relative">
                   <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
                     <div className="relative w-24 h-24 rounded-lg bg-white border-4 border-white shadow-lg overflow-hidden">
-                      {profile.image ? (
-                        <img src={profile.image} alt="Profile" className="w-full h-full object-cover" />
+                      {profile.avatarUrl ? (
+                        <img
+                          src={profile.avatarUrl}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
                           <User className="w-12 h-12 text-emerald-600" />
@@ -86,7 +123,11 @@ const Profile = () => {
                         htmlFor="profile-image"
                         className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/40 text-white opacity-0 hover:opacity-100 transition-opacity"
                       >
-                        <Camera className="w-6 h-6" />
+                        {uploading ? (
+                          <span className="text-[0.6rem] font-semibold">Uploading…</span>
+                        ) : (
+                          <Camera className="w-6 h-6" />
+                        )}
                       </label>
                     </div>
                     <input
@@ -172,17 +213,18 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    {/* Email */}
+                    {/* Email (managed by the account, not editable here) */}
                     <div>
                       <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email Address</label>
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           value={profile.email}
-                          onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                          readOnly
+                          disabled
                           type="email"
                           placeholder="Email"
-                          className={inputClass}
+                          className={`${inputClass} opacity-60 cursor-not-allowed`}
                         />
                       </div>
                     </div>
@@ -202,47 +244,47 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    {/* Address */}
+                    {/* Addresses live in their own screen (server-backed) */}
                     <div>
-                      <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Delivery Address</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-gray-400" />
-                        <textarea
-                          value={profile.address || ""}
-                          onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                          placeholder="Enter your full address"
-                          rows={3}
-                          className={inputClass + " resize-none"}
-                        />
-                      </div>
+                      <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Delivery Addresses</label>
+                      <button
+                        type="button"
+                        onClick={() => navigate("/customer/addresses")}
+                        className="w-full flex items-center gap-3 rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-600 transition-colors hover:border-emerald-400 hover:text-emerald-700"
+                      >
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        Manage saved addresses
+                        <span className="ml-auto text-gray-400">→</span>
+                      </button>
                     </div>
                   </div>
+
+                  {error && (
+                    <p className="mt-4 rounded-md bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
+                      {error}
+                    </p>
+                  )}
 
                   {/* Save */}
                   <div className="mt-6 flex items-center gap-4">
                     <motion.button
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
+                      disabled={saving || uploading}
+                      className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {saved ? (
+                      {saving ? (
                         <>
-                          <CheckCircle2 className="w-4 h-4" />
-                          Saved Successfully
+                          <span>Saving…</span>
                         </>
                       ) : (
-                        "Save Profile"
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          Save Profile
+                        </>
                       )}
                     </motion.button>
-                    {saved && (
-                      <motion.span
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="text-sm text-emerald-600 font-medium"
-                      >
-                        Changes saved!
-                      </motion.span>
-                    )}
+                    <span className="text-sm text-gray-500">Changes apply immediately.</span>
                   </div>
                 </form>
 

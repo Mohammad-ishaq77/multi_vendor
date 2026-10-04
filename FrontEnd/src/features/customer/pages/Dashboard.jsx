@@ -1,6 +1,6 @@
 /* oxlint-disable react/only-export-components */
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 
@@ -10,8 +10,11 @@ import ShopCard from "../components/ShopCard";
 import ProductCard from "../components/ProductCard";
 import PageTransition from "../components/PageTransition";
 
-import { categories, shops, products } from "../data/customerData";
-import orderService, { ORDERS_CHANGE_EVENT } from "../../../services/orderService";
+import { categoryService, productService, shopService, subscribeToShopProfileUpdates } from "../../../services/catalogService";
+import { orderService } from "../../../services/orderService";
+import { wishlistService } from "../../../services/accountService";
+import { normalizeCategories, normalizeProducts, normalizeShops, normalizeOrders, ordersInGroup, orderStatusLabel } from "../../../utils/normalize";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { ClipboardList, Heart, ShoppingCart, Truck } from "lucide-react";
 
 // ─── SHARED NAVIGATION ───
@@ -39,14 +42,13 @@ const HERO_SLIDES = [
   },
   {
     id: 2,
-    badge: "Special Offers",
-    headline: "Great deals from stores near you.",
-    subtext: "Discover discounts and exclusive offers from local shops.",
-    cta: "Shop Offers",
+    badge: "Shop local",
+    headline: "Find products listed by neighborhood shops.",
+    subtext: "Browse the live NearMart catalog and add available products to your cart.",
+    cta: "Browse Products",
     ctaPath: "/customer/products",
     accent: "from-[#1a5c3a] via-[#207a4e] to-[#145232]",
     badgeColor: "bg-white/10 border-white/20 text-white",
-    extraBadge: "Up to 30% OFF",
   },
   {
     id: 3,
@@ -184,11 +186,20 @@ const HeroCarousel = ({ onNavigate }) => {
 // ─── ACTIVE ORDER ───
 const ActiveOrder = ({ order }) => {
   if (!order) return null;
+  const progress = {
+    pending: 1,
+    confirmed: 2,
+    preparing: 2,
+    ready_for_pickup: 2,
+    out_for_delivery: 3,
+    delivered: 4,
+    completed: 4,
+  }[order.status] || 1;
   const steps = [
-    { label: "Confirmed", done: true },
-    { label: "Packed", done: true },
-    { label: "On the way", done: order.status === "on_the_way" || order.status === "delivered" },
-    { label: "Delivered", done: order.status === "delivered" },
+    { label: "Placed", done: progress >= 1 },
+    { label: "Processing", done: progress >= 2 },
+    { label: "On the way", done: progress >= 3 },
+    { label: "Delivered", done: progress >= 4 },
   ];
 
   return (
@@ -208,7 +219,7 @@ const ActiveOrder = ({ order }) => {
             </h3>
           </div>
           <span className="rounded-full bg-[#155c43]/10 px-2 py-0.5 text-[9px] font-semibold text-[#155c43] sm:px-3 sm:py-1 sm:text-xs">
-            {order.estimatedTime}
+            {orderStatusLabel(order.status)}
           </span>
         </div>
 
@@ -229,15 +240,17 @@ const ActiveOrder = ({ order }) => {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-xs text-gray-500 sm:text-sm">
-            Estimated arrival: <span className="font-semibold text-[#14261f]">{order.estimatedArrival}</span>
-          </p>
-          <button
-            onClick={() => window.location.assign(`/customer/orders/${order.id}/track`)}
+          {order.estimatedDelivery && (
+            <p className="text-xs text-gray-500 sm:text-sm">
+              Estimated arrival: <span className="font-semibold text-[#14261f]">{new Date(order.estimatedDelivery).toLocaleString()}</span>
+            </p>
+          )}
+          <Link
+            to={`/customer/orders/${order.id}/track`}
             className="text-xs font-semibold text-[#155c43] hover:underline sm:text-sm"
           >
             Track Order →
-          </button>
+          </Link>
         </div>
       </div>
     </motion.section>
@@ -296,21 +309,72 @@ const ScrollToTop = () => {
 };
 
 // ─── MAIN DASHBOARD ───
+/** Inline, retryable error for one dashboard section. */
+const SectionError = ({ state, label }) => {
+  if (!state.error) return null;
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md border border-amber-100 bg-amber-50/60 px-3 py-2.5 text-xs text-amber-900">
+      <span>We could not load {label}. {state.error}</span>
+      <button type="button" onClick={state.reload} className="font-semibold underline">
+        Retry
+      </button>
+    </div>
+  );
+};
+
 const CustomerDashboard = () => {
   const navigate = useNavigate();
   const { addToCart, cartCount } = useCart();
   const [greeting, setGreeting] = useState("Good morning");
   const reducedMotion = useReducedMotion();
-  const [orders, setOrders] = useState(() => orderService.getCustomerOrders());
-  const [wishlistCount] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("nearmart_wishlist") || "[]").length;
-    } catch {
-      return 0;
-    }
-  });
 
-  const activeOrder = orders.find((order) => !["Delivered", "Cancelled", "Completed"].includes(order.status));
+  // Everything on this screen comes from the API. While a request is in flight
+  // the section simply renders nothing, and a failure surfaces as an error
+  // rather than an empty-looking page pretending there is no data.
+  const categoriesState = useAsyncData(
+    () => categoryService.list().then(normalizeCategories),
+    []
+  );
+  const shopsState = useAsyncData(
+    () => shopService.list({ limit: 8 }).then(({ items }) => normalizeShops(items)),
+    []
+  );
+  const productsState = useAsyncData(
+    () => productService.list({ limit: 100 }).then(({ items }) => normalizeProducts(items)),
+    []
+  );
+  useEffect(() => {
+    const refreshCatalog = () => {
+      if (document.visibilityState !== "visible") return;
+      shopsState.reload();
+      productsState.reload();
+    };
+
+    window.addEventListener("focus", refreshCatalog);
+    const unsubscribe = subscribeToShopProfileUpdates(refreshCatalog);
+    const refreshInterval = window.setInterval(refreshCatalog, 30_000);
+    return () => {
+      window.removeEventListener("focus", refreshCatalog);
+      unsubscribe();
+      window.clearInterval(refreshInterval);
+    };
+  }, [productsState.reload, shopsState.reload]);
+  const ordersState = useAsyncData(
+    () => orderService.myOrders({ limit: 50 }).then(({ items }) => normalizeOrders(items)),
+    []
+  );
+  const wishlistState = useAsyncData(
+    () => wishlistService.list().then((items) => items.length),
+    []
+  );
+
+  const categories = categoriesState.data || [];
+  const shops = shopsState.data || [];
+  const products = productsState.data || [];
+  const orders = ordersState.data || [];
+  const wishlistCount = wishlistState.data || 0;
+
+  const activeOrder = orders.find((order) => ordersInGroup([order], "Placed").length > 0 || ordersInGroup([order], "Processing").length > 0 || ordersInGroup([order], "Shipped").length > 0);
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -318,12 +382,6 @@ const CustomerDashboard = () => {
     else if (hour < 17) setGreeting("Good afternoon");
     else if (hour < 21) setGreeting("Good evening");
     else setGreeting("Good night");
-  }, []);
-
-  useEffect(() => {
-    const refresh = () => setOrders(orderService.getCustomerOrders());
-    window.addEventListener(ORDERS_CHANGE_EVENT, refresh);
-    return () => window.removeEventListener(ORDERS_CHANGE_EVENT, refresh);
   }, []);
 
   const staggerContainer = {
@@ -339,10 +397,9 @@ const CustomerDashboard = () => {
   const mappedActiveOrder = activeOrder
     ? {
         id: activeOrder.id,
-        shopName: activeOrder.shopName || activeOrder.items?.[0]?.shopName || "NearMart",
-        status: ["Shipped", "Out for Delivery"].includes(activeOrder.status) ? "on_the_way" : activeOrder.status === "Delivered" ? "delivered" : "processing",
-        estimatedTime: "Live tracking",
-        estimatedArrival: "Soon",
+        shopName: activeOrder.shopName || activeOrder.items?.[0]?.shopName || "",
+        status: activeOrder.status,
+        estimatedDelivery: activeOrder.estimatedDelivery,
       }
     : null;
 
@@ -391,49 +448,72 @@ const CustomerDashboard = () => {
           <HeroCarousel onNavigate={navigate} />
           <ActiveOrder order={mappedActiveOrder} />
 
+          <section className="mb-6 sm:mb-10 lg:mb-12">
+            <SectionHeader title="Products" subtitle="Products listed by approved shops." actionLabel="View More" onAction={() => navigate("/customer/products")} />
+            <SectionError state={productsState} label="products" />
+            {productsState.loading && (
+              <p className="py-5 text-sm text-gray-500">Loading products...</p>
+            )}
+            {products.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={(p) => addToCart(p)}
+                  />
+                ))}
+              </div>
+            )}
+            {!productsState.loading && !productsState.error && products.length === 0 && (
+              <p className="py-5 text-sm text-gray-500">No products are available yet.</p>
+            )}
+          </section>
+
           {/* Categories — horizontal scroll on mobile, grid on desktop */}
-          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-6 sm:mb-10 lg:mb-12">
+          <section className="mb-6 sm:mb-10 lg:mb-12">
             <SectionHeader title="Shop by Category" subtitle="Find what you need quickly." actionLabel="View all" onAction={() => navigate("/customer/categories")} />
-            <motion.div
-              variants={staggerContainer}
+            <SectionError state={categoriesState} label="categories" />
+            {categoriesState.loading && (
+              <p className="py-5 text-sm text-gray-500">Loading categories...</p>
+            )}
+            {categories.length > 0 && (
+            <div
               className="flex gap-2 overflow-x-auto pb-2 pt-1 snap-x snap-mandatory sm:grid sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 sm:overflow-visible sm:gap-3 sm:pb-0 sm:pt-0"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {categories.map((category) => (
-                <motion.div key={category.id} variants={fadeUpItem} className="min-w-[88px] shrink-0 snap-start sm:min-w-0">
+                <div key={category.id} className="min-w-[88px] shrink-0 snap-start sm:min-w-0">
                   <CategoryCard category={category} onClick={() => navigate("/customer/categories")} />
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
-          </motion.section>
+            </div>
+            )}
+            {!categoriesState.loading && !categoriesState.error && categories.length === 0 && (
+              <p className="py-5 text-sm text-gray-500">No categories are available yet.</p>
+            )}
+          </section>
 
           {/* Shops */}
-          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-6 sm:mb-10 lg:mb-12">
-            <SectionHeader title="Popular Shops Near You" subtitle="Discover trusted local stores." actionLabel="View all" onAction={() => navigate("/customer/shops")} />
-            <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4">
+          <section className="mb-6 sm:mb-10 lg:mb-12">
+            <SectionHeader title="Available Shops" subtitle="Browse shops approved and listed on NearMart." actionLabel="View all" onAction={() => navigate("/customer/shops")} />
+            <SectionError state={shopsState} label="shops" />
+            {shopsState.loading && (
+              <p className="py-5 text-sm text-gray-500">Loading shops...</p>
+            )}
+            {shops.length > 0 && (
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4">
               {shops.map((shop) => (
-                <motion.div key={shop.id} variants={fadeUpItem}>
+                <div key={shop.id}>
                   <ShopCard shop={shop} onClick={() => navigate(`/customer/shops/${shop.id}`)} />
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
-          </motion.section>
-
-          
-          {/* Popular Products — only 4-5 cards with View More button */}
-          <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={staggerContainer} className="mb-6 sm:mb-10 lg:mb-12">
-            <SectionHeader title="Popular Products" subtitle="Trending items from local shops." actionLabel="View More" onAction={() => navigate("/customer/products")} />
-            <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {products.slice(0, 5).map((product) => (
-                <motion.div key={product.id} variants={fadeUpItem}>
-                  <ProductCard
-                    product={product}
-                    onAddToCart={(p) => addToCart(p)}
-                  />
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.section>
+            </div>
+            )}
+            {!shopsState.loading && !shopsState.error && shops.length === 0 && (
+              <p className="py-5 text-sm text-gray-500">No shops are available yet. Shops appear here after admin approval.</p>
+            )}
+          </section>
 
           <div className="h-6 sm:h-8" />
         <ScrollToTop />

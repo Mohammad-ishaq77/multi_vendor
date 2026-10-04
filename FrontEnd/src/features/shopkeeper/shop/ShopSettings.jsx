@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Save,
@@ -11,21 +11,41 @@ import {
 } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
+import { useToast } from "../../../components/common/Toast";
 
 const ShopSettings = () => {
   const { shop, setShop, shopSettings, setShopSettings } = useShopkeeper();
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     ...shopSettings,
     openingTime: shop.openingTime || "08:00",
     closingTime: shop.closingTime || "22:00",
-    minOrder: shop.minOrder || 100,
-    deliveryTime: shop.deliveryTime || "25–35 mins",
+    minOrder: shop.minOrder ?? 100,
+    deliveryTime: shop.deliveryTime || "25-35 mins",
   });
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setForm((current) => ({
+      ...current,
+      openingTime: shop.openingTime || "08:00",
+      closingTime: shop.closingTime || "22:00",
+      minOrder: shop.minOrder ?? 100,
+      deliveryTime: shop.deliveryTime || "25-35 mins",
+    }));
+  }, [shop.id, shop.openingTime, shop.closingTime, shop.minOrder, shop.deliveryTime]);
 
   const toggle = (key) => setForm((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (form.minOrder === "" || !Number.isFinite(Number(form.minOrder)) || Number(form.minOrder) < 0) {
+      showToast("Minimum order must be zero or more.", "error");
+      return;
+    }
+    setSaving(true);
+    // Notification/display toggles are device preferences (no server model);
+    // the shop hours and delivery settings are persisted through PUT /shops/my.
     setShopSettings({
       acceptOrders: form.acceptOrders,
       autoAccept: form.autoAccept,
@@ -36,12 +56,17 @@ const ShopSettings = () => {
       reviewAlerts: form.reviewAlerts,
       promoUpdates: form.promoUpdates,
     });
-    setShop({
+    const result = await setShop({
       openingTime: form.openingTime,
       closingTime: form.closingTime,
       minOrder: Number(form.minOrder) || 0,
       deliveryTime: form.deliveryTime,
     });
+    setSaving(false);
+    if (result?.ok === false) {
+      showToast(result.error || "Could not save your shop settings.", "error");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -76,9 +101,12 @@ const ShopSettings = () => {
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={handleSave}
-            className="flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700"
+            disabled={saving}
+            className="flex items-center gap-2 rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:opacity-60"
           >
-            {saved ? (
+            {saving ? (
+              "Saving…"
+            ) : saved ? (
               <>
                 <CheckCircle2 className="h-4 w-4" /> Saved
               </>
@@ -96,7 +124,7 @@ const ShopSettings = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700"
           >
-            <CheckCircle2 className="h-4 w-4" /> Settings saved successfully.
+            <CheckCircle2 className="h-4 w-4" /> Shop hours and delivery settings saved. Notification preferences are stored on this device.
           </motion.div>
         )}
 
@@ -128,6 +156,9 @@ const ShopSettings = () => {
               <label className="mb-1 block text-xs font-semibold text-gray-600">Minimum Order (₹)</label>
               <input
                 type="number"
+                min="0"
+                step="0.01"
+                required
                 value={form.minOrder}
                 onChange={(e) => setForm({ ...form, minOrder: e.target.value })}
                 className={inputClass}

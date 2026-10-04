@@ -7,6 +7,8 @@ import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { repo } from "../../config/db.js";
 import { ORDER_STATUSES } from "../../entities/Order.js";
+import { canTransition } from "./status.js";
+import { releaseOrderStock } from "./stock.js";
 import { emitToRole, emitToUser } from "../../realtime/socket.js";
 
 const router = Router();
@@ -14,20 +16,12 @@ router.use(requireAuth);
 
 const createOrderSchema = z.object({
   shopId: z.string().uuid(),
-  addressId: z.string().uuid().optional(),
+  addressId: z.string().uuid(),
   items: z.array(z.object({ productId: z.string().uuid(), quantity: z.coerce.number().int().min(1) })).min(1),
   paymentMethod: z.string().max(50).optional(),
   notes: z.string().optional(),
   offerCode: z.string().max(30).optional(),
 });
-
-function canTransition(from, to) {
-  const flow = ["pending", "confirmed", "preparing", "ready_for_pickup", "out_for_delivery", "delivered", "completed"];
-  if (to === "cancelled") return ["pending", "confirmed", "preparing"].includes(from);
-  const fi = flow.indexOf(from);
-  const ti = flow.indexOf(to);
-  return fi !== -1 && ti === fi + 1;
-}
 
 /** POST /api/orders — checkout + place order. */
 router.post(
@@ -46,17 +40,30 @@ router.post(
 
     let subtotal = 0;
     const lines = [];
+    const foreignShop = new Set();
     for (const line of req.body.items) {
       const product = await products.findOne({ where: { id: line.productId } });
-      if (!product || !product.isAvailable || product.shopId !== shop.id) {
+      if (!product || !product.isAvailable) {
         return res.status(400).json({ ok: false, error: `Product ${line.productId} unavailable.` });
       }
+      if (product.shopId !== shop.id) foreignShop.add(product.shopId);
       if (product.stock < line.quantity) {
         return res.status(400).json({ ok: false, error: `Insufficient stock for ${product.name}.` });
       }
       const price = Number(product.price);
       subtotal += price * line.quantity;
       lines.push({ product, quantity: line.quantity, price });
+    }
+    if (foreignShop.size) {
+      return res.status(400).json({
+        ok: false,
+        error: "Your cart has products from more than one shop. Place a separate order for each shop.",
+      });
+    }
+
+    const address = await repo("Address").findOne({ where: { id: req.body.addressId } });
+    if (!address || (req.user.role !== "admin" && address.userId !== req.user.id)) {
+      return res.status(400).json({ ok: false, error: "Select a saved delivery address." });
     }
 
     // Offer discount (best-effort)
@@ -203,7 +210,7 @@ router.patch(
       return res.status(403).json({ ok: false, error: "Not your order." });
     }
     if (!canTransition(order.status, req.body.status)) {
-      return res.status(400).json({ ok: false, error: `Cannot move ${order.status} → ${req.body.status}.` });
+      return res.status(400).json({ ok: false, error: `Cannot move ${order.status} to ${req.body.status}.` });
     }
     order.status = req.body.status;
     if (req.body.status === "delivered" || req.body.status === "completed") {
@@ -240,6 +247,7 @@ router.post(
     order.status = "cancelled";
     order.cancelledAt = new Date();
     order.cancelReason = req.body?.reason;
+    await releaseOrderStock(order.id);
     res.json({ ok: true, data: await orders.save(order) });
   })
 );

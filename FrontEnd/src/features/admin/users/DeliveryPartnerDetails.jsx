@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -13,7 +13,7 @@ function formatDate(iso) {
 }
 
 export default function DeliveryPartnerDetails() {
-  const { id } = useParams();
+  const { partnerId : id } = useParams();
   const navigate = useNavigate();
   const { deliveryPartners, orders } = useAdmin();
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function DeliveryPartnerDetails() {
       <div className="text-center py-20">
         <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500 font-medium">Delivery partner not found</p>
-        <button onClick={() => navigate("/admin/users")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">Back to users</button>
+        <button onClick={() => navigate("/admin/users/delivery-partners")} className="mt-4 text-sm text-[#155c43] font-medium hover:underline">Back to users</button>
       </div>
     );
   }
@@ -55,7 +55,7 @@ export default function DeliveryPartnerDetails() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <button onClick={() => navigate("/admin/users")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+        <button onClick={() => navigate("/admin/users/delivery-partners")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">

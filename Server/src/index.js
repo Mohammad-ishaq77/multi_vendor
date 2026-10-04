@@ -6,8 +6,10 @@ import swaggerUi from "swagger-ui-express";
 import { createServer } from "http";
 import { config, isDevSecret } from "./config/env.js";
 import { initDb } from "./config/db.js";
+import { LOCAL_UPLOAD_DIR } from "./config/cloudinary.js";
 import { swaggerSpec } from "./config/swagger.js";
 import { errorHandler } from "./common/middleware/error.js";
+import { registerParamValidators } from "./common/middleware/params.js";
 import { initSocket } from "./realtime/socket.js";
 
 import authRoutes from "./modules/auth/routes.js";
@@ -38,6 +40,8 @@ export function buildApp() {
   app.use(helmet({ crossOriginResourcePolicy: false }));
   app.use(cors({ origin: config.clientOrigin, methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] }));
   app.use(rateLimit({ windowMs: 60_000, max: 300, standardHeaders: true, legacyHeaders: false }));
+  // Development stub uploads (Cloudinary not configured) are served from here.
+  app.use("/uploads", express.static(LOCAL_UPLOAD_DIR, { fallthrough: true, maxAge: "1h" }));
 
   // Razorpay webhook needs the raw body for signature validation
   app.use(
@@ -55,26 +59,37 @@ export function buildApp() {
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.get("/docs.json", (_req, res) => res.json(swaggerSpec));
 
-  app.use("/api/auth", authRoutes);
-  app.use("/api/users", usersRoutes);
-  app.use("/api/categories", categoriesRoutes);
-  app.use("/api/shops", shopsRoutes);
-  app.use("/api/products", productsRoutes);
-  app.use("/api/cart", cartRoutes);
-  app.use("/api/wishlist", wishlistRoutes);
-  app.use("/api/addresses", addressesRoutes);
-  app.use("/api/orders", ordersRoutes);
-  app.use("/api/payments", paymentsRoutes);
-  app.use("/api/offers", offersRoutes);
-  app.use("/api/reviews", reviewsRoutes);
-  app.use("/api/delivery", deliveryRoutes);
-  app.use("/api/notifications", notificationsRoutes);
-  app.use("/api/approvals", approvalsRoutes);
-  app.use("/api/reports", reportsRoutes);
-  app.use("/api/uploads", uploadsRoutes);
-  app.use("/api/admin", adminRoutes);
-  app.use("/api/shopkeeper", shopkeeperRoutes);
-  app.use("/api/customer", customerRoutes);
+  const apiRouters = {
+    "/api/auth": authRoutes,
+    "/api/users": usersRoutes,
+    "/api/categories": categoriesRoutes,
+    "/api/shops": shopsRoutes,
+    "/api/products": productsRoutes,
+    "/api/cart": cartRoutes,
+    "/api/wishlist": wishlistRoutes,
+    "/api/addresses": addressesRoutes,
+    "/api/orders": ordersRoutes,
+    "/api/payments": paymentsRoutes,
+    "/api/offers": offersRoutes,
+    "/api/reviews": reviewsRoutes,
+    "/api/delivery": deliveryRoutes,
+    "/api/notifications": notificationsRoutes,
+    "/api/approvals": approvalsRoutes,
+    "/api/reports": reportsRoutes,
+    "/api/uploads": uploadsRoutes,
+    "/api/admin": adminRoutes,
+    "/api/shopkeeper": shopkeeperRoutes,
+    "/api/customer": customerRoutes,
+  };
+
+  // Malformed UUIDs must fail with 400 instead of a driver-level 500. Route params
+  // live on each router, so every router gets the validators before it is mounted.
+  for (const router of new Set([...Object.values(apiRouters), customerRoutes])) {
+    registerParamValidators(router);
+  }
+  for (const [prefix, router] of Object.entries(apiRouters)) {
+    app.use(prefix, router);
+  }
   app.use("/api", customerRoutes); // also serves GET /api/profile + PUT /api/profile
 
   app.use("/api", (_req, res) => res.status(404).json({ ok: false, error: "Not found." }));

@@ -2,31 +2,26 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import * as LucideIcons from "lucide-react";
-import { ChevronRight, Plus, Search, CheckCircle2, Store } from "lucide-react";
+import { ChevronRight, Plus, Search, CheckCircle2, Loader2, Store } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
-import { shopTypes } from "../data/shopTypes";
 import ShopOnboardingLayout from "./ShopOnboardingLayout";
 
 const ShopTypeSelection = () => {
   const navigate = useNavigate();
-  const { shop, setShop, setOnboardingStep } = useShopkeeper();
+  const { shop, setShop, setOnboardingStep, shopTypes, loading } = useShopkeeper();
   const [selected, setSelected] = useState(
-    () => shopTypes.find((type) => type.id === shop.typeId || type.name === shop.type) || null
+    () => shopTypes.find((type) => type.id === shop.categoryId) || null
   );
-  const [customType, setCustomType] = useState(shop.type && !shop.typeId ? shop.type : "");
-  const [isCustom, setIsCustom] = useState(Boolean(shop.type && !shop.typeId));
+  const [customType, setCustomType] = useState(shop.name ? "" : "");
+  const [isCustom, setIsCustom] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const filtered = useMemo(
     () =>
-      shopTypes.filter(
-        (type) =>
-          type.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          type.description.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    [searchQuery]
+      shopTypes.filter((type) => type.name.toLowerCase().includes(searchQuery.trim().toLowerCase())),
+    [shopTypes, searchQuery]
   );
 
   const handleSelect = (type) => {
@@ -42,23 +37,34 @@ const ShopTypeSelection = () => {
     setError("");
   };
 
-  const handleProceed = () => {
-    const typeName = isCustom ? customType.trim() : selected?.name;
-    if (!typeName) {
-      setError("Select a shop type or create your own");
+  const handleProceed = async () => {
+    if (!isCustom && !selected) {
+      setError("Select a shop category");
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      setShop({ type: typeName, typeId: selected?.id || null, isApproved: false });
-      setOnboardingStep("create_shop");
-      navigate("/shopkeeper/onboarding/create-shop");
-    }, 400);
+    // Categories are server rows, so the real categoryId travels with the shop.
+    const result = await setShop({
+      type: isCustom ? customType.trim() : selected?.name,
+      categoryId: isCustom ? null : selected?.id,
+    });
+    setSubmitting(false);
+    if (!result?.ok) {
+      setError(result?.error || "We could not save your selection.");
+      return;
+    }
+    setOnboardingStep("create_shop");
+    navigate("/shopkeeper/onboarding/create-shop");
   };
 
   const selectedMeta = isCustom
-    ? { name: customType || "Custom type", description: "Your custom type will be reviewed by the NearMart team.", icon: "Plus" }
-    : selected;
+    ? {
+        name: customType || "Custom type",
+        description: "Describe your shop on the next screen; admins review it before approval.",
+      }
+    : selected
+      ? { name: selected.name, description: "Customers browsing this category will see your shop." }
+      : null;
 
   return (
     <ShopOnboardingLayout stepKey="type_selection">
@@ -87,6 +93,12 @@ const ShopTypeSelection = () => {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <AnimatePresence>
+            {loading && shopTypes.length === 0 && (
+              <div className="col-span-full flex items-center gap-2 rounded-[16px] border border-[#dce8e2] bg-[#f8fbf9] px-4 py-6 text-sm text-(--color-text-muted)">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading categories from NearMart...
+              </div>
+            )}
             {filtered.map((type, index) => {
               const Icon = LucideIcons[type.icon] || Store;
               const active = selected?.id === type.id;
@@ -117,7 +129,7 @@ const ShopTypeSelection = () => {
                   <span className="min-w-0 pr-5">
                     <span className="block text-sm font-semibold text-(--color-text)">{type.name}</span>
                     <span className="mt-0.5 block text-xs leading-relaxed text-(--color-text-muted)">
-                      {type.description}
+                      {type.description || `Sell ${type.name.toLowerCase()} products`}
                     </span>
                   </span>
                 </motion.button>
@@ -138,17 +150,24 @@ const ShopTypeSelection = () => {
               <Plus className="h-5 w-5" />
             </span>
             <span>
-              <span className="block text-sm font-semibold">Create new type</span>
+              <span className="block text-sm font-semibold">Use another category</span>
               <span className="mt-0.5 block text-xs text-(--color-text-muted)">
-                Don't see your category? Add a custom one for review.
+                Skip the category and describe your shop on the next screen.
               </span>
             </span>
           </button>
         </div>
 
-        {filtered.length === 0 && (
+        {!loading && shopTypes.length === 0 && (
+          <div className="mt-4 rounded-[12px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            No product categories are published yet. You can still continue — an admin can assign your category
+            later.
+          </div>
+        )}
+
+        {shopTypes.length > 0 && filtered.length === 0 && (
           <p className="mt-4 text-sm text-(--color-text-muted)">
-            No types match “{searchQuery}”. Create a custom type instead.
+            No categories match “{searchQuery}”.
           </p>
         )}
 

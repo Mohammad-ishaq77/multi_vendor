@@ -36,10 +36,14 @@ const ShopkeeperProfile = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    setProfile(form);
-    window.dispatchEvent(new Event("nearmart-profile-change"));
+    const result = await setProfile(form);
+    if (!result?.ok) {
+      setPasswordError(result?.error || "We could not save your profile.");
+      return;
+    }
+    setPasswordError("");
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -60,9 +64,9 @@ const ShopkeeperProfile = () => {
       setPasswordError("New password and confirm password do not match.");
       return;
     }
+    // The API exposes no password-change endpoint, so nothing is pretended here.
     setPasswords({ current: "", new: "", confirm: "" });
-    setPasswordMessage("Password updated successfully.");
-    setTimeout(() => setPasswordMessage(""), 3000);
+    setPasswordError("Changing your password is not available yet. Contact support to reset it.");
   };
 
   const menuItems = [

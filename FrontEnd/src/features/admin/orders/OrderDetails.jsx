@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -463,7 +463,7 @@ export default function OrderDetails() {
               </h3>
               <div
                 className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                onClick={() => customer && navigate(`/admin/customers/${customer.id}`)}
+                onClick={() => customer && navigate(`/admin/users/customers/${customer.id}`)}
               >
                 <div className="w-11 h-11 rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold">
                   {order.customerName?.charAt(0)}
@@ -516,7 +516,7 @@ export default function OrderDetails() {
               {order.deliveryPartnerName ? (
                 <div
                   className="flex items-center gap-3 p-3 rounded-md bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => deliveryPartner && navigate(`/admin/delivery-partners/${deliveryPartner.id}`)}
+                  onClick={() => deliveryPartner && navigate(`/admin/users/delivery-partners/${deliveryPartner.id}`)}
                 >
                   <div className="w-11 h-11 rounded-md bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
                     {order.deliveryPartnerName?.charAt(0)}

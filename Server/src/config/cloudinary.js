@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+import path from "path";
 import { v2 as cloudinary } from "cloudinary";
 import { config } from "./env.js";
 
@@ -17,10 +19,28 @@ if (configured) {
 
 export const isCloudinaryConfigured = () => configured;
 
-/** Upload a multer buffer. Falls back to a local stub URL when not configured. */
+/** Where development stub uploads are written so the returned URL actually resolves. */
+export const LOCAL_UPLOAD_DIR = path.resolve("uploads");
+
+const safeSegment = (value, fallback) =>
+  String(value || "")
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || fallback;
+
+async function writeLocalStub(buffer, { folder, filename }) {
+  const dir = path.join(LOCAL_UPLOAD_DIR, safeSegment(folder, "nearmart"));
+  await fs.mkdir(dir, { recursive: true });
+  const name = safeSegment(filename, `upload-${Date.now()}`);
+  await fs.writeFile(path.join(dir, name), buffer);
+  return `/uploads/${path.relative(LOCAL_UPLOAD_DIR, dir).split(path.sep).join("/")}/${name}`;
+}
+
+/** Upload a multer buffer. Falls back to a locally served file when not configured. */
 export async function uploadBuffer(buffer, { folder = "nearmart", filename = `upload-${Date.now()}` } = {}) {
   if (!configured) {
-    return { url: `/uploads/${folder}/${filename}`, publicId: null, stub: true };
+    const url = await writeLocalStub(buffer, { folder, filename });
+    return { url, publicId: null, stub: true };
   }
   const b64 = buffer.toString("base64");
   const res = await cloudinary.uploader.upload(
