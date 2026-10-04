@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Filter, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Filter, Search, SlidersHorizontal, Store } from "lucide-react";
 import MainLayout from "../../layouts/MainLayout";
-import PageHero from "../../components/hero/PageHero";
-import { pageHeroes } from "../../config/heroes";
 import MarketplaceProductCard from "../../components/cards/MarketplaceProductCard";
 import MarketplaceShopCard from "../../components/cards/MarketplaceShopCard";
+import CardImage from "../../components/common/CardImage";
 import EmptyState from "../../components/ui/EmptyState";
 import categories from "../../data/categories.json";
 import { searchCatalog, sortProducts } from "../../utils/marketplace";
@@ -40,18 +39,7 @@ const MarketplacePage = () => {
 
   return (
     <MainLayout>
-      {query ? (
-        <PageHero
-          {...pageHeroes.search}
-          title={`Results for “${query}”`}
-          highlight=""
-          description={`Products, shops and categories matching “${query}” across NearMart.`}
-        />
-      ) : (
-        <PageHero {...pageHeroes.marketplace} />
-      )}
-
-      <section className="border-b border-(--color-green-soft) bg-white py-4">
+      <section className="bg-slate-50 py-4 shadow-xs">
         <div className="container-app">
           <form onSubmit={handleSearch} className="flex flex-col gap-2 lg:flex-row">
             <div className="relative flex-1">
@@ -101,7 +89,7 @@ const MarketplacePage = () => {
         </div>
       </section>
 
-      <section className="bg-(--color-surface-tint) py-6 lg:py-8">
+      <section className="bg-slate-50 py-6 lg:py-8">
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{query ? "Shops" : "Shops near you"}</h2>
           {results.vendors.length ? (
@@ -117,7 +105,7 @@ const MarketplacePage = () => {
       </section>
 
       {query && results.categories.length > 0 && (
-        <section className="bg-white py-6">
+        <section className="bg-slate-50 py-6">
           <div className="container-app">
             <h2 className="mb-3 font-display text-lg font-bold">Categories</h2>
             <div className="flex flex-wrap gap-2">
@@ -135,7 +123,7 @@ const MarketplacePage = () => {
         </section>
       )}
 
-      <section className="bg-white py-6 lg:py-8">
+      <section className="bg-slate-50 py-6 lg:py-8">
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{products.length} products</h2>
           {products.length ? (

@@ -42,21 +42,7 @@ const MarketplaceCategoryPage = () => {
 
   return (
     <MainLayout>
-      <PageHero
-        variant={category.variant || "overlay"}
-        eyebrow={category.name}
-        title={category.headline}
-        highlight={category.variant === "split" ? undefined : category.promise?.[0]}
-        description={category.intro || category.story}
-        image={category.cover}
-        mosaic={related.slice(0, 3).map((item) => item.cover).filter(Boolean)}
-        primaryTo="/marketplace"
-        primaryLabel="All shops"
-        secondaryTo="/categories"
-        secondaryLabel="All aisles"
-      />
-
-      <section className="border-b border-(--color-green-soft) bg-white py-3">
+      <section className="bg-slate-50 py-4 shadow-xs">
         <div className="container-app flex flex-col gap-2 lg:flex-row">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
@@ -84,7 +70,7 @@ const MarketplaceCategoryPage = () => {
       </section>
 
       {shops.length > 0 && (
-        <section className="bg-(--color-surface-tint) py-6 lg:py-8">
+        <section className="bg-slate-50 py-6 lg:py-8">
           <div className="container-app">
             <h2 className="mb-3 font-display text-lg font-bold">Stores</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -96,7 +82,7 @@ const MarketplaceCategoryPage = () => {
         </section>
       )}
 
-      <section className="bg-white py-6 lg:py-8">
+      <section className="bg-slate-50 py-6 lg:py-8">
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{products.length} products</h2>
           {products.length ? (
@@ -111,18 +97,40 @@ const MarketplaceCategoryPage = () => {
         </div>
       </section>
 
-      <section className="bg-(--color-green-bg) py-6">
+      {/* Horizontal Carousel-Based Categories Section */}
+      <section className="bg-slate-50 py-8 overflow-hidden">
         <div className="container-app">
-          <h2 className="mb-3 font-display text-lg font-bold">More categories</h2>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-700">Quick Navigation</span>
+              <h2 className="font-display text-xl font-extrabold text-slate-900">Explore Other Categories</h2>
+            </div>
+            <Link to="/categories" className="text-xs font-bold text-emerald-700 hover:underline">View All</Link>
+          </div>
+
+          <div className="no-scrollbar flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
             {related.map((item) => (
-                <Link key={item.slug} to={`/marketplace/${item.slug}`} className="card-surface card-shine overflow-hidden">
-                  <div className="card-media relative h-20">
-                    <CardImage src={item.cover} alt={item.name} category={item.name} className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-(--color-primary-dark)/45" />
-                    <h3 className="absolute inset-x-0 bottom-2 z-10 px-2 text-center text-xs font-bold text-white">{item.name}</h3>
-                  </div>
-                </Link>
+              <Link
+                key={item.slug}
+                to={`/marketplace/${item.slug}`}
+                className="group relative h-44 w-60 shrink-0 snap-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-300"
+              >
+                <CardImage
+                  src={item.cover}
+                  alt={item.name}
+                  category={item.name}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-108"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/35 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-3.5">
+                  <span className="inline-block rounded-md bg-emerald-500/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-xs">
+                    Category
+                  </span>
+                  <h3 className="mt-1 font-display text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                    {item.name}
+                  </h3>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
