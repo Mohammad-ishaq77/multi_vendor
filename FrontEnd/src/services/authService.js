@@ -204,7 +204,7 @@ export const authService = {
 
 export const logoutAndRedirect = async (navigate) => {
   await authService.logout();
-  navigate("/", { replace: true });
+  window.location.href = "/";
 };
 
 export default authService;

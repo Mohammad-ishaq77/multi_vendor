@@ -10,6 +10,8 @@ import {
   Home,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
+import { useAsyncData } from "../../../hooks/useAsyncData";
+import { orderService } from "../../../services/orderService";
 
 const steps = [
   { key: "Placed", label: "Order Placed", desc: "We received your order" },
@@ -37,10 +39,22 @@ const statusConfig = {
 
 const TrackOrder = () => {
   const { orderId } = useParams();
-  const orders = JSON.parse(localStorage.getItem("nearmart_orders") || "[]");
-  const order = orders.find((item) => item.id === orderId);
+  const { data: order, loading, error } = useAsyncData(
+    () => orderService.track(orderId),
+    [orderId]
+  );
 
-  if (!order) {
+  if (loading) {
+    return (
+      <CustomerShell>
+        <div className="max-w-2xl mx-auto px-6 py-12 flex justify-center">
+          <div className="w-8 h-8 border-4 border-[#1B4332] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </CustomerShell>
+    );
+  }
+
+  if (!order || error) {
     return (
       <CustomerShell>
         <div className="max-w-2xl mx-auto px-6 py-12 text-center">

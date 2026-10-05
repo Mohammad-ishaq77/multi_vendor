@@ -11,6 +11,9 @@ import {
   Download,
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
+import { useAsyncData } from "../../../hooks/useAsyncData";
+import { orderService } from "../../../services/orderService";
+import { normalizeOrder } from "../../../utils/normalize";
 
 const statusConfig = {
   Placed: {
@@ -47,8 +50,11 @@ const statusConfig = {
 
 const OrderDetails = () => {
   const { orderId } = useParams();
-  const orders = JSON.parse(localStorage.getItem("nearmart_orders") || "[]");
-  const order = orders.find((item) => item.id === orderId);
+  
+  const { data: order, loading, error } = useAsyncData(
+    () => orderService.get(orderId).then(normalizeOrder),
+    [orderId]
+  );
 
   const downloadInvoice = () => {
     const lines = [
@@ -70,7 +76,17 @@ const OrderDetails = () => {
     URL.revokeObjectURL(url);
   };
 
-  if (!order) {
+  if (loading) {
+    return (
+      <CustomerShell>
+        <div className="max-w-3xl mx-auto px-6 py-12 flex justify-center">
+          <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      </CustomerShell>
+    );
+  }
+
+  if (!order || error) {
     return (
       <CustomerShell>
         <div className="max-w-3xl mx-auto px-6 py-12 text-center">

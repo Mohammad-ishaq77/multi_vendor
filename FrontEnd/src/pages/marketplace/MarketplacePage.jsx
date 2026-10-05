@@ -8,6 +8,8 @@ import CardImage from "../../components/common/CardImage";
 import EmptyState from "../../components/ui/EmptyState";
 import categories from "../../data/categories.json";
 import { searchCatalog, sortProducts } from "../../utils/marketplace";
+import { useVoiceSearch } from "../../hooks/useVoiceSearch";
+import VoiceSearchButton, { VoiceSearchToast } from "../../components/common/VoiceSearchButton";
 
 const SORT_OPTIONS = [
   { id: "featured", label: "Featured" },
@@ -30,12 +32,31 @@ const MarketplacePage = () => {
   const products = useMemo(() => sortProducts(results.products, sortKey), [results.products, sortKey]);
 
   const handleSearch = (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     const next = new URLSearchParams(searchParams);
     if (draft.trim()) next.set("q", draft.trim());
     else next.delete("q");
     setSearchParams(next);
   };
+
+  const {
+    isListening,
+    isSpeechSupported,
+    selectedLang,
+    setSelectedLang,
+    speechToast,
+    startVoiceSearch,
+    showToast,
+    SPEECH_LANGUAGES,
+  } = useVoiceSearch((transcript, isFinal) => {
+    setDraft(transcript);
+    if (isFinal) {
+      const next = new URLSearchParams(searchParams);
+      if (transcript.trim()) next.set("q", transcript.trim());
+      else next.delete("q");
+      setSearchParams(next);
+    }
+  });
 
   return (
     <MainLayout>
@@ -50,8 +71,20 @@ const MarketplacePage = () => {
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder="Search products, shops or categories"
                 aria-label="Search marketplace"
-                className="input-field !min-h-10 pl-11"
+                className="input-field !min-h-10 pl-11 pr-[5.5rem]"
               />
+              <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <VoiceSearchButton
+                  isSpeechSupported={isSpeechSupported}
+                  isListening={isListening}
+                  startVoiceSearch={startVoiceSearch}
+                  selectedLang={selectedLang}
+                  setSelectedLang={setSelectedLang}
+                  SPEECH_LANGUAGES={SPEECH_LANGUAGES}
+                  showToast={showToast}
+                />
+              </div>
+              <VoiceSearchToast speechToast={speechToast} isListening={isListening} />
             </div>
             <div className="flex gap-2">
               <label className="relative min-w-[160px] flex-1 lg:flex-none">

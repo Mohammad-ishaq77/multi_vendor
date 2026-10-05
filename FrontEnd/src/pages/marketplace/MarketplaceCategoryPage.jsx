@@ -10,6 +10,8 @@ import NotFound from "../not-found/NotFound";
 import categories from "../../data/categories.json";
 import CardImage from "../../components/common/CardImage";
 import { getCategoryBySlug, getRelatedProducts, getRelatedVendors, sortProducts } from "../../utils/marketplace";
+import { useVoiceSearch } from "../../hooks/useVoiceSearch";
+import VoiceSearchButton, { VoiceSearchToast } from "../../components/common/VoiceSearchButton";
 
 const SORT_OPTIONS = [
   { id: "featured", label: "Featured" },
@@ -23,6 +25,19 @@ const MarketplaceCategoryPage = () => {
   const category = getCategoryBySlug(slug);
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState("featured");
+
+  const {
+    isListening,
+    isSpeechSupported,
+    selectedLang,
+    setSelectedLang,
+    speechToast,
+    startVoiceSearch,
+    showToast,
+    SPEECH_LANGUAGES,
+  } = useVoiceSearch((transcript, isFinal) => {
+    setQuery(transcript);
+  });
 
   const shops = useMemo(() => getRelatedVendors(category), [category]);
   const allProducts = useMemo(() => getRelatedProducts(category), [category]);
@@ -52,8 +67,20 @@ const MarketplaceCategoryPage = () => {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={`Filter ${category.name.toLowerCase()}`}
               aria-label={`Filter ${category.name} products`}
-              className="input-field !min-h-10 pl-11"
+              className="input-field !min-h-10 pl-11 pr-[5.5rem]"
             />
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <VoiceSearchButton
+                isSpeechSupported={isSpeechSupported}
+                isListening={isListening}
+                startVoiceSearch={startVoiceSearch}
+                selectedLang={selectedLang}
+                setSelectedLang={setSelectedLang}
+                SPEECH_LANGUAGES={SPEECH_LANGUAGES}
+                showToast={showToast}
+              />
+            </div>
+            <VoiceSearchToast speechToast={speechToast} isListening={isListening} />
           </div>
           <label className="relative lg:w-52">
             <span className="sr-only">Sort {category.name} products</span>

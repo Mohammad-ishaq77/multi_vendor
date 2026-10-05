@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { productService } from "../../../services/catalogService";
 import { normalizeProducts } from "../../../utils/normalize";
 import { useAsyncData } from "../../../hooks/useAsyncData";
+import { useVoiceSearch } from "../../../hooks/useVoiceSearch";
+import VoiceSearchButton, { VoiceSearchToast } from "../../../components/common/VoiceSearchButton";
 import CustomerShell from "../components/CustomerShell";
 import ProductCard from "../components/ProductCard";
 
@@ -41,6 +43,19 @@ const Products = () => {
     setParams(next);
   };
 
+  const {
+    isListening,
+    isSpeechSupported,
+    selectedLang,
+    setSelectedLang,
+    speechToast,
+    startVoiceSearch,
+    showToast,
+    SPEECH_LANGUAGES,
+  } = useVoiceSearch((transcript, isFinal) => {
+    updateParam("search", transcript);
+  });
+
   return (
     <CustomerShell>
       <section className="w-full">
@@ -48,13 +63,27 @@ const Products = () => {
         <p className="mt-1 text-sm text-gray-500">Products listed by NearMart shops.</p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
-          <input
-            type="search"
-            value={params.get("search") || ""}
-            onChange={(event) => updateParam("search", event.target.value)}
-            placeholder="Search products or shops"
-            className="w-full rounded-md border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-emerald-500"
-          />
+          <div className="relative flex items-center">
+            <input
+              type="search"
+              value={params.get("search") || ""}
+              onChange={(event) => updateParam("search", event.target.value)}
+              placeholder="Search products or shops"
+              className="w-full rounded-md border border-gray-200 bg-white px-4 py-2.5 pr-[5.5rem] text-sm outline-none focus:border-emerald-500"
+            />
+            <div className="absolute right-1 flex items-center gap-1">
+              <VoiceSearchButton
+                isSpeechSupported={isSpeechSupported}
+                isListening={isListening}
+                startVoiceSearch={startVoiceSearch}
+                selectedLang={selectedLang}
+                setSelectedLang={setSelectedLang}
+                SPEECH_LANGUAGES={SPEECH_LANGUAGES}
+                showToast={showToast}
+              />
+            </div>
+            <VoiceSearchToast speechToast={speechToast} isListening={isListening} />
+          </div>
           <select
             aria-label="Filter by category"
             value={category}

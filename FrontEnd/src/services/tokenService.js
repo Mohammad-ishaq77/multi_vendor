@@ -47,6 +47,10 @@ export const tokenService = {
 
   clear() {
     storageService.removeMany([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, ACTIVE_ROLE_KEY]);
+    if (typeof window !== "undefined") {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    }
   },
 
   hasSession() {

@@ -69,7 +69,7 @@ const tabs = ["All", "Processing", "Shipped", "Delivered", "Cancelled"];
 const Orders = () => {
   // Real orders from GET /api/orders/my — no local copy.
   const { data, loading, error, reload } = useAsyncData(
-    () => orderService.myOrders({ limit: 50 }).then(normalizeOrders),
+    () => orderService.myOrders({ limit: 50 }).then((res) => normalizeOrders(res.items)),
     []
   );
   const orders = data || [];

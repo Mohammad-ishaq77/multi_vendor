@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { AlignJustify, X } from "lucide-react";
+import MarketplaceSearch from "../common/MarketplaceSearch";
 
 export const DASHBOARD_INSET = "px-2.5 sm:px-5 lg:px-6";
 
@@ -46,11 +47,16 @@ const DashboardHeader = ({
         </AnimatePresence>
       </motion.button>
 
-      <h1 className="min-w-0 flex-1 truncate text-xs font-bold tracking-tight text-gray-900 sm:text-[15px] lg:text-base">
+      <h1 className="hidden sm:block min-w-0 flex-1 truncate text-xs font-bold tracking-tight text-gray-900 sm:text-[15px] lg:text-base">
         {title}
       </h1>
 
-      <div className="flex shrink-0 items-center gap-0.5 sm:gap-2">{children}</div>
+      {/* Dashboard Top Search Bar */}
+      <div className="flex-1 max-w-lg sm:max-w-2xl mx-2 sm:mx-6 flex items-center">
+        <MarketplaceSearch variant="nav" placeholder="Search everywhere..." />
+      </div>
+
+      <div className="flex shrink-0 items-center gap-0.5 sm:gap-2 ml-auto">{children}</div>
     </header>
   );
 };

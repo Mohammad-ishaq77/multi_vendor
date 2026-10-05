@@ -63,6 +63,7 @@ const Checkout = () => {
   const { user } = useAuth();
   const [isPlacing, setIsPlacing] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("razorpay");
 
   const [address, setAddress] = useState(EMPTY_ADDRESS);
   const [savedAddresses, setSavedAddresses] = useState([]);
@@ -254,26 +255,27 @@ const Checkout = () => {
         shopId: singleShop.shopId,
         addressId,
         items: singleShop.items,
-        paymentMethod: "razorpay",
+        paymentMethod: selectedPaymentMethod,
       });
       const order = normalizeOrder(created);
 
-      // 2. Pay that exact, server-computed amount.
-      const payment = await paymentService.checkout({
-        amount: order.total,
-        orderId: order.id,
-        customer: {
-          fullName: address.fullName,
-          email: user?.email || address.email,
-          phone: address.phone,
-        },
-        description: `NearMart order ${order.id.slice(0, 8)}`,
-      });
+      if (selectedPaymentMethod === "razorpay") {
+        // 2. Pay that exact, server-computed amount.
+        const payment = await paymentService.checkout({
+          amount: order.total,
+          orderId: order.id,
+          customer: {
+            fullName: address.fullName,
+            email: user?.email || address.email,
+            phone: address.phone,
+          },
+          description: `NearMart order ${order.id.slice(0, 8)}`,
+        });
+      }
 
       await reloadCart();
-      showToast("Payment successful. Your order has been placed.");
+      showToast(selectedPaymentMethod === "razorpay" ? "Payment successful. Your order has been placed." : "Your order has been placed successfully.");
       navigate(`/customer/orders/${order.id}`);
-      void payment;
     } catch (error) {
       const message = error?.cancelled
         ? "Payment was cancelled before completion. The order is saved with a pending payment."
@@ -568,55 +570,118 @@ const Checkout = () => {
                   <CreditCard className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-[#14261f]">Pay with Razorpay</h2>
-                  <p className="text-xs text-gray-500">UPI, cards, net banking, wallets and other supported methods.</p>
+                  <h2 className="text-lg font-bold text-[#14261f]">Payment Method</h2>
+                  <p className="text-xs text-gray-500">Choose how you want to pay for your order.</p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <motion.label
+                <motion.button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("razorpay")}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  className="flex items-center gap-4 border border-[#155c43] bg-[#f0f8f3] shadow-md shadow-[#155c43]/5 rounded-md p-4 cursor-default"
+                  className={`w-full flex items-center gap-4 border shadow-md shadow-[#155c43]/5 rounded-md p-4 transition-all text-left ${
+                    selectedPaymentMethod === "razorpay" 
+                      ? "border-[#155c43] bg-[#f0f8f3]" 
+                      : "border-gray-200 bg-white hover:border-[#155c43]/50"
+                  }`}
                 >
-                  <div className="w-5 h-5 rounded-full border-2 border-[#155c43] flex items-center justify-center shrink-0">
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="w-2.5 h-2.5 bg-[#155c43] rounded-full"
-                    />
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                    selectedPaymentMethod === "razorpay" ? "border-[#155c43]" : "border-gray-300"
+                  }`}>
+                    {selectedPaymentMethod === "razorpay" && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-2.5 h-2.5 bg-[#155c43] rounded-full"
+                      />
+                    )}
                   </div>
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 shrink-0">
                     <CreditCard className="w-5 h-5" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-sm text-[#14261f]">Razorpay Checkout</p>
-                    <p className="text-xs text-gray-500">Google Pay, PhonePe, BharatPe, UPI apps, cards, net banking and wallets.</p>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm text-[#14261f]">Online Payment (Razorpay)</p>
+                    <p className="text-xs text-gray-500 mt-0.5">UPI apps, cards, net banking and wallets.</p>
                   </div>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="ml-auto"
-                  >
-                    <Check className="w-5 h-5 text-[#155c43]" />
-                  </motion.div>
-                </motion.label>
+                  {selectedPaymentMethod === "razorpay" && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="shrink-0"
+                    >
+                      <Check className="w-5 h-5 text-[#155c43]" />
+                    </motion.div>
+                  )}
+                </motion.button>
+
+                <motion.button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("cod")}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className={`w-full flex items-center gap-4 border shadow-md shadow-[#155c43]/5 rounded-md p-4 transition-all text-left ${
+                    selectedPaymentMethod === "cod" 
+                      ? "border-[#155c43] bg-[#f0f8f3]" 
+                      : "border-gray-200 bg-white hover:border-[#155c43]/50"
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                    selectedPaymentMethod === "cod" ? "border-[#155c43]" : "border-gray-300"
+                  }`}>
+                    {selectedPaymentMethod === "cod" && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-2.5 h-2.5 bg-[#155c43] rounded-full"
+                      />
+                    )}
+                  </div>
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 shrink-0">
+                    <span className="font-bold text-lg text-gray-500">₹</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm text-[#14261f]">Cash on Delivery</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Pay with cash when your order is delivered.</p>
+                  </div>
+                  {selectedPaymentMethod === "cod" && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="shrink-0"
+                    >
+                      <Check className="w-5 h-5 text-[#155c43]" />
+                    </motion.div>
+                  )}
+                </motion.button>
               </div>
 
-              <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                {RAZORPAY_CONFIG.methods.map((method) => (
-                  <div key={method.id} className="rounded-md border border-(--color-green-soft) bg-(--color-green-bg)/60 px-4 py-3">
-                    <p className="text-sm font-semibold text-[#14261f]">{method.label}</p>
-                    <p className="text-xs text-gray-500">{method.detail}</p>
-                  </div>
-                ))}
-              </div>
-              {!isRazorpayAvailable && (
-                <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                  {paymentHint} Ask an administrator to add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to the
-                  server environment before checkout can complete.
-                </p>
-              )}
+              <AnimatePresence>
+                {selectedPaymentMethod === "razorpay" && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {RAZORPAY_CONFIG.methods.map((method) => (
+                        <div key={method.id} className="rounded-md border border-(--color-green-soft) bg-(--color-green-bg)/60 px-4 py-3">
+                          <p className="text-sm font-semibold text-[#14261f]">{method.label}</p>
+                          <p className="text-xs text-gray-500">{method.detail}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {!isRazorpayAvailable && (
+                      <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        {paymentHint} Ask an administrator to add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to the
+                        server environment before checkout can complete.
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {paymentError && (
                 <p className="mt-3 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
                   {paymentError}
@@ -711,7 +776,7 @@ const Checkout = () => {
                   multiShop ||
                   unavailableItems.length > 0 ||
                   !addressId ||
-                  !isRazorpayAvailable
+                  (selectedPaymentMethod === "razorpay" && !isRazorpayAvailable)
                 }
                 className="w-full mt-6 bg-linear-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-md font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"
               >
@@ -724,7 +789,7 @@ const Checkout = () => {
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
-                    Place & Pay
+                    {selectedPaymentMethod === "razorpay" ? "Place & Pay" : "Place Order"}
                   </>
                 )}
                 <motion.div
@@ -737,7 +802,7 @@ const Checkout = () => {
 
               <div className="flex items-center justify-center gap-2 mt-4 text-[0.65rem] text-gray-400">
                 <ShieldCheck className="w-3 h-3" />
-                Secured by Razorpay
+                {selectedPaymentMethod === "razorpay" ? "Secured by Razorpay" : "Pay with Cash on Delivery"}
               </div>
             </div>
           </motion.aside>

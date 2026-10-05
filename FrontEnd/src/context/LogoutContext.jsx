@@ -12,11 +12,11 @@ export const LogoutProvider = ({ children }) => {
 
   const requestLogout = useCallback(() => setOpen(true), []);
   const cancelLogout = useCallback(() => setOpen(false), []);
-  const confirmLogout = useCallback(() => {
+  const confirmLogout = useCallback(async () => {
     setOpen(false);
-    navigate("/", { replace: true });
-    authService.logout();
-  }, [navigate]);
+    await authService.logout();
+    window.location.href = "/";
+  }, []);
 
   return (
     <LogoutContext.Provider value={{ requestLogout }}>

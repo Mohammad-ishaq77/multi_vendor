@@ -5,6 +5,8 @@ import * as LucideIcons from "lucide-react";
 import { ChevronRight, Plus, Search, CheckCircle2, Loader2, Store } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 import ShopOnboardingLayout from "./ShopOnboardingLayout";
+import { useVoiceSearch } from "../../../hooks/useVoiceSearch";
+import VoiceSearchButton, { VoiceSearchToast } from "../../../components/common/VoiceSearchButton";
 
 const ShopTypeSelection = () => {
   const navigate = useNavigate();
@@ -23,6 +25,19 @@ const ShopTypeSelection = () => {
       shopTypes.filter((type) => type.name.toLowerCase().includes(searchQuery.trim().toLowerCase())),
     [shopTypes, searchQuery]
   );
+
+  const {
+    isListening,
+    isSpeechSupported,
+    selectedLang,
+    setSelectedLang,
+    speechToast,
+    startVoiceSearch,
+    showToast,
+    SPEECH_LANGUAGES,
+  } = useVoiceSearch((transcript, isFinal) => {
+    setSearchQuery(transcript);
+  });
 
   const handleSelect = (type) => {
     setSelected(type);
@@ -86,8 +101,20 @@ const ShopTypeSelection = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search grocery, pharmacy, bakery..."
-              className="input-field pl-10"
+              className="input-field pl-10 pr-[5.5rem]"
             />
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              <VoiceSearchButton
+                isSpeechSupported={isSpeechSupported}
+                isListening={isListening}
+                startVoiceSearch={startVoiceSearch}
+                selectedLang={selectedLang}
+                setSelectedLang={setSelectedLang}
+                SPEECH_LANGUAGES={SPEECH_LANGUAGES}
+                showToast={showToast}
+              />
+            </div>
+            <VoiceSearchToast speechToast={speechToast} isListening={isListening} />
           </div>
         </div>
 
