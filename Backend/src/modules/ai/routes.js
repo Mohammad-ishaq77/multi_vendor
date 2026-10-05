@@ -55,14 +55,26 @@ function getFallbackResponse(message, contextInfo) {
   if (query.includes("return") || query.includes("refund") || query.includes("cancel")) {
     return "You can easily check your order status or request cancellations from your Account > Orders dashboard. For shop-specific return policies, please contact the seller via the shop page.";
   }
+  if (query.includes("add") && (query.includes("shop") || query.includes("store") || query.includes("vendor") || query.includes("sell"))) {
+    return "To add your shop and start selling on NearMart, simply register an account and select 'Shopkeeper' as your role. You can then submit your shop details for quick approval!";
+  }
   if (query.includes("shop") || query.includes("vendor") || query.includes("store")) {
-    return `We have active verified shops on NearMart! Here are some of our top stores: ${contextInfo.split("Featured Approved Shops: ")[1]?.split("\n")[0] || "Explore our Marketplace page for all local shops."}`;
+    const shops = contextInfo.split("Featured Approved Shops: ")[1]?.split("\n")[0];
+    return `We have many active verified shops on NearMart! ${shops ? `Some of our top stores include: ${shops}. ` : ""}Explore our Marketplace page to discover all local shops.`;
   }
   if (query.includes("product") || query.includes("price") || query.includes("item") || query.includes("buy")) {
-    return `Looking for items? ${contextInfo.split("Sample Available Products: ")[1] || "You can use the search bar above to instantly find products by voice or text!"}`;
+    const products = contextInfo.split("Sample Available Products: ")[1];
+    return `Looking for items? ${products ? `Some of the items available right now are: ${products.replace(".", "")}. ` : ""}You can use the search bar above to instantly find products by voice or text!`;
   }
   if (query.includes("hello") || query.includes("hi") || query.includes("hey")) {
     return "Hello! Welcome to NearMart Assistant. How can I help you find products, local shops, or track orders today?";
+  }
+
+  if (query.includes("contact") || query.includes("phone") || query.includes("email") || query.includes("support")) {
+    return "You can reach out to NearMart support via email at support@nearmart.in or call us at +91-9876543210 for any assistance.";
+  }
+  if (query.includes("frontend") || query.includes("backend") || query.includes("database") || query.includes("tech") || query.includes("stack") || query.includes("project")) {
+    return "NearMart is built with a modern tech stack: React.js and Tailwind CSS for the frontend, Node.js and Express for the backend, and PostgreSQL as the database.";
   }
 
   return `Thanks for reaching out! NearMart is your hyper-local marketplace. You can search products, browse categories, or check active shops. ${contextInfo}`;
@@ -81,6 +93,10 @@ router.post(
     const systemPrompt = `You are NearMart Assistant, a helpful, polite, and knowledgeable AI assistant for NearMart, a multi-vendor e-commerce marketplace.
 Your goal is to assist customers with products, shop recommendations, ordering process, delivery information, and general customer support.
 Keep your responses concise, clear, friendly, and structured.
+
+Project Information:
+- Tech Stack: Frontend (React.js, Tailwind CSS), Backend (Node.js, Express), Database (PostgreSQL).
+- Contact Info: Email (support@nearmart.in), Phone (+91-9876543210).
 
 Here is real-time catalog context from the NearMart database:
 ${contextInfo}`;
