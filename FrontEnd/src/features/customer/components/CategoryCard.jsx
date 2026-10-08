@@ -1,10 +1,32 @@
 import React from "react";
+import {
+  ShoppingBasket,
+  Apple,
+  Milk,
+  Coffee,
+  Shirt,
+  Smartphone,
+  HeartPulse,
+  Sparkles,
+  ShoppingBag,
+} from "lucide-react";
 import { motion } from "framer-motion";
-import * as Icons from "lucide-react";
 import CardImage from "../../../components/common/CardImage";
 
+const iconMap = {
+  ShoppingBasket,
+  Apple,
+  Milk,
+  Coffee,
+  Shirt,
+  Smartphone,
+  HeartPulse,
+  Sparkles,
+  ShoppingBag,
+};
+
 const CategoryCard = ({ category, onClick }) => {
-  const Icon = Icons[category.icon] || Icons.ShoppingBag;
+  const Icon = iconMap[category.icon] || ShoppingBag;
 
   return (
     <motion.button
@@ -21,16 +43,19 @@ const CategoryCard = ({ category, onClick }) => {
           category={category.name}
           className="h-full w-full object-cover"
         />
+
         {category.count && (
           <span className="absolute right-3 top-3 z-10 rounded-full bg-white/95 px-2 py-0.5 text-[0.65rem] font-bold text-(--color-primary)">
             {category.count}
           </span>
         )}
       </div>
+
       <div className="flex items-center gap-3 p-4">
         <span className="flex h-10 w-10 items-center justify-center rounded-md bg-(--color-green-bg) text-(--color-primary)">
           <Icon className="h-5 w-5" />
         </span>
+
         <p className="text-sm font-semibold text-(--color-text) group-hover:text-(--color-primary)">
           {category.name}
         </p>
