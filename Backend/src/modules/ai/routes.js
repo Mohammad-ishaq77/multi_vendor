@@ -111,6 +111,12 @@ ${contextInfo}`;
     ];
 
     try {
+      console.log("OLLAMA REQUEST:", {
+        host: config.ai.ollamaHost,
+        model: config.ai.model,
+        hasApiKey: Boolean(config.ai.apiKey),
+      });
+
       const response = await fetch(`${config.ai.ollamaHost}/api/chat`, {
         method: "POST",
         headers: {
@@ -165,6 +171,7 @@ ${contextInfo}`;
 );
 
 export default router;
+
 
 
 
