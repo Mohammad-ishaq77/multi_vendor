@@ -141,10 +141,14 @@ export const CartProvider = ({ children }) => {
         groups.set(key, {
           shopId: item.shopId,
           shopName: item.shopName || item.shop || "Shop",
+          minOrder: Number(item.minOrder) || 0,
+          subtotal: 0,
           items: [],
         });
       }
-      groups.get(key).items.push({
+      const shop = groups.get(key);
+      shop.subtotal += (Number(item.price) || 0) * (Number(item.quantity) || 1);
+      shop.items.push({
         productId: item.productId,
         quantity: Number(item.quantity) || 1,
       });

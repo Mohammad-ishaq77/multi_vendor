@@ -1,12 +1,13 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BadgeCheck, CheckCircle2, ChevronRight, ClipboardList, FileCheck, Info, MapPin, User } from "lucide-react";
+import { BadgeCheck, CheckCircle2, ChevronRight, ClipboardList, FileCheck, Info, Loader2, MapPin, User } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import OnboardingLayout from "./OnboardingLayout";
 
 export default function DocumentsUpload() {
   const navigate = useNavigate();
   const {
-    updateOnboardingStep,
+    submitApplication,
     contactData,
     addressData,
     identityData,
@@ -14,6 +15,7 @@ export default function DocumentsUpload() {
     setDocumentsUploaded,
     actionError,
   } = useDeliveryPartner();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleUpload = async (event) => {
     const files = Array.from(event.target.files || []);
@@ -21,9 +23,11 @@ export default function DocumentsUpload() {
     event.target.value = "";
   };
 
-  const handleContinue = () => {
-    updateOnboardingStep("verification");
-    navigate("/delivery/onboarding/verification");
+  const handleContinue = async () => {
+    setSubmitting(true);
+    const result = await submitApplication();
+    setSubmitting(false);
+    if (result?.ok) navigate("/delivery/onboarding/verification");
   };
 
   const summary = [
@@ -106,9 +110,18 @@ export default function DocumentsUpload() {
           <span>Submitting sends your application to the NearMart admin panel. You cannot accept deliveries until it is approved.</span>
         </div>
 
-        <button type="button" onClick={handleContinue} className="btn-primary w-full">
-          Submit application
-          <ChevronRight className="h-4 w-4" />
+        <button type="button" onClick={handleContinue} disabled={submitting} className="btn-primary w-full disabled:cursor-wait disabled:opacity-60">
+          {submitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Submitting application...
+            </>
+          ) : (
+            <>
+              Submit application
+              <ChevronRight className="h-4 w-4" />
+            </>
+          )}
         </button>
       </div>
     </OnboardingLayout>

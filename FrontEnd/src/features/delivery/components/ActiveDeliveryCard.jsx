@@ -29,7 +29,10 @@ export default function ActiveDeliveryCard({ delivery }) {
             Active Delivery
           </span>
         </div>
-        <p className="text-base font-bold text-emerald-600 sm:text-lg">₹{delivery.partnerEarning}</p>
+        <div className="text-right">
+          <p className="text-base font-bold text-emerald-600 sm:text-lg">₹{delivery.partnerEarning}</p>
+          <p className="text-[0.65rem] text-gray-400">Your earning (80%)</p>
+        </div>
       </div>
 
       {/* Progress Bar */}

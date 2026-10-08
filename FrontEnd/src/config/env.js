@@ -25,6 +25,16 @@ export const API_ORIGIN =
 /** Public Razorpay key. Safe for the browser; the secret never is. */
 export const RAZORPAY_PUBLIC_KEY = env.VITE_RAZORPAY_KEY_ID || "";
 
+/**
+ * MapTiler public key (map tiles, place search, reverse geocoding).
+ * Safe for the browser — restrict the key to your domains in the MapTiler
+ * dashboard. An empty value makes the location picker show a setup notice
+ * instead of a broken map.
+ */
+export const MAPTILER_API_KEY = env.VITE_MAPTILER_API_KEY || "";
+
+export const hasMapTilerKey = () => Boolean(MAPTILER_API_KEY);
+
 /** How long the API client waits before aborting a request (ms). */
 export const API_TIMEOUT_MS = Number(env.VITE_API_TIMEOUT_MS) || 20000;
 
@@ -40,8 +50,10 @@ export default {
   API_BASE_URL,
   API_ORIGIN,
   API_TIMEOUT_MS,
+  MAPTILER_API_KEY,
   RAZORPAY_PUBLIC_KEY,
   SOCKET_URL,
   hasApiBase,
+  hasMapTilerKey,
   hasRazorpayPublicKey,
 };

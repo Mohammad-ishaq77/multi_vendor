@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   IndianRupee,
@@ -19,7 +20,20 @@ import { useShopkeeper } from "../context/ShopkeeperContext";
 
 const ShopkeeperDashboard = () => {
   const navigate = useNavigate();
-  const { shop, orders, products, earnings, reviews, updateOrderStatus, getNextStatus } = useShopkeeper();
+  const { shop, orders, products, earnings, reviews, updateOrderStatus, getNextStatus, refreshOrders } = useShopkeeper();
+
+  useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === "visible") refreshOrders();
+    };
+
+    window.addEventListener("focus", refresh);
+    const refreshInterval = window.setInterval(refresh, 8000);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.clearInterval(refreshInterval);
+    };
+  }, [refreshOrders]);
 
   const recentOrders = orders.slice(0, 5);
   const totalProducts = products.length;

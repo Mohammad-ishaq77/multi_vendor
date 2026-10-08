@@ -30,15 +30,18 @@ const ProfileSettings = lazy(() => import("../profile/ProfileSettings"));
 
 function DeliveryPartnerGate() {
   const location = useLocation();
-  const { hasCompletedOnboarding } = useDeliveryPartner();
+  const { isApproved, applicationStatus } = useDeliveryPartner();
 
   const path = location.pathname;
   const isOnboardingRoute = path.startsWith("/delivery/onboarding");
 
   if (isOnboardingRoute) return null;
 
-  if (!hasCompletedOnboarding) {
-    return <Navigate to="/delivery/onboarding/guidelines" replace />;
+  if (!isApproved) {
+    const destination = ["submitted", "rejected"].includes(applicationStatus)
+      ? "/delivery/onboarding/verification"
+      : "/delivery/onboarding/guidelines";
+    return <Navigate to={destination} replace />;
   }
 
   if (path === "/delivery") {
@@ -73,6 +76,7 @@ function AppRoutes() {
           <Route path="/" element={<Navigate to="/delivery/dashboard" replace />} />
           <Route path="dashboard" element={<DeliveryPartnerDashboard />} />
           <Route path="available" element={<AvailableDeliveries />} />
+          <Route path="details" element={<DeliveryDetails />} />
           <Route path="details/:deliveryId" element={<DeliveryDetails />} />
           <Route path="active" element={<ActiveDelivery />} />
           <Route path="pickup" element={<PickupVerification />} />
@@ -94,15 +98,24 @@ function AppRoutes() {
 }
 
 function DeliveryPartnerRoutes() {
-  const { hasCompletedOnboarding } = useDeliveryPartner();
+  const { loading, isApproved, applicationStatus } = useDeliveryPartner();
   const location = useLocation();
   const isOnboardingRoute = location.pathname.startsWith("/delivery/onboarding");
 
+  if (loading) return <PageLoader />;
+  if (isApproved) {
+    return isOnboardingRoute ? <Navigate to="/delivery/dashboard" replace /> : <AppRoutes />;
+  }
+  if (applicationStatus === "submitted") return <UnderVerification />;
+  if (applicationStatus === "rejected") {
+    if (!isOnboardingRoute || location.pathname.endsWith("/verification")) return <UnderVerification />;
+    return <OnboardingRoutes />;
+  }
   if (isOnboardingRoute) {
     return <OnboardingRoutes />;
   }
 
-  return hasCompletedOnboarding ? <AppRoutes /> : <OnboardingRoutes />;
+  return <OnboardingRoutes />;
 }
 
 export default function DeliveryPartnerEntry() {

@@ -121,14 +121,19 @@ const Cart = () => {
     cartCount,
     cartTotal,
     unavailableItems,
+    shops,
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
     clearCart,
   } = useCart();
 
-  const deliveryFee = cartTotal > 0 ? 40 : 0;
-  const total = cartTotal + deliveryFee;
+  // The delivery fee is priced by the server from the real road distance
+  // between the shop and the chosen address, so the cart cannot show one.
+  const total = cartTotal;
+  const shopsBelowMinimum = shops.filter(
+    (shop) => Math.round(shop.subtotal * 100) < Math.round(shop.minOrder * 100)
+  );
 
   return (
     <CustomerShell>
@@ -215,9 +220,7 @@ const Cart = () => {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Delivery Fee</span>
-                        <span className={`font-semibold ${deliveryFee === 0 ? "text-emerald-600" : "text-gray-900"}`}>
-                          {deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}
-                        </span>
+                        <span className="text-xs font-semibold text-gray-500">Calculated at checkout</span>
                       </div>
                     </div>
 
@@ -227,6 +230,17 @@ const Cart = () => {
                       </p>
                     )}
 
+                    {shopsBelowMinimum.length > 0 && (
+                      <div role="status" className="mb-4 space-y-2 text-sm text-amber-800">
+                        {shopsBelowMinimum.map((shop) => (
+                          <p key={shop.shopId}>
+                            Orders from {shop.shopName} start at ₹{shop.minOrder.toFixed(2)}.
+                            Add ₹{(shop.minOrder - shop.subtotal).toFixed(2)} more from this shop to place your order.
+                          </p>
+                        ))}
+                      </div>
+                    )}
+
                     {/* Total */}
                     <div className="flex justify-between items-baseline pt-4 mb-5">
                       <span className="text-sm font-semibold text-gray-900">Total</span>
@@ -234,13 +248,13 @@ const Cart = () => {
                     </div>
 
                     {/* Checkout Button */}
-                    {unavailableItems.length ? (
+                    {unavailableItems.length || shopsBelowMinimum.length ? (
                       <button
                         type="button"
                         disabled
                         className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-md bg-gray-300 py-3.5 text-sm font-semibold text-gray-600"
                       >
-                        Remove unavailable items to continue
+                        {unavailableItems.length ? "Remove unavailable items to continue" : "Meet each shop's minimum order to continue"}
                       </button>
                     ) : (
                       <Link
@@ -258,7 +272,7 @@ const Cart = () => {
                         <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
                           <Truck className="w-3.5 h-3.5" />
                         </div>
-                        <span>Delivery fee: ₹40</span>
+                        <span>Delivery fee by road distance, shown at checkout</span>
                       </div>
                       <div className="flex items-center gap-2.5 text-xs text-gray-500">
                         <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">

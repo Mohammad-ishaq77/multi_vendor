@@ -15,12 +15,12 @@ const DeliveryPartnerContext = createContext(null);
  *
  * Two things stay local, both UI-only:
  *  - `agreedToGuidelines` — a checkbox the partner has to tick in the wizard
- *  - `documentsData` — files uploaded during onboarding. The files themselves are
- *    stored through `POST /api/uploads`; only the pending list of returned URLs is
- *    kept locally because the API has no delivery-document table yet.
+ *  - `documentsData` — UI metadata for documents persisted through the delivery
+ *    document API. File bytes are stored through `POST /api/uploads`.
  */
 
 const UI_ONLY_KEY = "nearmart_dp_ui";
+const ESTIMATED_DELIVERY_TIME = "25-30 mins";
 
 const loadUiState = () => {
   try {
@@ -73,6 +73,7 @@ const toDeliveryJob = (order, extra = {}) => {
   if (!order) return null;
   const address = order.deliveryAddress || order.address || {};
   const shop = order.shop || {};
+  const deliveryFee = num(order.deliveryFee);
   return {
     ...order,
     id: order.id,
@@ -93,9 +94,20 @@ const toDeliveryJob = (order, extra = {}) => {
       price: num(item.price ?? item.product?.price),
     })),
     orderAmount: num(order.total),
-    deliveryFee: num(order.deliveryFee),
-    distance: order.distanceKm != null ? num(order.distanceKm) : null,
-    estimatedTime: order.estimatedDelivery || "",
+    deliveryFee,
+    partnerEarning: num(
+      extra.assignment?.partnerEarning ??
+        order.assignment?.partnerEarning ??
+        order.deliveryPartnerShare ??
+        deliveryFee * 0.8
+    ),
+    adminShare: num(order.nearMartShare ?? deliveryFee * 0.2),
+    distance: order.deliveryDistance != null
+      ? num(order.deliveryDistance)
+      : order.distanceKm != null
+        ? num(order.distanceKm)
+        : null,
+    estimatedTime: ESTIMATED_DELIVERY_TIME,
     createdAt: order.createdAt || null,
     ...extra,
   };
@@ -131,7 +143,7 @@ export function DeliveryPartnerProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const [stats, profile, available, active, history, earningsRes, notificationsRes] =
+      const [stats, profile, available, active, history, earningsRes, notificationsRes, documents] =
         await Promise.all([
           deliveryService.stats(),
           // /delivery/stats is an aggregate only; /delivery/profile carries the
@@ -142,6 +154,7 @@ export function DeliveryPartnerProvider({ children }) {
           deliveryService.history({ limit: 50 }).then(({ items }) => items).catch(() => []),
           deliveryService.earnings().catch(() => null),
           deliveryService.notifications().catch(() => []),
+          deliveryService.documents(),
         ]);
 
       setPartner({ ...(profile || {}), ...(stats || {}) });
@@ -156,6 +169,7 @@ export function DeliveryPartnerProvider({ children }) {
           status: ORDER_STATUS_TO_UI[assignment.status] || assignment.status,
           partnerEarning: num(assignment.partnerEarning),
           distance: assignment.distanceKm != null ? num(assignment.distanceKm) : null,
+          estimatedTime: ESTIMATED_DELIVERY_TIME,
           completedAt: assignment.deliveredAt || assignment.createdAt || null,
         }))
       );
@@ -175,12 +189,18 @@ export function DeliveryPartnerProvider({ children }) {
           createdAt: n.createdAt,
         }))
       );
+      patchUiState({
+        documentsData: (documents || []).map((document) => ({
+          ...document,
+          name: document.type || "Supporting document",
+        })),
+      });
     } catch (err) {
       setError(err?.message || "We could not load your delivery data.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [patchUiState]);
 
   useEffect(() => {
     loadAll();
@@ -214,6 +234,7 @@ export function DeliveryPartnerProvider({ children }) {
       identity: identity ? { ...identity, status: identity.status || "submitted" } : null,
       verificationStatus: partner?.isApproved ? "approved" : partner?.applicationStatus || "draft",
       applicationStatus: partner?.isApproved ? "approved" : partner?.applicationStatus || "draft",
+      applicationNotes: partner?.applicationNotes || "",
       onboardingStep: partner?.onboardingStep || "guidelines",
       isOnline: Boolean(partner?.isOnline),
     };
@@ -318,16 +339,22 @@ export function DeliveryPartnerProvider({ children }) {
 
   const documentsData = uiState.documentsData || null;
   const setDocumentsUploaded = useCallback(
-    async (files) => {
+    async (files, documentType) => {
       setActionError(null);
       try {
         const entries = await Promise.all(
           (files || []).map(async (file) => {
             const uploaded = await uploadService.image(file, "nearmart/delivery/documents");
-            return { type: file.type, name: file.name, url: uploaded?.url || null };
+            if (!uploaded?.url) throw new Error(`Could not upload ${file.name}.`);
+            const type = documentType || file.name || "Supporting document";
+            const saved = await deliveryService.addDocument({ type, url: uploaded.url });
+            return { ...saved, type, name: file.name, url: uploaded.url };
           })
         );
-        const next = [...(documentsData || []), ...entries];
+        const next = [
+          ...(documentsData || []).filter((document) => !entries.some((entry) => entry.type === document.type)),
+          ...entries,
+        ];
         patchUiState({ documentsData: next });
         return { ok: true, data: next };
       } catch (err) {
@@ -484,6 +511,7 @@ export function DeliveryPartnerProvider({ children }) {
       isOnline,
       isApproved,
       applicationStatus,
+      applicationNotes: profile.applicationNotes,
       onboardingStep,
       hasCompletedOnboarding,
       identityData: partner?.identityData || null,

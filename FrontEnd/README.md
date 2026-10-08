@@ -95,7 +95,7 @@ cd Backend
 npm install
 
 # Setup environment variables in Backend/.env
-PORT=5001
+PORT=5000
 DATABASE_URL=your_postgresql_connection_string
 JWT_ACCESS_SECRET=your_jwt_access_secret
 JWT_REFRESH_SECRET=your_jwt_refresh_secret
@@ -106,7 +106,7 @@ OLLAMA_MODEL=llama3
 npm run dev
 ```
 
-The API server will start on `http://localhost:5001`.
+The API server will start on `http://localhost:5000`.
 
 ---
 
@@ -131,7 +131,7 @@ The frontend application will start on `http://localhost:5173`.
 ### Backend (`Backend/.env`)
 | Variable | Description |
 |---|---|
-| `PORT` | API Server Port (Default: 5001) |
+| `PORT` | API Server Port (Default: 5000) |
 | `DATABASE_URL` | PostgreSQL / Neon DB connection URL |
 | `JWT_ACCESS_SECRET` | Secret key for signing access tokens |
 | `JWT_REFRESH_SECRET` | Secret key for signing refresh tokens |

@@ -17,6 +17,7 @@ import {
   AlertCircle,
   Clock,
   ShieldCheck,
+  MapPin,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { adminService } from "../../../services/orderService";
@@ -158,7 +159,13 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
 export default function DeliveryPartnerApprovalDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { approvals, approveDeliveryPartner, rejectDeliveryPartner, requestDeliveryPartnerChanges } = useAdmin();
+  const {
+    approvals,
+    actionError,
+    approveDeliveryPartner,
+    rejectDeliveryPartner,
+    requestDeliveryPartnerChanges,
+  } = useAdmin();
 
   const [confirmModal, setConfirmModal] = useState({ open: false, action: "" });
   const [rejectModal, setRejectModal] = useState(false);
@@ -207,29 +214,32 @@ export default function DeliveryPartnerApprovalDetails() {
 
   const confirmApprove = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    approveDeliveryPartner(approval.id);
+    const result = await approveDeliveryPartner(approval.id);
     setLoading(false);
-    setConfirmModal({ open: false, action: "" });
-    navigate("/admin/approvals/delivery-partners");
+    if (result?.success) {
+      setConfirmModal({ open: false, action: "" });
+      navigate("/admin/approvals/delivery-partners");
+    }
   };
 
   const confirmReject = async (reason) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    rejectDeliveryPartner(approval.id, reason);
+    const result = await rejectDeliveryPartner(approval.id, reason);
     setLoading(false);
-    setRejectModal(false);
-    navigate("/admin/approvals/delivery-partners");
+    if (result?.success) {
+      setRejectModal(false);
+      navigate("/admin/approvals/delivery-partners");
+    }
   };
 
   const confirmChanges = async (message) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    requestDeliveryPartnerChanges(approval.id, message);
+    const result = await requestDeliveryPartnerChanges(approval.id, message);
     setLoading(false);
-    setChangesModal(false);
-    navigate("/admin/approvals/delivery-partners");
+    if (result?.success) {
+      setChangesModal(false);
+      navigate("/admin/approvals/delivery-partners");
+    }
   };
 
   // Only real, recorded events: submission and the admin decision. Verification and
@@ -265,10 +275,27 @@ const timeline = [
             <User className="w-4 h-4 text-[#155c43]" /> Personal Information
           </h3>
           <div className="space-y-4">
-            <InfoRow icon={User} label="Full Name" value={approval.applicantName} />
+            <InfoRow icon={User} label="Full Name" value={approval.identityData?.fullName || approval.applicantName} />
             <InfoRow icon={Mail} label="Email" value={approval.email} />
             <InfoRow icon={Phone} label="Phone" value={approval.phone} />
-            <InfoRow icon={Calendar} label="Date of Birth" value="— (not provided)" />
+            <InfoRow icon={Calendar} label="Date of Birth" value={approval.identityData?.dob} />
+            <InfoRow
+              icon={Shield}
+              label="Aadhaar"
+              value={approval.identityData?.aadhaarLast4 ? `Ending in ${approval.identityData.aadhaarLast4}` : ""}
+            />
+            <InfoRow
+              icon={MapPin}
+              label="Address"
+              value={[
+                approval.addressData?.house,
+                approval.addressData?.area,
+                approval.addressData?.city,
+                approval.addressData?.district,
+                approval.addressData?.state,
+                approval.addressData?.pinCode,
+              ].filter(Boolean).join(", ")}
+            />
           </div>
         </motion.div>
 
@@ -310,20 +337,8 @@ const timeline = [
           />
           {approval.notes && (
             <div className="mt-4 p-3 bg-gray-50 rounded-md">
-              <p className="text-xs font-medium text-gray-500 mb-1">Applicant Notes</p>
+              <p className="text-xs font-medium text-gray-500 mb-1">Admin review notes</p>
               <p className="text-sm text-gray-600">{approval.notes}</p>
-            </div>
-          )}
-          {approval.changesMessage && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-md">
-              <p className="text-xs font-medium text-blue-700 mb-1">Changes Requested</p>
-              <p className="text-sm text-blue-600">{approval.changesMessage}</p>
-            </div>
-          )}
-          {approval.rejectionReason && (
-            <div className="mt-4 p-3 bg-rose-50 rounded-md">
-              <p className="text-xs font-medium text-rose-700 mb-1">Rejection Reason</p>
-              <p className="text-sm text-rose-600">{approval.rejectionReason}</p>
             </div>
           )}
         </motion.div>
@@ -347,7 +362,13 @@ const timeline = [
         </motion.div>
       </div>
 
-      {approval.status === "pending" && (
+      {actionError && (
+        <p role="alert" className="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          {actionError}
+        </p>
+      )}
+
+      {["pending", "rejected"].includes(approval.status) && (
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
           className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">Actions</h3>
@@ -373,4 +394,3 @@ const timeline = [
     </div>
   );
 }
-

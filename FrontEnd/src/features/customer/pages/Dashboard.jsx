@@ -336,11 +336,11 @@ const CustomerDashboard = () => {
     []
   );
   const shopsState = useAsyncData(
-    () => shopService.list({ limit: 8 }).then(({ items }) => normalizeShops(items)),
+    () => shopService.list({ limit: 4, sort: "recent" }).then(({ items }) => normalizeShops(items)),
     []
   );
   const productsState = useAsyncData(
-    () => productService.list({ limit: 100 }).then(({ items }) => normalizeProducts(items)),
+    () => productService.list({ limit: 10 }).then(({ items }) => normalizeProducts(items)),
     []
   );
   useEffect(() => {
@@ -363,12 +363,26 @@ const CustomerDashboard = () => {
     () => orderService.myOrders({ limit: 50 }).then(({ items }) => normalizeOrders(items)),
     []
   );
+  useEffect(() => {
+    const refreshOrders = () => {
+      if (document.visibilityState === "visible") ordersState.reload();
+    };
+
+    window.addEventListener("focus", refreshOrders);
+    const refreshInterval = window.setInterval(refreshOrders, 8000);
+    return () => {
+      window.removeEventListener("focus", refreshOrders);
+      window.clearInterval(refreshInterval);
+    };
+  }, [ordersState.reload]);
   const wishlistState = useAsyncData(
     () => wishlistService.list().then((items) => items.length),
     []
   );
 
-  const categories = categoriesState.data || [];
+  const categories = (categoriesState.data || []).filter(
+    (category) => category.name.trim().toLowerCase() !== "food"
+  );
   const shops = shopsState.data || [];
   const products = productsState.data || [];
   const orders = ordersState.data || [];
@@ -449,7 +463,7 @@ const CustomerDashboard = () => {
           <ActiveOrder order={mappedActiveOrder} />
 
           <section className="mb-6 sm:mb-10 lg:mb-12">
-            <SectionHeader title="Products" subtitle="Products listed by approved shops." actionLabel="View More" onAction={() => navigate("/customer/products")} />
+            <SectionHeader title="New Products" subtitle="The 10 latest products from approved shops." actionLabel="Discover all" onAction={() => navigate("/customer/products")} />
             <SectionError state={productsState} label="products" />
             {productsState.loading && (
               <p className="py-5 text-sm text-gray-500">Loading products...</p>
@@ -496,7 +510,7 @@ const CustomerDashboard = () => {
 
           {/* Shops */}
           <section className="mb-6 sm:mb-10 lg:mb-12">
-            <SectionHeader title="Available Shops" subtitle="Browse shops approved and listed on NearMart." actionLabel="View all" onAction={() => navigate("/customer/shops")} />
+            <SectionHeader title="New Shops" subtitle="The 4 latest shops approved on NearMart." actionLabel="Browse all" onAction={() => navigate("/customer/shops")} />
             <SectionError state={shopsState} label="shops" />
             {shopsState.loading && (
               <p className="py-5 text-sm text-gray-500">Loading shops...</p>

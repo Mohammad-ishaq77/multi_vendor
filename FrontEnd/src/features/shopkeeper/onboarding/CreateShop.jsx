@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 import ShopOnboardingLayout from "./ShopOnboardingLayout";
+import LocationPicker from "../../../components/common/LocationPicker";
 
 const PHONE_RE = /^(\+91[\s-]?)?[6-9]\d{9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,6 +52,11 @@ const CreateShop = () => {
   });
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  // Exact shop position on the map — required for road-distance delivery pricing.
+  const [location, setLocation] = useState(() =>
+    shop.lat != null && shop.lng != null ? { lat: Number(shop.lat), lng: Number(shop.lng) } : null
+  );
 
   const update = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -85,6 +91,7 @@ const CreateShop = () => {
     if (!form.city.trim()) next.city = "City is required";
     if (!form.state.trim()) next.state = "State is required";
     if (!PIN_RE.test(form.pincode.trim())) next.pincode = "Enter a 6-digit PIN code";
+    if (!location) next.location = "Shop location is not set. Please select your shop location on the map.";
     if (!form.openingTime) next.openingTime = "Opening time is required";
     if (!form.closingTime) next.closingTime = "Closing time is required";
     if (form.openingTime && form.closingTime && form.closingTime <= form.openingTime) {
@@ -100,39 +107,48 @@ const CreateShop = () => {
   const handleProceed = async () => {
     if (!validate()) return;
     setSaving(true);
+    setSubmitError("");
 
-    // The image must exist as a URL on the server, not as a local preview.
-    let shopImage = form.shopImage && form.shopImage.startsWith("http") ? form.shopImage : null;
-    if (imageFile) {
-      const uploadedUrl = await uploadImage(imageFile, "nearmart/shops");
-      if (uploadedUrl) shopImage = uploadedUrl;
+    try {
+      // The image must exist as a URL on the server, not as a local preview.
+      let shopImage = form.shopImage && form.shopImage.startsWith("http") ? form.shopImage : null;
+      if (imageFile) {
+        const uploadedUrl = await uploadImage(imageFile, "nearmart/shops");
+        if (!uploadedUrl) throw new Error("The shop image upload did not return a URL. Please try again.");
+        shopImage = uploadedUrl;
+      }
+
+      const payload = {
+        name: form.name.trim(),
+        description: form.description.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim() || undefined,
+        address: form.address.trim(),
+        city: form.city.trim(),
+        state: form.state.trim(),
+        pincode: form.pincode.trim(),
+        lat: location.lat,
+        lng: location.lng,
+        openingTime: form.openingTime,
+        closingTime: form.closingTime,
+        minOrder: Number(form.minOrder) || 0,
+        shopImage: shopImage || undefined,
+        categoryId: shop.categoryId || undefined,
+      };
+
+      const result = shop.id
+        ? await setShop(payload)
+        : await createShop(payload);
+
+      if (!result?.ok) return;
+
+      setOnboardingStep("documents");
+      navigate("/shopkeeper/onboarding/documents");
+    } catch (error) {
+      setSubmitError(error?.message || "We could not save your shop. Please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    const payload = {
-      name: form.name.trim(),
-      description: form.description.trim(),
-      phone: form.phone.trim(),
-      email: form.email.trim() || undefined,
-      address: form.address.trim(),
-      city: form.city.trim(),
-      state: form.state.trim(),
-      pincode: form.pincode.trim(),
-      openingTime: form.openingTime,
-      closingTime: form.closingTime,
-      minOrder: Number(form.minOrder) || 0,
-      shopImage: shopImage || undefined,
-      categoryId: shop.categoryId || undefined,
-    };
-
-    const result = shop.id
-      ? await setShop(payload)
-      : await createShop(payload);
-
-    setSaving(false);
-    if (!result?.ok) return;
-
-    setOnboardingStep("documents");
-    navigate("/shopkeeper/onboarding/documents");
   };
 
   return (
@@ -284,6 +300,30 @@ const CreateShop = () => {
                   {errors.pincode && <p className="mt-1 text-xs text-rose-600">{errors.pincode}</p>}
                 </div>
               </div>
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider">Shop location on the map *</label>
+                <LocationPicker
+                  label="Pin your shop's exact spot"
+                  hint="Search for the area or tap the map — customers are priced by the real road distance from this point."
+                  value={location}
+                  onChange={(next) => {
+                    setLocation(next);
+                    if (errors.location) setErrors((prev) => ({ ...prev, location: "" }));
+                  }}
+                  onAddressChange={(place) => {
+                    if (!place) return;
+                    setForm((prev) => ({
+                      ...prev,
+                      address: prev.address || place.line1 || "",
+                      city: prev.city || place.city || "",
+                      state: prev.state || place.state || "",
+                      pincode: prev.pincode || place.pincode || "",
+                    }));
+                  }}
+                  mapHeight="h-64 sm:h-72"
+                />
+                {errors.location && <p className="mt-1 text-xs text-rose-600">{errors.location}</p>}
+              </div>
             </section>
 
             <section className="space-y-3">
@@ -324,9 +364,9 @@ const CreateShop = () => {
             </section>
           </div>
 
-          {actionError && (
+          {(submitError || actionError) && (
             <div className="mt-5 rounded-[12px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {actionError}
+              {submitError || actionError}
             </div>
           )}
 

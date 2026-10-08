@@ -61,6 +61,10 @@ export const config = {
     ollamaHost: process.env.OLLAMA_HOST || "http://localhost:11434",
     model: process.env.OLLAMA_MODEL || "llama3",
   },
+  routing: {
+    osrmBaseUrl: (process.env.OSRM_BASE_URL || "https://router.project-osrm.org").replace(/\/+$/, ""),
+    timeoutMs: num(process.env.ROUTING_TIMEOUT_MS, 8000),
+  },
 };
 
 export const isDevSecret =

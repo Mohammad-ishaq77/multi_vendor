@@ -31,6 +31,19 @@ export const orderService = {
     return paged(await apiClient.get("/orders/my", { query: params }));
   },
 
+  /**
+   * GET /api/orders/delivery-quote?shopId=&addressId= — server-priced delivery
+   * preview (real road distance, fee, availability). The client never sends a
+   * distance or a fee; the server recomputes both from shop + address
+   * coordinates, so the checkout preview always matches what the order charges.
+   * @returns {Promise<{distanceKm:number, deliveryFee:number, nearMartShare:number,
+   *          deliveryPartnerShare:number, deliveryAvailable:boolean, message?:string}>}
+   */
+  async deliveryQuote(shopId, addressId) {
+    if (!shopId || !addressId) return null;
+    return apiClient.get("/orders/delivery-quote", { query: { shopId, addressId } });
+  },
+
   /** GET /api/orders/:id */
   async get(id) {
     return apiClient.get(`/orders/${encodeURIComponent(id)}`);
@@ -114,6 +127,12 @@ export const shopkeeperService = {
   /** POST /api/shopkeeper/documents */
   addDocument: (payload) => apiClient.post("/shopkeeper/documents", payload),
 
+  /** GET /api/shopkeeper/documents */
+  documents: async () => (await apiClient.get("/shopkeeper/documents")) || [],
+
+  /** POST /api/shopkeeper/approval/resubmit */
+  resubmitApproval: () => apiClient.post("/shopkeeper/approval/resubmit"),
+
   /** GET /api/shopkeeper/products */
   products: (params = {}) => apiClient.get("/shopkeeper/products", { query: params }).then(paged),
 
@@ -168,6 +187,9 @@ export const deliveryService = {
   /** GET /api/delivery/active */
   active: () => apiClient.get("/delivery/active"),
 
+  /** GET /api/delivery/orders/:id — full pickup details. */
+  order: (orderId) => apiClient.get(`/delivery/orders/${encodeURIComponent(orderId)}`),
+
   /** POST /api/delivery/accept/:orderId */
   accept: (orderId) => apiClient.post(`/delivery/accept/${encodeURIComponent(orderId)}`),
 
@@ -186,6 +208,12 @@ export const deliveryService = {
 
   /** PUT /api/delivery/profile */
   updateProfile: (payload) => apiClient.put("/delivery/profile", payload),
+
+  /** POST /api/delivery/documents */
+  addDocument: (payload) => apiClient.post("/delivery/documents", payload),
+
+  /** GET /api/delivery/documents */
+  documents: async () => (await apiClient.get("/delivery/documents")) || [],
 
   /** GET /api/delivery/notifications */
   notifications: async () => (await apiClient.get("/delivery/notifications")) || [],

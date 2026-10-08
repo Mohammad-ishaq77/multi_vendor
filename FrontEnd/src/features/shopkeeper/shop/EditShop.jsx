@@ -17,6 +17,7 @@ import {
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 import { useToast } from "../../../components/common/Toast";
+import LocationPicker from "../../../components/common/LocationPicker";
 
 const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 pl-11 pr-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
 
@@ -40,6 +41,10 @@ const EditShop = () => {
   });
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [locationError, setLocationError] = useState("");
+
+  const shopLocation =
+    form.lat != null && form.lng != null ? { lat: Number(form.lat), lng: Number(form.lng) } : null;
 
   useEffect(() => {
     setForm((current) => ({
@@ -73,6 +78,12 @@ const EditShop = () => {
       showToast("Minimum order must be zero or more.", "error");
       return;
     }
+    if (!shopLocation) {
+      setLocationError("Shop location is not set. Please select your shop location on the map.");
+      showToast("Shop location is not set. Please select your shop location on the map.", "error");
+      return;
+    }
+    setLocationError("");
     setSaving(true);
     const result = await setShop(form);
     setSaving(false);
@@ -183,6 +194,35 @@ const EditShop = () => {
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pincode</label>
                   <input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 transition-all" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Shop location on the map *
+                </label>
+                <LocationPicker
+                  label={shopLocation ? "Drag the pin to fine-tune your shop's spot" : "Pin your shop's exact spot"}
+                  hint="Delivery is priced by the real road distance from this point, so keep it accurate."
+                  value={shopLocation}
+                  onChange={(next) => {
+                    update("lat", next ? next.lat : null);
+                    update("lng", next ? next.lng : null);
+                    if (locationError) setLocationError("");
+                  }}
+                  onAddressChange={(place) => {
+                    if (!place) return;
+                    setForm((prev) => ({
+                      ...prev,
+                      address: prev.address || place.line1 || "",
+                      city: prev.city || place.city || "",
+                      state: prev.state || place.state || "",
+                      pincode: prev.pincode || place.pincode || "",
+                    }));
+                  }}
+                  mapHeight="h-64 sm:h-72"
+                />
+                {locationError && (
+                  <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-rose-600">{locationError}</p>
+                )}
               </div>
             </div>
           </div>

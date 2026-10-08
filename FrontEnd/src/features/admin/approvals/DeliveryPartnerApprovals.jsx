@@ -197,7 +197,13 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
 
 export default function DeliveryPartnerApprovals() {
   const navigate = useNavigate();
-  const { approvals, approveDeliveryPartner, rejectDeliveryPartner, requestDeliveryPartnerChanges } = useAdmin();
+  const {
+    approvals,
+    actionError,
+    approveDeliveryPartner,
+    rejectDeliveryPartner,
+    requestDeliveryPartnerChanges,
+  } = useAdmin();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -221,9 +227,9 @@ export default function DeliveryPartnerApprovals() {
       const q = search.toLowerCase();
       result = result.filter(
         (a) =>
-          a.applicantName.toLowerCase().includes(q) ||
-          a.email.toLowerCase().includes(q) ||
-          a.phone.includes(q)
+          (a.applicantName || "").toLowerCase().includes(q) ||
+          (a.email || "").toLowerCase().includes(q) ||
+          (a.phone || "").includes(q)
       );
     }
 
@@ -247,26 +253,23 @@ export default function DeliveryPartnerApprovals() {
 
   const confirmApprove = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    approveDeliveryPartner(confirmModal.id);
+    const result = await approveDeliveryPartner(confirmModal.id);
     setLoading(false);
-    setConfirmModal({ open: false, id: null, action: "" });
+    if (result?.success) setConfirmModal({ open: false, id: null, action: "" });
   };
 
   const confirmReject = async (reason) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    rejectDeliveryPartner(rejectModal.id, reason);
+    const result = await rejectDeliveryPartner(rejectModal.id, reason);
     setLoading(false);
-    setRejectModal({ open: false, id: null });
+    if (result?.success) setRejectModal({ open: false, id: null });
   };
 
   const confirmChanges = async (message) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    requestDeliveryPartnerChanges(changesModal.id, message);
+    const result = await requestDeliveryPartnerChanges(changesModal.id, message);
     setLoading(false);
-    setChangesModal({ open: false, id: null });
+    if (result?.success) setChangesModal({ open: false, id: null });
   };
 
   return (
@@ -280,6 +283,12 @@ export default function DeliveryPartnerApprovals() {
           {filtered.length} application{filtered.length !== 1 ? "s" : ""}
         </span>
       </div>
+
+      {actionError && (
+        <p role="alert" className="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          {actionError}
+        </p>
+      )}
 
       <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
         <div className="p-4 border-b border-gray-100">
@@ -390,8 +399,8 @@ export default function DeliveryPartnerApprovals() {
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="text-sm text-gray-900">{app.vehicleType}</p>
-                          <p className="text-xs text-gray-500">{app.vehicleNumber}</p>
+                          <p className="text-sm text-gray-900">{app.vehicleType || "Not provided"}</p>
+                          <p className="text-xs text-gray-500">{app.vehicleNumber || ""}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -410,7 +419,7 @@ export default function DeliveryPartnerApprovals() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          {app.status === "pending" && (
+                          {["pending", "rejected"].includes(app.status) && (
                             <>
                               <button onClick={() => handleApprove(app.id)} className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
                                 <CheckCircle2 className="w-4 h-4" />
@@ -444,7 +453,7 @@ export default function DeliveryPartnerApprovals() {
                     </span>
                   </div>
                   <div className="text-sm text-gray-600 space-y-1 mb-3">
-                    <p>Vehicle: {app.vehicleType} ({app.vehicleNumber})</p>
+                    <p>Vehicle: {[app.vehicleType, app.vehicleNumber].filter(Boolean).join(" · ") || "Not provided"}</p>
                     <p>Applied: {formatDate(app.appliedAt)}</p>
                   </div>
                   <div className="flex items-center gap-1">
@@ -454,7 +463,7 @@ export default function DeliveryPartnerApprovals() {
                     >
                       <Eye className="w-3.5 h-3.5" /> View
                     </button>
-                    {app.status === "pending" && (
+                    {["pending", "rejected"].includes(app.status) && (
                       <>
                         <button onClick={() => handleApprove(app.id)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Approve

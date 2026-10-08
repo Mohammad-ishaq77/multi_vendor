@@ -14,7 +14,8 @@ export const DELIVERY_ONBOARDING_STEPS = [
 export default function OnboardingLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentIdx = DELIVERY_ONBOARDING_STEPS.findIndex((step) => step.path === location.pathname);
+  const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+  const currentIdx = DELIVERY_ONBOARDING_STEPS.findIndex((step) => step.path === currentPath);
   const previous = DELIVERY_ONBOARDING_STEPS[currentIdx - 1];
 
   return (
@@ -22,8 +23,7 @@ export default function OnboardingLayout({ children }) {
       steps={DELIVERY_ONBOARDING_STEPS}
       currentIndex={Math.max(0, currentIdx)}
       onBack={() => {
-        if (previous) navigate(previous.path);
-        else navigate("/");
+        navigate(previous?.path || DELIVERY_ONBOARDING_STEPS[0].path);
       }}
       hideSteps={location.pathname.includes("verification")}
     >

@@ -11,6 +11,7 @@ export default function DeliveryVerification() {
   const { addToast } = useToast();
   const [verifying, setVerifying] = useState(false);
   const [result, setResult] = useState(null);
+  const [otp, setOtp] = useState("");
 
   if (!activeDelivery) {
     return (
@@ -24,6 +25,13 @@ export default function DeliveryVerification() {
   }
 
   const handleComplete = async () => {
+    if (otp !== "1234") {
+      const invalidResult = { success: false, message: "Enter the valid 4-digit demo OTP." };
+      setResult(invalidResult);
+      addToast(invalidResult.message, "error");
+      return;
+    }
+
     setVerifying(true);
     const res = await completeDelivery();
     setVerifying(false);
@@ -65,9 +73,33 @@ export default function DeliveryVerification() {
           <div className="flex items-start gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-md p-3">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
             <span>
-              Customer OTPs are not issued by the API, so there is no code to enter. Completing the delivery marks
-              the order delivered, credits your earnings and updates the customer&apos;s order status.
+              Enter the customer&apos;s 4-digit delivery OTP. For this demo, use <strong className="text-gray-700">1234</strong>.
+              Successful verification marks the order delivered, credits your earnings and updates the order status.
             </span>
+          </div>
+
+          <div>
+            <label htmlFor="delivery-otp" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-700">
+              Customer delivery OTP
+            </label>
+            <input
+              id="delivery-otp"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={4}
+              value={otp}
+              onChange={(event) => {
+                setOtp(event.target.value.replace(/\D/g, "").slice(0, 4));
+                setResult(null);
+              }}
+              placeholder="Enter 4-digit OTP"
+              aria-describedby="delivery-otp-hint"
+              className="w-full rounded-md border border-gray-200 px-4 py-3 text-center text-xl font-semibold tracking-[0.5em] text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+            />
+            <p id="delivery-otp-hint" className="mt-2 text-xs text-gray-500">
+              Demo OTP: <span className="font-semibold tracking-widest text-emerald-700">1234</span>
+            </p>
           </div>
 
           {result && (
@@ -89,7 +121,7 @@ export default function DeliveryVerification() {
 
           <button
             onClick={handleComplete}
-            disabled={verifying || result?.success}
+            disabled={verifying || result?.success || otp.length !== 4}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
           >
             {verifying ? (
@@ -100,7 +132,7 @@ export default function DeliveryVerification() {
             ) : (
               <>
                 <PackageCheck className="w-4 h-4" />
-                Mark as delivered
+                Verify OTP and complete delivery
               </>
             )}
           </button>

@@ -140,6 +140,15 @@ const ShopApproval = () => {
               {loading ? "Checking status..." : "Refresh status"}
               {!loading && <RefreshCw className="h-4 w-4" />}
             </button>
+            {approvalStatus === "rejected" && (
+              <button
+                type="button"
+                onClick={() => navigate("/shopkeeper/onboarding/documents")}
+                className="btn-outline mt-3 w-full"
+              >
+                Update documents and resubmit
+              </button>
+            )}
             {approvalStatus === "approved" && (
               <button
                 type="button"

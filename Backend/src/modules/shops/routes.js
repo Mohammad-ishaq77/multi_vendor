@@ -6,7 +6,7 @@ import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { hasCoords, pointGeoJSON, slugify } from "../../common/utils/helpers.js";
-import { repo } from "../../config/db.js";
+import { AppDataSource, repo } from "../../config/db.js";
 
 const router = Router();
 
@@ -62,7 +62,12 @@ router.get(
     if (req.query.city) qb.andWhere("LOWER(shop.city) = LOWER(:city)", { city: req.query.city });
     if (req.query.search) qb.andWhere("shop.name ILIKE :q", { q: `%${req.query.search}%` });
     if (req.query.approvedOnly !== "false") qb.andWhere("shop.isApproved = true");
-    qb.orderBy("shop.rating", "DESC").skip(skip).take(take);
+    if (req.query.sort === "recent") {
+      qb.orderBy("shop.createdAt", "DESC").addOrderBy("shop.id", "DESC");
+    } else {
+      qb.orderBy("shop.rating", "DESC");
+    }
+    qb.skip(skip).take(take);
     const [items, total] = await qb.getManyAndCount();
     res.json(pagedResponse(items, total, page, limit));
   })
@@ -119,24 +124,26 @@ router.post(
   validate({ body: createShopSchema }),
   asyncHandler(async (req, res) => {
     const shops = repo("Shop");
-    const existing = await shops.findOne({ where: { ownerId: req.user.id } });
+    const ownerId = req.user.role === "admin" && req.body.ownerId ? req.body.ownerId : req.user.id;
+    const existing = await shops.findOne({ where: { ownerId } });
     if (existing && req.user.role !== "admin") {
       return res.status(409).json({ ok: false, error: "You already have a shop." });
     }
     const payload = withLocation(req.body);
-    const shop = shops.create({
-      ...payload,
-      ownerId: req.user.role === "admin" && req.body.ownerId ? req.body.ownerId : req.user.id,
-      slug: `${slugify(req.body.name)}-${Date.now().toString(36)}`,
-    });
-    const saved = await shops.save(shop);
-    // Approval request for admin queue
-    try {
-      const approvals = repo("Approval");
+    const saved = await AppDataSource.transaction(async (manager) => {
+      const transactionalShops = manager.getRepository("Shop");
+      const shop = transactionalShops.create({
+        ...payload,
+        ownerId,
+        slug: `${slugify(req.body.name)}-${Date.now().toString(36)}`,
+      });
+      const created = await transactionalShops.save(shop);
+      const approvals = manager.getRepository("Approval");
       await approvals.save(
-        approvals.create({ applicantId: saved.ownerId, type: "shopkeeper", status: "pending" })
+        approvals.create({ applicantId: created.ownerId, type: "shopkeeper", status: "pending" })
       );
-    } catch { /* approvals table may be unavailable */ }
+      return created;
+    });
     res.status(201).json({ ok: true, data: saved });
   })
 );

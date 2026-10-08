@@ -7,6 +7,7 @@ import { useShopkeeper } from "../context/ShopkeeperContext";
 import { uploadService } from "../../../services/catalogService";
 
 const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50";
+const OTHER_CATEGORY = "other";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const AddProduct = () => {
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [submitStage, setSubmitStage] = useState("");
   const [error, setError] = useState("");
 
   const categories = useMemo(
@@ -45,16 +47,21 @@ const AddProduct = () => {
     e.preventDefault();
     if (!form.name || !form.price) return;
     setSaving(true);
+    let currentStage = form.image instanceof File ? "Uploading product image..." : "Saving product...";
+    setSubmitStage(currentStage);
     setError("");
     try {
       let imageUrl = null;
       if (form.image instanceof File) {
         const uploaded = await uploadService.image(form.image, "nearmart/products");
         imageUrl = uploaded?.url || null;
+        if (!imageUrl) throw new Error("The image upload did not return a usable URL.");
       }
+      currentStage = "Saving product...";
+      setSubmitStage(currentStage);
       const result = await addProduct({
         ...form,
-        categoryId: form.categoryId || null,
+        categoryId: form.categoryId === OTHER_CATEGORY ? null : form.categoryId || null,
         imageUrl,
         price: Number(form.price),
         discount: Number(form.discount) || 0,
@@ -64,7 +71,14 @@ const AddProduct = () => {
         const validationDetails = result?.issues
           ?.map((issue) => `${issue.path}: ${issue.message}`)
           .join(" ");
-        setError(validationDetails || result?.error || "We could not save this product.");
+        const isConnectionFailure = [0, 502, 503, 504].includes(result?.status);
+        const failureContext = currentStage.startsWith("Uploading")
+          ? " while uploading the product image"
+          : " while saving the product";
+        const connectionHelp = isConnectionFailure
+          ? `${failureContext}. Check that the backend is running on port 5000 and the Vite /api proxy is available. If the save timed out, check your product list before submitting again.`
+          : "";
+        setError(validationDetails || `${result?.error || "We could not save this product."}${connectionHelp}`);
         return;
       }
       navigate("/shopkeeper/products");
@@ -72,9 +86,17 @@ const AddProduct = () => {
       const validationDetails = err?.issues
         ?.map((issue) => `${issue.path}: ${issue.message}`)
         .join(" ");
-      setError(validationDetails || err?.message || "We could not save this product.");
+      const isConnectionFailure = err?.status === 0 || err?.status === 502 || err?.status === 503 || err?.status === 504;
+      const failureContext = currentStage.startsWith("Uploading")
+        ? " while uploading the product image"
+        : " while saving the product";
+      const connectionHelp = isConnectionFailure
+        ? `${failureContext}. Check that the backend is running on port 5000 and the Vite /api proxy is available. If the save timed out, check your product list before submitting again.`
+        : "";
+      setError(validationDetails || `${err?.message || "We could not save this product."}${connectionHelp}`);
     } finally {
       setSaving(false);
+      setSubmitStage("");
     }
   };
 
@@ -102,9 +124,12 @@ const AddProduct = () => {
                 <div>
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
                   <select value={form.categoryId} onChange={(e) => update("categoryId", e.target.value)} className={inputClass}>
-                    {!categories.length && <option value="">No categories available</option>}
+                    <option value={OTHER_CATEGORY}>Other</option>
                     {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
+                  {form.categoryId === OTHER_CATEGORY && (
+                    <p className="mt-1.5 text-xs text-gray-500">This product will not appear in a customer category.</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-[0.65rem] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Unit</label>
@@ -159,13 +184,13 @@ const AddProduct = () => {
 
           <div className="flex items-center gap-3">
             {error && (
-              <p className="flex-1 text-sm text-rose-600">{error}</p>
+              <p role="alert" className="flex-1 text-sm text-rose-600">{error}</p>
             )}
             <motion.button whileTap={{ scale: 0.98 }} type="button" onClick={() => navigate("/shopkeeper/products")} className="px-5 py-3 rounded-md text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">
               Cancel
             </motion.button>
             <motion.button whileTap={{ scale: 0.98 }} type="submit" disabled={saving || !form.name || !form.price} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-md font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all disabled:opacity-50">
-              {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Save className="w-4 h-4" /> Add Product</>}
+              {saving ? <>{submitStage || "Saving..."}<div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /></> : <><Save className="w-4 h-4" /> Add Product</>}
             </motion.button>
           </div>
         </form>

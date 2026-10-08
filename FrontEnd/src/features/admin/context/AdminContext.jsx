@@ -93,14 +93,20 @@ const enrichApproval = (approval, { usersById, shopsByOwnerId }) => {
   const applicant = usersById[approval.applicantId] || null;
   const shop = shopsByOwnerId[approval.applicantId] || null;
   const isDelivery = approval.type === "delivery_partner";
+  const contact = approval.contactData || {};
+  const identity = approval.identityData || {};
+  const applicantName =
+    approval.applicantName || contact.fullName || identity.fullName || applicant?.name || "";
   return {
     ...approval,
     type: approval.type,
     status: approval.status,
-    applicantName: applicant?.name || "",
-    email: applicant?.email || "",
-    phone: applicant?.phone || "",
+    applicantName,
+    name: applicantName,
+    email: approval.email || contact.email || applicant?.email || "",
+    phone: approval.phone || contact.phone || applicant?.phone || "",
     appliedAt: approval.appliedAt || null,
+    date: approval.appliedAt || null,
     submittedAt: approval.appliedAt || null,
     reviewedAt: approval.reviewedAt || null,
     shopName: shop?.name || "",
@@ -108,9 +114,8 @@ const enrichApproval = (approval, { usersById, shopsByOwnerId }) => {
     // The API stores a single review note; it has no separate change-request state.
     rejectionReason: approval.status === "rejected" ? approval.notes || "" : "",
     changesMessage: "",
-    // Vehicle details are not exposed by any admin endpoint.
-    vehicleType: null,
-    vehicleNumber: null,
+    vehicleType: approval.vehicleType || "",
+    vehicleNumber: approval.vehicleNumber || "",
     documents: isDelivery ? [] : shop?.documents || null,
   };
 };
@@ -532,21 +537,20 @@ export function AdminProvider({ children }) {
     [reviewApproval]
   );
 
-  /** The API only accepts approved/rejected — there is no "changes requested" state. */
+  const requestShopkeeperChanges = useCallback(
+    (id, message) => reviewApproval(id, "rejected", message),
+    [reviewApproval]
+  );
+  const requestDeliveryPartnerChanges = useCallback(
+    (id, message) => reviewApproval(id, "rejected", message),
+    [reviewApproval]
+  );
+
   const unsupported = useCallback((what) => {
     const message = `${what} is not supported by the API yet.`;
     setActionError(message);
     return { success: false, message };
   }, []);
-
-  const requestShopkeeperChanges = useCallback(
-    (_id, _message) => unsupported("Requesting changes on an application"),
-    [unsupported]
-  );
-  const requestDeliveryPartnerChanges = useCallback(
-    (_id, _message) => unsupported("Requesting changes on an application"),
-    [unsupported]
-  );
 
   /* Offers */
 

@@ -5,6 +5,8 @@ import { requireAuth } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
+import { calculateDeliveryDetails } from "../../common/utils/deliveryPricing.js";
+import { DELIVERY_MESSAGES, RoadDistanceError } from "../../common/utils/roadDistance.js";
 import { repo } from "../../config/db.js";
 import { ORDER_STATUSES } from "../../entities/Order.js";
 import { canTransition } from "./status.js";
@@ -60,6 +62,16 @@ router.post(
         error: "Your cart has products from more than one shop. Place a separate order for each shop.",
       });
     }
+    const minimumOrder = Number(shop.minOrder) || 0;
+    const minimumOrderCents = Math.round(minimumOrder * 100);
+    const subtotalCents = Math.round(subtotal * 100);
+    if (subtotalCents < minimumOrderCents) {
+      const remaining = ((minimumOrderCents - subtotalCents) / 100).toFixed(2);
+      return res.status(400).json({
+        ok: false,
+        error: `Orders from ${shop.name} start at ₹${minimumOrder.toFixed(2)}. Add ₹${remaining} more to place your order.`,
+      });
+    }
 
     const address = await repo("Address").findOne({ where: { id: req.body.addressId } });
     if (!address || (req.user.role !== "admin" && address.userId !== req.user.id)) {
@@ -81,7 +93,22 @@ router.post(
       }
     }
 
-    const deliveryFee = 40;
+    let pricing;
+    try {
+      pricing = await calculateDeliveryDetails(shop, address);
+    } catch (err) {
+      const known = err instanceof RoadDistanceError;
+      return res.status(known ? err.status : 502).json({
+        ok: false,
+        error: known ? err.message : DELIVERY_MESSAGES.ROUTING_FAILED,
+      });
+    }
+
+    if (!pricing.deliveryAvailable) {
+      return res.status(400).json({ ok: false, error: pricing.message });
+    }
+
+    const { deliveryFee, nearMartShare, deliveryPartnerShare } = pricing;
     const totalAmount = Math.max(0, subtotal - discount + deliveryFee);
 
     const order = await orders.save(
@@ -94,6 +121,13 @@ router.post(
         paymentMethod: req.body.paymentMethod || "razorpay",
         subtotal,
         deliveryFee,
+        deliveryDistance: pricing.distanceKm,
+        nearMartShare,
+        deliveryPartnerShare,
+        shopLat: shop.lat,
+        shopLng: shop.lng,
+        customerLat: address.lat,
+        customerLng: address.lng,
         discount,
         totalAmount,
         notes: req.body.notes,
@@ -128,6 +162,45 @@ router.post(
     const full = await orders.findOne({ where: { id: order.id }, relations: { items: true } });
     emitToRole("shopkeeper", "order:new", { orderId: order.id, shopId: shop.id });
     res.status(201).json({ ok: true, data: full });
+  })
+);
+
+const quoteQuerySchema = z.object({
+  shopId: z.string().uuid(),
+  addressId: z.string().uuid(),
+});
+
+/**
+ * GET /api/orders/delivery-quote?shopId=&addressId= — real road distance +
+ * delivery fee for checkout. Same server-side pricing as order creation, so
+ * the checkout preview can never disagree with what the order charges.
+ */
+router.get(
+  "/delivery-quote",
+  validate({ query: quoteQuerySchema }),
+  asyncHandler(async (req, res) => {
+    const shop = await repo("Shop").findOne({ where: { id: req.query.shopId } });
+    if (!shop || !shop.isApproved) {
+      return res.status(404).json({ ok: false, error: "Shop unavailable." });
+    }
+
+    const address = await repo("Address").findOne({ where: { id: req.query.addressId } });
+    if (!address || (req.user.role !== "admin" && address.userId !== req.user.id)) {
+      return res.status(400).json({ ok: false, error: "Select a saved delivery address." });
+    }
+
+    let details;
+    try {
+      details = await calculateDeliveryDetails(shop, address);
+    } catch (err) {
+      const known = err instanceof RoadDistanceError;
+      return res.status(known ? err.status : 502).json({
+        ok: false,
+        error: known ? err.message : DELIVERY_MESSAGES.ROUTING_FAILED,
+      });
+    }
+
+    res.json({ ok: true, data: details });
   })
 );
 

@@ -26,7 +26,7 @@ export default function DeliveryCard({ delivery, showAccept = false, onAccept })
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-emerald-600">₹{delivery.partnerEarning}</p>
-          <p className="text-[0.65rem] text-gray-400">Your earning</p>
+          <p className="text-[0.65rem] text-gray-400">Your earning (80%)</p>
         </div>
       </div>
 

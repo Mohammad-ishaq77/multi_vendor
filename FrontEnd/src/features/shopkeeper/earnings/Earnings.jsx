@@ -81,9 +81,9 @@ const Earnings = () => {
         <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
           <div className="p-5 border-b border-gray-100">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-gray-900 text-sm">Transaction History</h3>
+              <h3 className="font-bold text-gray-900 text-sm">Order History</h3>
               <div className="flex gap-1">
-                {["all", "settled", "pending"].map((tab) => (
+                {["all", "completed", "pending"].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -108,9 +108,9 @@ const Earnings = () => {
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-md flex items-center justify-center ${
-                    txn.status === "Settled" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                    txn.status === "Completed" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                   }`}>
-                    {txn.status === "Settled" ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+                    {txn.status === "Completed" ? <CheckCircle2 className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{txn.orderId}</p>
@@ -120,11 +120,14 @@ const Earnings = () => {
                 <div className="text-right">
                   <p className="text-sm font-bold text-gray-900">₹{txn.amount}</p>
                   <span className={`text-[0.6rem] font-bold px-2 py-0.5 rounded-full ${
-                    txn.status === "Settled" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                    txn.status === "Completed" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                   }`}>{txn.status}</span>
                 </div>
               </motion.div>
             ))}
+            {filteredTxns.length === 0 && (
+              <p className="p-6 text-center text-sm text-gray-500">No orders in this category.</p>
+            )}
           </div>
         </div>
       </div>

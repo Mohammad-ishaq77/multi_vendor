@@ -244,9 +244,16 @@ export default function DeliveryPartnerDashboard() {
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-600">Active delivery</p>
                 <h2 className="mt-1 text-lg font-bold">{activeDelivery.id}</h2>
               </div>
-              <p className="text-lg font-bold text-(--color-primary)">{formatINR(activeDelivery.partnerEarning)}</p>
+              <div className="text-right">
+                <p className="text-lg font-bold text-(--color-primary)">{formatINR(activeDelivery.partnerEarning)}</p>
+                <p className="text-[11px] text-(--color-text-muted)">Your earning (80%)</p>
+              </div>
             </div>
             <p className="mb-4 text-sm text-(--color-text-muted)">{statusLabel(activeDelivery.status)}</p>
+            <div className="mb-4 flex flex-wrap gap-4 text-xs text-(--color-text-muted)">
+              <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{activeDelivery.distance ?? "—"} km</span>
+              <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{activeDelivery.estimatedTime || "25-30 mins"}</span>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="flex items-start gap-2 text-sm">
                 <Store className="mt-0.5 h-4 w-4 text-(--color-primary)" />
@@ -361,7 +368,10 @@ export default function DeliveryPartnerDashboard() {
                       <p className="text-sm font-bold">{delivery.id}</p>
                       <p className="mt-1 text-xs text-(--color-text-muted)">{delivery.shopName}</p>
                     </div>
-                    <p className="text-base font-bold text-(--color-primary)">{formatINR(delivery.partnerEarning)}</p>
+                    <div className="text-right">
+                      <p className="text-base font-bold text-(--color-primary)">{formatINR(delivery.partnerEarning)}</p>
+                      <p className="text-[10px] text-(--color-text-muted)">Your earning (80%)</p>
+                    </div>
                   </div>
                   <div className="mt-3 flex items-center gap-3 text-xs text-(--color-text-muted)">
                     <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{delivery.distance} km</span>

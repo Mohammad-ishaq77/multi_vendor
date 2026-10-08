@@ -18,11 +18,11 @@ export default function OnboardingShell({
       <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-(--color-green-soft) blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-(--color-green-light)/20 blur-3xl" />
 
-      <div className="container-app relative z-10 py-6 sm:py-8 lg:py-10">
+      <div className="container-app relative z-10 py-4 sm:py-6 lg:py-8">
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-5 flex items-center justify-between gap-3"
+          className="mb-4 flex items-center justify-between gap-3 sm:mb-5"
         >
           {onBack ? (
             <button
@@ -43,7 +43,7 @@ export default function OnboardingShell({
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 rounded-[16px] border border-white/70 bg-white/80 px-4 py-3.5 shadow-[var(--shadow-card)] backdrop-blur-xl sm:px-5"
+            className="mb-4 rounded-[14px] border border-white/70 bg-white/80 px-3 py-3 shadow-[var(--shadow-card)] backdrop-blur-xl sm:mb-5 sm:rounded-[16px] sm:px-5 sm:py-3.5"
           >
             <div className="mb-2.5 flex items-center justify-between">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-(--color-primary)">
@@ -94,7 +94,7 @@ export default function OnboardingShell({
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="overflow-hidden rounded-[24px] border border-white/70 bg-white/90 shadow-[var(--shadow-hover)] backdrop-blur-xl"
+          className="overflow-hidden rounded-[18px] border border-white/70 bg-white/90 shadow-[var(--shadow-hover)] backdrop-blur-xl sm:rounded-[24px]"
         >
           {children}
         </motion.div>

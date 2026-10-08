@@ -16,7 +16,7 @@ import { paymentStatusConfig, orderStatusFlow } from "../data/dummyOrders";
 const OrderDetails = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { orders, updateOrderStatus, getNextStatus } = useShopkeeper();
+  const { orders, actionError, updatingOrderId, updateOrderStatus, getNextStatus } = useShopkeeper();
   const order = orders.find((o) => o.id === orderId);
 
   if (!order) {
@@ -31,7 +31,8 @@ const OrderDetails = () => {
     );
   }
 
-  const paymentCfg = paymentStatusConfig[order.paymentStatus] || paymentStatusConfig.Paid;
+  const paymentStatusLabel = order.paymentStatusLabel || "Pending";
+  const paymentCfg = paymentStatusConfig[paymentStatusLabel] || paymentStatusConfig.Pending;
   const nextStatus = getNextStatus(order.status);
   const currentStep = orderStatusFlow.indexOf(order.status);
 
@@ -60,13 +61,19 @@ const OrderDetails = () => {
           {nextStatus && (
             <motion.button
               whileTap={{ scale: 0.95 }}
+              disabled={updatingOrderId === order.id}
               onClick={() => updateOrderStatus(order.id, nextStatus)}
-              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
+              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors disabled:cursor-wait disabled:opacity-60"
             >
-              <CheckCircle2 className="w-4 h-4" /> Mark as {nextStatus}
+              <CheckCircle2 className="w-4 h-4" /> {updatingOrderId === order.id ? "Updating…" : `Mark as ${nextStatus}`}
             </motion.button>
           )}
         </div>
+        {actionError && (
+          <div role="alert" className="mb-5 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+            {actionError}
+          </div>
+        )}
 
         {/* Status Progress */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm mb-6">
@@ -111,7 +118,7 @@ const OrderDetails = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm"><span className="text-gray-500">Method</span><span className="font-semibold text-gray-900">{order.paymentMethod}</span></div>
               <div className="flex justify-between text-sm"><span className="text-gray-500">Status</span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${paymentCfg.bg} ${paymentCfg.color}`}>{order.paymentStatus}</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${paymentCfg.bg} ${paymentCfg.color}`}>{paymentStatusLabel}</span>
               </div>
               <div className="flex justify-between text-sm"><span className="text-gray-500">Total</span><span className="font-bold text-gray-900">₹{order.total}</span></div>
             </div>

@@ -5,7 +5,7 @@ import { requireAuth } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
-import { repo } from "../../config/db.js";
+import { AppDataSource, repo } from "../../config/db.js";
 import { ORDER_STATUSES } from "../../entities/Order.js";
 import { canTransition } from "../orders/status.js";
 import { releaseOrderStock } from "../orders/stock.js";
@@ -70,6 +70,68 @@ router.get(
   })
 );
 
+/** GET /api/shopkeeper/documents — the current shop owner's verification files. */
+router.get(
+  "/documents",
+  asyncHandler(async (req, res) => {
+    const shop = await repo("Shop").findOne({ where: { ownerId: req.user.id } });
+    if (!shop) return res.json({ ok: true, data: [] });
+    const documents = await repo("ShopDocument").find({
+      where: { shopId: shop.id },
+      order: { createdAt: "ASC" },
+    });
+    res.json({ ok: true, data: documents });
+  })
+);
+
+/** POST /api/shopkeeper/approval/resubmit — return corrected application to the review queue. */
+router.post(
+  "/approval/resubmit",
+  asyncHandler(async (req, res) => {
+    const saved = await AppDataSource.transaction(async (manager) => {
+      const shops = manager.getRepository("Shop");
+      const shop = await shops.findOne({ where: { ownerId: req.user.id } });
+      if (!shop) throw Object.assign(new Error("Create your shop before resubmitting."), { status: 400 });
+
+      const documents = await manager.getRepository("ShopDocument").find({ where: { shopId: shop.id } });
+      const requiredTypes = ["aadhaar", "pan", "license"];
+      const uploadedTypes = new Set(documents.map((document) => document.type?.toLowerCase()));
+      const missingTypes = requiredTypes.filter((type) => !uploadedTypes.has(type));
+      if (missingTypes.length) {
+        throw Object.assign(new Error(`Upload the required documents before resubmitting: ${missingTypes.join(", ")}.`), { status: 400 });
+      }
+
+      const approvals = manager.getRepository("Approval");
+      const approval = await approvals.findOne({
+        where: { applicantId: req.user.id, type: "shopkeeper" },
+        order: { appliedAt: "DESC" },
+      });
+      if (approval?.status === "approved") {
+        throw Object.assign(new Error("Your shop is already approved."), { status: 409 });
+      }
+      if (approval?.status === "pending") {
+        throw Object.assign(new Error("Your application is already waiting for review."), { status: 409 });
+      }
+
+      shop.isApproved = false;
+      shop.isOpen = false;
+      await shops.save(shop);
+
+      const resubmitted = approval || approvals.create({
+        applicantId: req.user.id,
+        type: "shopkeeper",
+      });
+      resubmitted.status = "pending";
+      resubmitted.notes = null;
+      resubmitted.reviewedBy = null;
+      resubmitted.reviewedAt = null;
+      resubmitted.appliedAt = new Date();
+      return approvals.save(resubmitted);
+    });
+    res.json({ ok: true, data: saved });
+  })
+);
+
 /** PUT /api/shopkeeper/onboarding/step — persist wizard step (delegated to shops/documents). */
 router.put(
   "/onboarding/step",
@@ -88,8 +150,14 @@ router.post(
       ? await repo("Shop").findOne({ where: { id: req.body.shopId } })
       : await myShop(req.user.id);
     if (!shop) return res.status(404).json({ ok: false, error: "Shop not found." });
-    const docs = repo("ShopDocument");
-    const created = await docs.save(docs.create({ shopId: shop.id, type: req.body.type, url: req.body.url }));
+    if (req.user.role !== "admin" && shop.ownerId !== req.user.id) {
+      return res.status(403).json({ ok: false, error: "You can only update documents for your own shop." });
+    }
+    const created = await AppDataSource.transaction(async (manager) => {
+      const docs = manager.getRepository("ShopDocument");
+      await docs.delete({ shopId: shop.id, type: req.body.type });
+      return docs.save(docs.create({ shopId: shop.id, type: req.body.type, url: req.body.url }));
+    });
     res.status(201).json({ ok: true, data: created });
   })
 );
@@ -127,15 +195,29 @@ router.get(
   asyncHandler(async (req, res) => {
     const shop = await myShop(req.user.id);
     const { page, limit, skip, take } = getPagination(req.query);
-    const where = { shopId: shop.id };
-    if (req.query.status) where.status = req.query.status;
-    const [items, total] = await repo("Order").findAndCount({
-      where,
-      relations: { items: true },
-      order: { createdAt: "DESC" },
-      skip,
-      take,
-    });
+    const query = repo("Order")
+      .createQueryBuilder("order")
+      .leftJoinAndSelect("order.items", "item")
+      .leftJoin("order.customer", "customer")
+      .addSelect(["customer.id", "customer.name", "customer.phone"])
+      .leftJoin("order.address", "address")
+      .addSelect([
+        "address.id",
+        "address.fullName",
+        "address.phone",
+        "address.line1",
+        "address.line2",
+        "address.city",
+        "address.state",
+        "address.pincode",
+      ])
+      .where("order.shopId = :shopId", { shopId: shop.id });
+    if (req.query.status) query.andWhere("order.status = :status", { status: req.query.status });
+    const [items, total] = await query
+      .orderBy("order.createdAt", "DESC")
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
     res.json(pagedResponse(items, total, page, limit));
   })
 );
@@ -145,10 +227,25 @@ router.get(
   "/orders/:id",
   asyncHandler(async (req, res) => {
     const shop = await myShop(req.user.id);
-    const order = await repo("Order").findOne({
-      where: { id: req.params.id, shopId: shop.id },
-      relations: { items: true },
-    });
+    const order = await repo("Order")
+      .createQueryBuilder("order")
+      .leftJoinAndSelect("order.items", "item")
+      .leftJoin("order.customer", "customer")
+      .addSelect(["customer.id", "customer.name", "customer.phone"])
+      .leftJoin("order.address", "address")
+      .addSelect([
+        "address.id",
+        "address.fullName",
+        "address.phone",
+        "address.line1",
+        "address.line2",
+        "address.city",
+        "address.state",
+        "address.pincode",
+      ])
+      .where("order.id = :orderId", { orderId: req.params.id })
+      .andWhere("order.shopId = :shopId", { shopId: shop.id })
+      .getOne();
     if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
     res.json({ ok: true, data: order });
   })

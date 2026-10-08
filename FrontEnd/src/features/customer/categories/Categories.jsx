@@ -16,10 +16,12 @@ const Categories = () => {
       if (product.categoryId) result[product.categoryId] = (result[product.categoryId] || 0) + 1;
       return result;
     }, {});
-    return normalizeCategories(categoryRecords).map((category) => ({
-      ...category,
-      productCount: counts[category.id] || 0,
-    }));
+    return normalizeCategories(categoryRecords)
+      .filter((category) => category.name.trim().toLowerCase() !== "food")
+      .map((category) => ({
+        ...category,
+        productCount: counts[category.id] || 0,
+      }));
   }, []);
 
   return (

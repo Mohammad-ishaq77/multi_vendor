@@ -18,6 +18,7 @@ import {
   Sparkles,
   Plus,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import CustomerShell from "../components/CustomerShell";
@@ -30,6 +31,8 @@ import { shopService } from "../../../services/catalogService";
 import { normalizeAddresses, normalizeOrder, normalizeShop } from "../../../utils/normalize";
 import { hasRazorpayPublicKey } from "../../../config/env";
 import { RAZORPAY_CONFIG } from "../../../config/razorpay";
+import LocationPicker from "../../../components/common/LocationPicker";
+import { useDeliveryQuote } from "../../../hooks/useDeliveryQuote";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -75,6 +78,14 @@ const Checkout = () => {
   const [checkoutShop, setCheckoutShop] = useState(null);
   const [shopDetailsError, setShopDetailsError] = useState("");
 
+  // Map location for the inline "new address" form.
+  const [newAddressLocation, setNewAddressLocation] = useState(null);
+  const [newAddressPlace, setNewAddressPlace] = useState(null);
+  // Map location pending save for an existing address that has none yet.
+  const [pendingSavedLocation, setPendingSavedLocation] = useState(null);
+  const [pendingSavedPlace, setPendingSavedPlace] = useState(null);
+  const [savingLocation, setSavingLocation] = useState(false);
+
   /** Whether the SERVER is actually able to take a payment right now. */
   const [paymentsConfigured, setPaymentsConfigured] = useState(null);
 
@@ -114,6 +125,23 @@ const Checkout = () => {
   }, [user?.email]);
 
   const singleShop = shops.length === 1 ? shops[0] : null;
+
+  const selectedSavedAddress =
+    !isNewAddress && selectedAddressIndex != null ? savedAddresses[selectedAddressIndex] : null;
+  const selectedMissingLocation = Boolean(selectedSavedAddress && !selectedSavedAddress.hasLocation);
+
+  // Server-priced delivery preview: real road distance + fee for the selected
+  // shop/address. Only available once an address is saved and selected —
+  // an inline, not-yet-saved address (or one without map coordinates) would
+  // only produce an error, so we wait instead.
+  const {
+    quote: deliveryQuote,
+    loading: quoteLoading,
+    error: quoteError,
+  } = useDeliveryQuote(
+    isNewAddress || selectedMissingLocation ? null : singleShop?.shopId || null,
+    isNewAddress || selectedMissingLocation ? null : addressId
+  );
 
   useEffect(() => {
     if (!singleShop?.shopId) {
@@ -165,10 +193,22 @@ const Checkout = () => {
    * be checked out shop by shop. Saying so is better than silently splitting it.
    */
   const multiShop = shops.length > 1;
+  const minimumOrder = Number(checkoutShop?.minOrder) || 0;
+  const minimumOrderShortfall = Boolean(
+    checkoutShop &&
+      Math.round(cartTotal * 100) < Math.round(minimumOrder * 100)
+  );
 
   // Shown as an estimate; the amount actually charged is the server's total.
-  const estimatedDeliveryFee = cartTotal > 0 ? 40 : 0;
+  const estimatedDeliveryFee =
+    deliveryQuote?.deliveryAvailable ? Number(deliveryQuote.deliveryFee) : 0;
   const estimatedTotal = cartTotal + estimatedDeliveryFee;
+
+  const deliveryUnavailableMessage =
+    selectedSavedAddress && deliveryQuote && !deliveryQuote.deliveryAvailable
+      ? deliveryQuote.message ||
+        "Delivery not available in this area."
+      : "";
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAddress((prev) => ({ ...prev, [name]: value }));
@@ -179,6 +219,8 @@ const Checkout = () => {
     setSelectedAddressIndex(index);
     setIsNewAddress(false);
     setAddressId(saved.id);
+    setPendingSavedLocation(null);
+    setPendingSavedPlace(null);
     setAddress({
       fullName: saved.fullName || "",
       email: user?.email || "",
@@ -195,6 +237,23 @@ const Checkout = () => {
     setAddressId(null);
     setIsNewAddress(true);
     setAddress({ ...EMPTY_ADDRESS, email: user?.email || "" });
+    setNewAddressLocation(null);
+    setNewAddressPlace(null);
+    setPendingSavedLocation(null);
+    setPendingSavedPlace(null);
+  };
+
+  /** Reverse-geocoded parts for the new address: prefill only empty fields. */
+  const handleNewAddressPlace = (place) => {
+    setNewAddressPlace(place);
+    if (!place) return;
+    setAddress((prev) => ({
+      ...prev,
+      address: prev.address || place.line1 || "",
+      city: prev.city || place.city || "",
+      state: prev.state || place.state || "",
+      pincode: prev.pincode || place.pincode || "",
+    }));
   };
 
   const isAddressComplete = Boolean(
@@ -206,16 +265,23 @@ const Checkout = () => {
     if (!isAddressComplete) {
       return showToast("Please fill in all address details before saving.", "error");
     }
+    if (!newAddressLocation) {
+      return showToast("Please select your delivery location on the map.", "error");
+    }
     try {
+      // The reverse geocode may have landed after the user started typing —
+      // fill anything they left blank from the located place.
       const created = await addressService.create({
         fullName: address.fullName.trim(),
         phone: address.phone.trim(),
         line1: address.address.trim(),
         line2: "",
-        city: address.city.trim(),
-        state: address.state.trim(),
-        pincode: address.pincode.trim(),
+        city: address.city.trim() || (newAddressPlace?.city ?? ""),
+        state: address.state.trim() || (newAddressPlace?.state ?? ""),
+        pincode: address.pincode.trim() || (newAddressPlace?.pincode ?? ""),
         label: "Home",
+        lat: newAddressLocation.lat,
+        lng: newAddressLocation.lng,
         isDefault: savedAddresses.length === 0,
       });
 
@@ -225,9 +291,38 @@ const Checkout = () => {
       setSelectedAddressIndex(next.length - 1);
       setAddressId(normalized.id);
       setIsNewAddress(false);
+      setNewAddressLocation(null);
+      setNewAddressPlace(null);
       showToast("Address saved");
     } catch (error) {
       showToast(error?.message || "We could not save that address.", "error");
+    }
+  };
+
+  /** Attach a map location to a saved address that does not have one yet. */
+  const saveSelectedAddressLocation = async () => {
+    const target = savedAddresses[selectedAddressIndex];
+    if (!target) return;
+    if (!pendingSavedLocation) {
+      return showToast("Please select your delivery location on the map.", "error");
+    }
+    setSavingLocation(true);
+    try {
+      const patch = { lat: pendingSavedLocation.lat, lng: pendingSavedLocation.lng };
+      if (!target.city && pendingSavedPlace?.city) patch.city = pendingSavedPlace.city;
+      if (!target.state && pendingSavedPlace?.state) patch.state = pendingSavedPlace.state;
+      if (!target.pincode && pendingSavedPlace?.pincode) patch.pincode = pendingSavedPlace.pincode;
+
+      const updated = await addressService.update(target.id, patch);
+      const normalized = normalizeAddresses([updated])[0];
+      setSavedAddresses((prev) => prev.map((item) => (item.id === target.id ? normalized : item)));
+      setPendingSavedLocation(null);
+      setPendingSavedPlace(null);
+      showToast("Delivery location saved");
+    } catch (error) {
+      showToast(error?.message || "We could not save that location.", "error");
+    } finally {
+      setSavingLocation(false);
     }
   };
 
@@ -243,8 +338,23 @@ const Checkout = () => {
     if (!singleShop?.shopId) {
       return showToast("Your cart items are not linked to a shop yet. Refresh and try again.", "error");
     }
+    if (!checkoutShop) {
+      return showToast("Shop details are still loading. Please try again.", "error");
+    }
+    if (minimumOrderShortfall) {
+      return showToast(
+        `Orders from ${checkoutShop.name} start at ₹${minimumOrder.toFixed(2)}. Add ₹${(minimumOrder - cartTotal).toFixed(2)} more.`,
+        "error"
+      );
+    }
     if (!addressId) {
       return showToast("Please select or save a delivery address.", "error");
+    }
+    if (selectedMissingLocation) {
+      return showToast("Please select your delivery location on the map.", "error");
+    }
+    if (deliveryUnavailableMessage) {
+      return showToast(deliveryUnavailableMessage, "error");
     }
     setIsPlacing(true);
     setPaymentError("");
@@ -261,7 +371,7 @@ const Checkout = () => {
 
       if (selectedPaymentMethod === "razorpay") {
         // 2. Pay that exact, server-computed amount.
-        const payment = await paymentService.checkout({
+        await paymentService.checkout({
           amount: order.total,
           orderId: order.id,
           customer: {
@@ -425,15 +535,44 @@ const Checkout = () => {
                             {saved.city}, {saved.state} - {saved.pincode}
                           </p>
                           <p className="text-xs text-gray-400 mt-2">{saved.phone}</p>
+                          {!saved.hasLocation && (
+                            <span className="mt-2 inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[0.65rem] font-semibold text-amber-700">
+                              <AlertCircle className="h-3 w-3" /> No map location yet
+                            </span>
+                          )}
                         </div>
                         <span className={`text-xs font-semibold ${selectedAddressIndex === index ? "text-[#155c43]" : "text-gray-400"}`}>
                           {selectedAddressIndex === index ? "Selected" : "Use this"}
                         </span>
                       </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+                      </button>
+                    ))}
+                    {selectedMissingLocation && (
+                      <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
+                        <p className="mb-3 flex items-start gap-2 text-xs font-semibold text-amber-800">
+                          <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          This address has no map location yet. Set it so we can calculate the real road
+                          distance and delivery fee.
+                        </p>
+                        <LocationPicker
+                          label="Set delivery location"
+                          value={pendingSavedLocation}
+                          onChange={setPendingSavedLocation}
+                          onAddressChange={setPendingSavedPlace}
+                          mapHeight="h-56 sm:h-64"
+                        />
+                        <button
+                          type="button"
+                          onClick={saveSelectedAddressLocation}
+                          disabled={savingLocation}
+                          className="mt-3 w-full bg-[#155c43] text-white py-2.5 rounded-md text-sm font-semibold hover:bg-[#104b36] transition-colors disabled:opacity-60"
+                        >
+                          {savingLocation ? "Saving location…" : "Save location"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
               {(savedAddresses.length === 0 || isNewAddress) && (
               <div className="grid md:grid-cols-2 gap-4">
@@ -514,6 +653,22 @@ const Checkout = () => {
                     className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
+                <div className="md:col-span-2">
+                  <LocationPicker
+                    label="Delivery location on the map"
+                    hint="Search for your area or tap the map — this is the exact point we price delivery from."
+                    value={newAddressLocation}
+                    onChange={setNewAddressLocation}
+                    onAddressChange={handleNewAddressPlace}
+                    mapHeight="h-64 sm:h-72"
+                  />
+                  {!newAddressLocation && (
+                    <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-rose-500">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      Please select your delivery location on the map.
+                    </p>
+                  )}
+                </div>
                 <div className="md:col-span-2 flex items-center justify-between gap-3 pt-1">
                   <span className="text-xs text-gray-400">This address will be saved to your Addresses.</span>
                   <div className="flex items-center gap-3">
@@ -550,7 +705,14 @@ const Checkout = () => {
                 <p className="mt-2 text-sm text-gray-600">
                   Minimum order: ₹{checkoutShop.minOrder.toFixed(2)}
                 </p>
-                <p className="mt-1 text-xs text-gray-500">Shown for reference only; checkout does not enforce this yet.</p>
+                {minimumOrderShortfall ? (
+                  <p role="alert" className="mt-2 text-sm text-amber-800">
+                    Orders from {checkoutShop.name} start at ₹{minimumOrder.toFixed(2)}.
+                    Add ₹{(minimumOrder - cartTotal).toFixed(2)} more from this shop to place your order.
+                  </p>
+                ) : (
+                  <p className="mt-1 text-xs text-emerald-700">Your cart meets this shop's minimum order.</p>
+                )}
               </section>
             )}
 
@@ -748,9 +910,40 @@ const Checkout = () => {
                 <div className="flex justify-between text-sm text-gray-600">
                   <span className="flex items-center gap-1.5">
                     <Truck className="w-3.5 h-3.5" /> Delivery Fee
+                    {quoteLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />}
                   </span>
-                  <span className="font-medium">₹{estimatedDeliveryFee}</span>
+                  <span className="font-medium">
+                    {quoteLoading
+                      ? "Calculating…"
+                      : deliveryQuote?.deliveryAvailable
+                        ? `₹${estimatedDeliveryFee}`
+                        : deliveryQuote
+                          ? "Unavailable"
+                          : isNewAddress
+                            ? "After saving"
+                            : "—"}
+                  </span>
                 </div>
+                {!quoteLoading && deliveryQuote?.deliveryAvailable && (
+                  <p className="-mt-2 text-[0.65rem] text-gray-400">
+                    {Number(deliveryQuote.distanceKm).toFixed(2)} km by road from the shop — server-calculated.
+                  </p>
+                )}
+                {quoteError && (
+                  <p className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
+                    {quoteError}
+                  </p>
+                )}
+                {deliveryUnavailableMessage && (
+                  <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800" role="alert">
+                    {deliveryUnavailableMessage}
+                  </p>
+                )}
+                {selectedMissingLocation && (
+                  <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800" role="alert">
+                    Please select your delivery location on the map.
+                  </p>
+                )}
                 <div className="border-t border-gray-100 pt-4 flex justify-between items-center">
                   <span className="font-bold text-[#14261f]">Estimated Total</span>
                   <motion.span
@@ -775,7 +968,11 @@ const Checkout = () => {
                   isPlacing ||
                   multiShop ||
                   unavailableItems.length > 0 ||
+                  minimumOrderShortfall ||
+                  !checkoutShop ||
                   !addressId ||
+                  selectedMissingLocation ||
+                  Boolean(deliveryUnavailableMessage) ||
                   (selectedPaymentMethod === "razorpay" && !isRazorpayAvailable)
                 }
                 className="w-full mt-6 bg-linear-to-r from-[#155c43] to-[#1a6b4e] text-white py-3.5 rounded-md font-semibold shadow-lg shadow-[#155c43]/25 hover:from-[#104b36] hover:to-[#155c43] transition-all disabled:opacity-70 flex items-center justify-center gap-2 relative overflow-hidden"

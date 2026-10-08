@@ -51,6 +51,7 @@ export const normalizeProduct = (product) => {
     shopId: product.shopId || shop?.id || null,
     shopName: shop?.name || product.shopName || "",
     shop: shop?.name || product.shopName || "",
+    minOrder: num(shop?.minOrder),
     shopLocation: shop?.city || shop?.address || "",
     shopRating: num(shop?.rating),
     createdAt: product.createdAt || null,
@@ -93,6 +94,8 @@ export const normalizeShop = (shop) => {
     ownerName: shop.owner?.name || shop.ownerName || "",
     latitude: shop.lat != null ? num(shop.lat) : null,
     longitude: shop.lng != null ? num(shop.lng) : null,
+    lat: shop.lat != null ? num(shop.lat) : null,
+    lng: shop.lng != null ? num(shop.lng) : null,
     createdAt: shop.createdAt || null,
   };
 };
@@ -183,7 +186,8 @@ export const ORDER_STATUS_LABELS = {
   pending: "Placed",
   confirmed: "Processing",
   preparing: "Processing",
-  ready_for_pickup: "Processing",
+  ready_for_pickup: "Ready for pickup",
+  shipped: "Shipped",
   out_for_delivery: "Out for Delivery",
   delivered: "Delivered",
   completed: "Delivered",
@@ -193,19 +197,29 @@ export const ORDER_STATUS_LABELS = {
 /** Which tab each backend status belongs to. */
 export const ORDER_STATUS_GROUPS = {
   Placed: ["pending"],
-  Processing: ["confirmed", "preparing", "ready_for_pickup"],
-  Shipped: ["out_for_delivery"],
+  Processing: ["confirmed", "preparing"],
+  "Ready for pickup": ["ready_for_pickup"],
+  Shipped: ["shipped"],
   "Out for Delivery": ["out_for_delivery"],
   Delivered: ["delivered", "completed"],
   Cancelled: ["cancelled"],
 };
 
-export const orderStatusLabel = (status) => ORDER_STATUS_LABELS[status] || "Processing";
+export const normalizeOrderStatus = (status) => {
+  const key = String(status || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  return key;
+};
+
+export const orderStatusLabel = (status) =>
+  ORDER_STATUS_LABELS[normalizeOrderStatus(status)] || "Processing";
 
 export const ordersInGroup = (orders, group) => {
   const allowed = ORDER_STATUS_GROUPS[group];
   if (!allowed) return orders;
-  return orders.filter((order) => allowed.includes(order.status));
+  return orders.filter((order) => allowed.includes(normalizeOrderStatus(order.status)));
 };
 
 /** The shopkeeper's next legal action, per the server's transition rules. */
@@ -282,6 +296,8 @@ export const normalizeOrders = (items) => (items || []).map(normalizeOrder);
 export const normalizeAddress = (address) => {
   if (!address) return null;
   const line = [address.line1, address.line2].filter(Boolean).join(", ");
+  const lat = address.lat != null && Number.isFinite(Number(address.lat)) ? Number(address.lat) : null;
+  const lng = address.lng != null && Number.isFinite(Number(address.lng)) ? Number(address.lng) : null;
   return {
     ...address,
     id: address.id,
@@ -299,6 +315,10 @@ export const normalizeAddress = (address) => {
     isDefault: Boolean(address.isDefault),
     isPrimary: Boolean(address.isDefault),
     full: [line, address.city, address.state, address.pincode].filter(Boolean).join(", "),
+    // Map position — required for road-distance delivery pricing.
+    lat,
+    lng,
+    hasLocation: lat != null && lng != null,
   };
 };
 

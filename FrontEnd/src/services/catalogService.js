@@ -87,7 +87,7 @@ export const productService = {
   },
 
   async create(payload) {
-    return apiClient.post("/products", payload);
+    return apiClient.post("/products", payload, { timeoutMs: 60_000 });
   },
 
   async update(id, payload) {
@@ -100,7 +100,7 @@ export const productService = {
 };
 
 export const shopService = {
-  /** GET /api/shops */
+  /** GET /api/shops; sort: "recent" returns newest shops first. */
   async list(params = {}) {
     return paged(await apiClient.get("/shops", { query: params }));
   },

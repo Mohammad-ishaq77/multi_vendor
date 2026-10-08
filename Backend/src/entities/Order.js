@@ -30,6 +30,13 @@ export const Order = new EntitySchema({
     paymentMethod: { type: "varchar", length: 50, nullable: true, name: "payment_method" },
     subtotal: { type: "decimal", precision: 10, scale: 2, nullable: true },
     deliveryFee: { type: "decimal", precision: 10, scale: 2, default: 0, name: "delivery_fee" },
+    deliveryDistance: { type: "decimal", precision: 8, scale: 3, nullable: true, name: "delivery_distance" },
+    nearMartShare: { type: "decimal", precision: 10, scale: 2, default: 0, name: "nearmart_share" },
+    deliveryPartnerShare: { type: "decimal", precision: 10, scale: 2, default: 0, name: "delivery_partner_share" },
+    shopLat: { type: "decimal", precision: 10, scale: 7, nullable: true, name: "shop_lat" },
+    shopLng: { type: "decimal", precision: 10, scale: 7, nullable: true, name: "shop_lng" },
+    customerLat: { type: "decimal", precision: 10, scale: 7, nullable: true, name: "customer_lat" },
+    customerLng: { type: "decimal", precision: 10, scale: 7, nullable: true, name: "customer_lng" },
     discount: { type: "decimal", precision: 10, scale: 2, default: 0 },
     totalAmount: { type: "decimal", precision: 10, scale: 2, nullable: true, name: "total_amount" },
     notes: { type: "text", nullable: true },
@@ -43,6 +50,7 @@ export const Order = new EntitySchema({
   relations: {
     customer: { type: "many-to-one", target: "User", joinColumn: { name: "customer_id" }, onDelete: "CASCADE" },
     shop: { type: "many-to-one", target: "Shop", joinColumn: { name: "shop_id" }, onDelete: "CASCADE" },
+    address: { type: "many-to-one", target: "Address", joinColumn: { name: "address_id" }, nullable: true, onDelete: "SET NULL" },
     items: { type: "one-to-many", target: "OrderItem", inverseSide: "order" },
   },
 });

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,10 +13,12 @@ import {
 import CustomerShell from "../components/CustomerShell";
 import { useAsyncData } from "../../../hooks/useAsyncData";
 import { orderService } from "../../../services/orderService";
+import { normalizeOrderStatus, orderStatusLabel } from "../../../utils/normalize";
 
 const steps = [
   { key: "Placed", label: "Order Placed", desc: "We received your order" },
   { key: "Processing", label: "Processing", desc: "Preparing your items" },
+  { key: "Ready for pickup", label: "Ready for pickup", desc: "Your order is packed" },
   { key: "Shipped", label: "Shipped", desc: "Handed to delivery partner" },
   { key: "Out for Delivery", label: "Out for Delivery", desc: "Arriving soon" },
   { key: "Delivered", label: "Delivered", desc: "Package received" },
@@ -24,6 +27,7 @@ const steps = [
 const stepIcons = {
   Placed: Package,
   Processing: Clock,
+  "Ready for pickup": Package,
   Shipped: Truck,
   "Out for Delivery": MapPin,
   Delivered: Home,
@@ -31,7 +35,9 @@ const stepIcons = {
 
 const statusConfig = {
   Delivered: "bg-emerald-500",
+  Cancelled: "bg-rose-500",
   Processing: "bg-amber-500",
+  "Ready for pickup": "bg-emerald-500",
   Shipped: "bg-emerald-500",
   "Out for Delivery": "bg-teal-600",
   Placed: "bg-gray-400",
@@ -39,10 +45,20 @@ const statusConfig = {
 
 const TrackOrder = () => {
   const { orderId } = useParams();
-  const { data: order, loading, error } = useAsyncData(
+  const { data: order, loading, error, reload } = useAsyncData(
     () => orderService.track(orderId),
     [orderId]
   );
+
+  useEffect(() => {
+    if (!order || ["delivered", "completed", "cancelled"].includes(normalizeOrderStatus(order.status))) {
+      return undefined;
+    }
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") reload();
+    }, 8000);
+    return () => window.clearInterval(intervalId);
+  }, [order, reload]);
 
   if (loading) {
     return (
@@ -72,8 +88,10 @@ const TrackOrder = () => {
     );
   }
 
-  const currentIndex = steps.findIndex((s) => s.key === order.status);
+  const displayStatus = orderStatusLabel(order.status);
+  const currentIndex = steps.findIndex((step) => step.key === displayStatus);
   const activeIndex = currentIndex === -1 ? 1 : currentIndex;
+  const isCancelled = normalizeOrderStatus(order.status) === "cancelled";
 
   return (
     <CustomerShell>
@@ -100,21 +118,28 @@ const TrackOrder = () => {
         >
           <div
             className={`w-14 h-14 rounded-full ${
-              statusConfig[order.status] || "bg-gray-400"
+              statusConfig[displayStatus] || "bg-gray-400"
             } flex items-center justify-center mx-auto mb-4`}
           >
             <Truck className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-[#0F172A] mb-1">
-            {order.status}
+            {displayStatus}
           </h1>
           <p className="text-sm text-[#64748B]">
-            {order.id} · Estimated: 20–30 mins
+            {order.orderId || order.id}
+            {order.estimatedDelivery
+              ? ` · Estimated: ${new Date(order.estimatedDelivery).toLocaleString()}`
+              : " · Status updates automatically"}
           </p>
         </motion.div>
 
         {/* Timeline */}
-        <motion.div
+        {isCancelled ? (
+          <div className="rounded-lg border border-rose-200 bg-rose-50 p-6 text-center text-sm text-rose-800">
+            This order was cancelled and will not be delivered.
+          </div>
+        ) : <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -165,7 +190,7 @@ const TrackOrder = () => {
                       }`}
                     >
                       {isCurrent
-                        ? "In progress..."
+                        ? displayStatus === "Delivered" ? "Delivered" : "In progress..."
                         : isActive
                         ? "Completed"
                         : "Pending"}
@@ -175,7 +200,7 @@ const TrackOrder = () => {
               );
             })}
           </div>
-        </motion.div>
+        </motion.div>}
       </div>
     </CustomerShell>
   );

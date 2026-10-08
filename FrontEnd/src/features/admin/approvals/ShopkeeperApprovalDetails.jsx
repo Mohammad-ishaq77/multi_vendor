@@ -207,7 +207,7 @@ function InfoRow({ icon: Icon, label, value }) {
 export default function ShopkeeperApprovalDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { approvals, approveShopkeeper, rejectShopkeeper, requestShopkeeperChanges } = useAdmin();
+  const { approvals, actionError, approveShopkeeper, rejectShopkeeper, requestShopkeeperChanges } = useAdmin();
 
   const [confirmModal, setConfirmModal] = useState({ open: false, action: "" });
   const [rejectModal, setRejectModal] = useState(false);
@@ -258,33 +258,37 @@ export default function ShopkeeperApprovalDetails() {
 
   const confirmApprove = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    approveShopkeeper(approval.id);
+    const result = await approveShopkeeper(approval.id);
     setLoading(false);
-    setConfirmModal({ open: false, action: "" });
-    navigate("/admin/approvals/shopkeepers");
+    if (result?.success) {
+      setConfirmModal({ open: false, action: "" });
+      navigate("/admin/approvals/shopkeepers");
+    }
   };
 
   const confirmReject = async (reason) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    rejectShopkeeper(approval.id, reason);
+    const result = await rejectShopkeeper(approval.id, reason);
     setLoading(false);
-    setRejectModal(false);
-    navigate("/admin/approvals/shopkeepers");
+    if (result?.success) {
+      setRejectModal(false);
+      navigate("/admin/approvals/shopkeepers");
+    }
   };
 
   const confirmChanges = async (message) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    requestShopkeeperChanges(approval.id, message);
+    const result = await requestShopkeeperChanges(approval.id, message);
     setLoading(false);
-    setChangesModal(false);
-    navigate("/admin/approvals/shopkeepers");
+    if (result?.success) {
+      setChangesModal(false);
+      navigate("/admin/approvals/shopkeepers");
+    }
   };
 
   return (
     <div className="space-y-6 max-w-4xl">
+      {actionError && <p role="alert" className="rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{actionError}</p>}
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate("/admin/approvals/shopkeepers")}
@@ -382,27 +386,15 @@ export default function ShopkeeperApprovalDetails() {
         >
           <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <FileText className="w-4 h-4 text-[#155c43]" />
-            Additional Notes
+            Admin review notes
           </h3>
           <p className="text-sm text-gray-600 leading-relaxed">
-            {approval.notes || "No additional notes provided."}
+            {approval.notes || "No review notes recorded."}
           </p>
-          {approval.changesMessage && (
-            <div className="mt-4 p-3 bg-blue-50 rounded-md">
-              <p className="text-xs font-medium text-blue-700 mb-1">Changes Requested</p>
-              <p className="text-sm text-blue-600">{approval.changesMessage}</p>
-            </div>
-          )}
-          {approval.rejectionReason && (
-            <div className="mt-4 p-3 bg-rose-50 rounded-md">
-              <p className="text-xs font-medium text-rose-700 mb-1">Rejection Reason</p>
-              <p className="text-sm text-rose-600">{approval.rejectionReason}</p>
-            </div>
-          )}
         </motion.div>
       </div>
 
-      {approval.status === "pending" && (
+      {["pending", "rejected"].includes(approval.status) && (
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -452,4 +444,3 @@ export default function ShopkeeperApprovalDetails() {
     </div>
   );
 }
-

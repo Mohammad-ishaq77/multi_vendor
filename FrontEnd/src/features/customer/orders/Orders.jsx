@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import CustomerShell from "../components/CustomerShell";
 import { orderService } from "../../../services/orderService";
-import { normalizeOrders, ordersInGroup } from "../../../utils/normalize";
+import { normalizeOrderStatus, normalizeOrders, ordersInGroup } from "../../../utils/normalize";
 import { formatDate } from "../../../utils/helpers";
 import { useAsyncData } from "../../../hooks/useAsyncData";
 
@@ -41,6 +41,13 @@ const statusConfig = {
     border: "border-amber-200",
     dot: "bg-amber-500",
   },
+  "Ready for pickup": {
+    icon: Package,
+    color: "text-emerald-700",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    dot: "bg-emerald-600",
+  },
   Shipped: {
     icon: Truck,
     color: "text-emerald-700",
@@ -64,7 +71,7 @@ const statusConfig = {
   },
 };
 
-const tabs = ["All", "Processing", "Shipped", "Delivered", "Cancelled"];
+const tabs = ["All", "Processing", "Ready for pickup", "Out for Delivery", "Delivered", "Cancelled"];
 
 const Orders = () => {
   // Real orders from GET /api/orders/my — no local copy.
@@ -75,6 +82,27 @@ const Orders = () => {
   const orders = data || [];
   const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (!data?.some((order) => !["delivered", "completed", "cancelled"].includes(normalizeOrderStatus(order.status)))) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") reload();
+    }, 8000);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") reload();
+    };
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, [data, reload]);
 
   const filtered = orders.filter((order) => {
     const matchesTab = activeTab === "All" || ordersInGroup([order], activeTab).length > 0;
@@ -91,7 +119,8 @@ const Orders = () => {
   const statusCounts = {
     All: orders.length,
     Processing: ordersInGroup(orders, "Processing").length,
-    Shipped: ordersInGroup(orders, "Shipped").length,
+    "Ready for pickup": ordersInGroup(orders, "Ready for pickup").length,
+    "Out for Delivery": ordersInGroup(orders, "Out for Delivery").length,
     Delivered: ordersInGroup(orders, "Delivered").length,
     Cancelled: ordersInGroup(orders, "Cancelled").length,
   };

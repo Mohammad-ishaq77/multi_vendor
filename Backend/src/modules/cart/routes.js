@@ -14,7 +14,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const items = await repo("CartItem").find({
       where: { userId: req.user.id },
-      relations: { product: true },
+      relations: { product: { shop: true } },
       order: { createdAt: "DESC" },
     });
     res.json({ ok: true, data: items });

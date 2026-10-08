@@ -230,7 +230,7 @@ function ChangesModal({ isOpen, onClose, onConfirm, loading }) {
 
 export default function ShopkeeperApprovals() {
   const navigate = useNavigate();
-  const { approvals, approveShopkeeper, rejectShopkeeper, requestShopkeeperChanges } = useAdmin();
+  const { approvals, actionError, approveShopkeeper, rejectShopkeeper, requestShopkeeperChanges } = useAdmin();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -288,30 +288,28 @@ export default function ShopkeeperApprovals() {
 
   const confirmApprove = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    approveShopkeeper(confirmModal.id);
+    const result = await approveShopkeeper(confirmModal.id);
     setLoading(false);
-    setConfirmModal({ open: false, id: null, action: "" });
+    if (result?.success) setConfirmModal({ open: false, id: null, action: "" });
   };
 
   const confirmReject = async (reason) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    rejectShopkeeper(rejectModal.id, reason);
+    const result = await rejectShopkeeper(rejectModal.id, reason);
     setLoading(false);
-    setRejectModal({ open: false, id: null });
+    if (result?.success) setRejectModal({ open: false, id: null });
   };
 
   const confirmChanges = async (message) => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    requestShopkeeperChanges(changesModal.id, message);
+    const result = await requestShopkeeperChanges(changesModal.id, message);
     setLoading(false);
-    setChangesModal({ open: false, id: null });
+    if (result?.success) setChangesModal({ open: false, id: null });
   };
 
   return (
     <div className="space-y-6">
+      {actionError && <p role="alert" className="rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{actionError}</p>}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Shopkeeper Approvals</h1>
@@ -458,7 +456,7 @@ export default function ShopkeeperApprovals() {
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          {app.status === "pending" && (
+                          {["pending", "rejected"].includes(app.status) && (
                             <>
                               <button
                                 onClick={() => handleApprove(app.id)}
@@ -522,7 +520,7 @@ export default function ShopkeeperApprovals() {
                       <Eye className="w-3.5 h-3.5" />
                       View
                     </button>
-                    {app.status === "pending" && (
+                    {["pending", "rejected"].includes(app.status) && (
                       <>
                         <button
                           onClick={() => handleApprove(app.id)}

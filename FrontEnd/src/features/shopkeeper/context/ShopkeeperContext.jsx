@@ -76,6 +76,8 @@ const DEFAULT_SHOP = {
   city: "",
   state: "",
   pincode: "",
+  lat: null,
+  lng: null,
   openingTime: "",
   closingTime: "",
   isOpen: false,
@@ -123,12 +125,19 @@ const saveUiState = (state) => {
 /** Add the shopkeeper screen aliases to an API order. */
 const withUiStatus = (order) => {
   if (!order) return order;
+  const paymentStatusLabel = {
+    paid: "Paid",
+    pending: "Pending",
+    refunded: "Refunded",
+    failed: "Failed",
+  }[String(order.paymentStatus || "").toLowerCase()] || "Pending";
   return {
     ...order,
     apiStatus: order.status,
     status: API_TO_UI_STATUS[order.status] || order.status,
-    customer: order.customerName,
-    phone: order.customerPhone,
+    paymentStatusLabel,
+    customer: order.customerName || "Customer",
+    phone: order.customerPhone || order.address?.phone || "",
   };
 };
 
@@ -156,6 +165,9 @@ export function ShopkeeperProvider({ children }) {
   const [shopStatus, setShopStatus] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState(null);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
   const [offers, setOffers] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [earnings, setEarnings] = useState(null);
@@ -187,6 +199,21 @@ export function ShopkeeperProvider({ children }) {
     }
   }, []);
 
+  const loadOrders = useCallback(async () => {
+    setOrdersLoading(true);
+    setOrdersError(null);
+    try {
+      const { items } = await shopkeeperService.orders({ limit: 100 });
+      setOrders(normalizeOrders(items).map(withUiStatus));
+      return true;
+    } catch (err) {
+      setOrdersError(err?.message || "We could not load your orders.");
+      return false;
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, []);
+
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -204,18 +231,19 @@ export function ShopkeeperProvider({ children }) {
       const hasShop = Boolean(statusRes?.shop);
       if (hasShop) {
         await loadShop();
-        const [productsRes, ordersRes, offersRes, reviewsRes, earningsRes, notificationsRes] =
+        const [productsRes, , offersRes, reviewsRes, earningsRes, notificationsRes, documentsRes] =
           await Promise.all([
             shopkeeperService.products({ limit: 100 }).then(({ items }) => normalizeProducts(items)),
-            shopkeeperService.orders({ limit: 100 }).then(({ items }) => normalizeOrders(items).map(withUiStatus)),
+            loadOrders(),
             shopkeeperService.offers().then((items) => normalizeOffers(items)),
             shopkeeperService.reviews({ limit: 50 }).then(({ items }) => normalizeReviews(items)),
             shopkeeperService.earnings().catch(() => null),
             notificationService.list({ limit: 20 }).then(({ items }) => items).catch(() => []),
+            shopkeeperService.documents(),
           ]);
 
         setProducts(productsRes);
-        setOrders(ordersRes);
+        setDocuments(documentsRes || []);
         setOffers(offersRes);
         setReviews(reviewsRes);
         setEarnings({
@@ -238,6 +266,7 @@ export function ShopkeeperProvider({ children }) {
       } else {
         setProducts([]);
         setOrders([]);
+        setOrdersError(null);
         setOffers([]);
         setReviews([]);
         setEarnings(null);
@@ -250,7 +279,7 @@ export function ShopkeeperProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [loadShop, profile, user]);
+  }, [loadOrders, loadShop, profile, user]);
 
   useEffect(() => {
     if (user) applyProfile((prev) => ({ ...normalizeUser(user), ...prev }));
@@ -334,6 +363,9 @@ export function ShopkeeperProvider({ children }) {
           city: next.city,
           state: next.state,
           pincode: next.pincode,
+          // Pair must be sent together (backend rejects half a pair).
+          lat: next.lat != null ? Number(next.lat) : undefined,
+          lng: next.lng != null ? Number(next.lng) : undefined,
           categoryId: next.categoryId || null,
           openingTime: next.openingTime || null,
           closingTime: next.closingTime || null,
@@ -378,10 +410,11 @@ export function ShopkeeperProvider({ children }) {
   );
 
   const addProduct = useCallback(
-    (product) =>
-      runAction(async () => {
+    async (product) => {
+      setActionError(null);
+      try {
         const payload = {
-          name: product.name,
+          name: product.name.trim(),
           description: product.description || "",
           price: Number(product.price),
           mrp: product.originalPrice ? Number(product.originalPrice) : Number(product.price),
@@ -395,9 +428,23 @@ export function ShopkeeperProvider({ children }) {
         if (categoryId) payload.categoryId = categoryId;
         if (imageUrl) payload.imageUrl = imageUrl;
         const created = await productService.create(payload);
-        return normalizeProduct(created);
-      }, { successMessage: "Product added" }),
-    [runAction]
+        const normalized = normalizeProduct(created);
+        if (!normalized?.id) throw new Error("The server did not confirm that the product was saved.");
+        setProducts((current) => [normalized, ...current.filter((item) => item.id !== normalized.id)]);
+        return { ok: true, data: normalized, message: "Product added" };
+      } catch (err) {
+        const message = err?.message || "Could not add the product.";
+        setActionError(message);
+        return {
+          ok: false,
+          error: message,
+          issues: err?.issues || null,
+          status: err?.status ?? null,
+          code: err?.code || null,
+        };
+      }
+    },
+    []
   );
 
   const updateProduct = useCallback(
@@ -466,13 +513,29 @@ export function ShopkeeperProvider({ children }) {
 
   /** UI status -> server status. Only the shop's own order flow is allowed. */
   const updateOrderStatus = useCallback(
-    (orderId, uiStatus) =>
-      runAction(async () => {
+    async (orderId, uiStatus) => {
+      setActionError(null);
+      setUpdatingOrderId(orderId);
+      try {
         const apiStatus = UI_TO_API_STATUS[uiStatus];
         if (!apiStatus) throw new Error(`"${uiStatus}" is not a valid order status.`);
-        return shopkeeperService.updateOrderStatus(orderId, apiStatus);
-      }, { successMessage: `Order marked ${uiStatus}` }),
-    [runAction]
+        const updated = await shopkeeperService.updateOrderStatus(orderId, apiStatus);
+        setOrders((current) =>
+          current.map((order) =>
+            order.id === orderId ? withUiStatus({ ...order, ...updated }) : order
+          )
+        );
+        await loadOrders();
+        return { ok: true, data: updated, message: `Order marked ${uiStatus}` };
+      } catch (err) {
+        const message = err?.message || `Could not mark the order ${uiStatus.toLowerCase()}.`;
+        setActionError(message);
+        return { ok: false, error: message, issues: err?.issues || null };
+      } finally {
+        setUpdatingOrderId(null);
+      }
+    },
+    [loadOrders]
   );
 
   const getNextStatus = useCallback((currentStatus) => {
@@ -579,12 +642,12 @@ export function ShopkeeperProvider({ children }) {
       averageOrderValue: paid.length
         ? Math.round(paid.reduce((sum, o) => sum + Number(o.total || 0), 0) / paid.length)
         : 0,
-      transactions: paid.slice(0, 10).map((o) => ({
+      transactions: paid.map((o) => ({
         id: o.id,
         orderId: o.id,
         amount: Number(o.total || 0),
         date: o.createdAt,
-        status: o.paymentStatus === "paid" ? "Settled" : "Pending",
+        status: o.apiStatus === "completed" ? "Completed" : "Pending",
         method: o.paymentMethod || "â€”",
       })),
     };
@@ -635,6 +698,10 @@ export function ShopkeeperProvider({ children }) {
       documents,
       uploadDocument,
       orders,
+      ordersLoading,
+      ordersError,
+      refreshOrders: loadOrders,
+      updatingOrderId,
       updateOrderStatus,
       getNextStatus,
       offers,
@@ -674,6 +741,10 @@ export function ShopkeeperProvider({ children }) {
       documents,
       uploadDocument,
       orders,
+      ordersLoading,
+      ordersError,
+      loadOrders,
+      updatingOrderId,
       updateOrderStatus,
       getNextStatus,
       offers,

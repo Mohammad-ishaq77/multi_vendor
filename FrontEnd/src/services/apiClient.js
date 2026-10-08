@@ -165,13 +165,16 @@ const notifySessionExpired = () => {
  * Raw fetch that deliberately skips auth handling. Used for the refresh call
  * itself so a rejected refresh token cannot recurse.
  */
-const rawRequest = async (method, path, { body, query, headers, signal } = {}) => {
+const rawRequest = async (method, path, { body, query, headers, signal, timeoutMs = API_TIMEOUT_MS } = {}) => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
-  if (signal) {
-    if (signal.aborted) controller.abort();
-    else signal.addEventListener("abort", () => controller.abort(), { once: true });
-  }
+  let timedOut = false;
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const abortRequest = () => controller.abort();
+  if (signal?.aborted) controller.abort(signal.reason);
+  else signal?.addEventListener("abort", abortRequest, { once: true });
 
   const requestHeaders = { Accept: "application/json", ...(headers || {}) };
 
@@ -198,9 +201,17 @@ const rawRequest = async (method, path, { body, query, headers, signal } = {}) =
     return { response, payload: await parseBody(response) };
   } catch (error) {
     if (error instanceof ApiError) throw error;
+    if (signal?.aborted && !timedOut) throw error;
+    if (timedOut) {
+      throw new ApiError(STATUS_MESSAGES[504], {
+        status: 504,
+        cause: error,
+      });
+    }
     throw networkError(error);
   } finally {
     clearTimeout(timeout);
+    signal?.removeEventListener("abort", abortRequest);
   }
 };
 
@@ -252,6 +263,7 @@ const shouldSkipRefresh = (path) =>
  * @param {boolean}[options.auth=true] Attach the bearer token
  * @param {boolean}[options.retry=true] Allow one refresh-and-replay attempt
  * @param {AbortSignal}[options.signal]
+ * @param {number}[options.timeoutMs] Request timeout override in milliseconds
  * @returns {Promise<any>} the parsed `data` payload
  */
 export const request = async (method, path, options = {}) => {
@@ -262,6 +274,7 @@ export const request = async (method, path, options = {}) => {
     auth = true,
     retry = true,
     signal,
+    timeoutMs,
     unwrap = true,
   } = options;
 
@@ -279,6 +292,7 @@ export const request = async (method, path, options = {}) => {
       query,
       headers: requestHeaders,
       signal,
+      timeoutMs,
     });
 
     if (response.ok && payload?.ok !== false) {
@@ -337,7 +351,7 @@ export const apiClient = {
 
   /** Multipart upload — Content-Type is left to the browser. */
   upload: (path, formData, options = {}) =>
-    request("POST", path, { ...options, body: formData }),
+    request("POST", path, { timeoutMs: 120_000, ...options, body: formData }),
 
   /** Escape hatch when a caller needs the whole envelope. */
   request,

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -13,7 +14,7 @@ import {
 import CustomerShell from "../components/CustomerShell";
 import { useAsyncData } from "../../../hooks/useAsyncData";
 import { orderService } from "../../../services/orderService";
-import { normalizeOrder } from "../../../utils/normalize";
+import { normalizeOrder, normalizeOrderStatus } from "../../../utils/normalize";
 
 const statusConfig = {
   Placed: {
@@ -46,15 +47,31 @@ const statusConfig = {
     border: "border-violet-200",
     icon: Package,
   },
+  Cancelled: {
+    color: "text-rose-700",
+    bg: "bg-rose-50",
+    border: "border-rose-200",
+    icon: Package,
+  },
 };
 
 const OrderDetails = () => {
   const { orderId } = useParams();
   
-  const { data: order, loading, error } = useAsyncData(
+  const { data: order, loading, error, reload } = useAsyncData(
     () => orderService.get(orderId).then(normalizeOrder),
     [orderId]
   );
+
+  useEffect(() => {
+    if (!order || ["delivered", "completed", "cancelled"].includes(normalizeOrderStatus(order.status))) {
+      return undefined;
+    }
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") reload();
+    }, 8000);
+    return () => window.clearInterval(intervalId);
+  }, [order, reload]);
 
   const downloadInvoice = () => {
     const lines = [
@@ -111,7 +128,7 @@ const OrderDetails = () => {
     );
   }
 
-  const config = statusConfig[order.status] || statusConfig.Processing;
+  const config = statusConfig[order.statusLabel] || statusConfig.Processing;
   const StatusIcon = config.icon;
 
   return (
@@ -150,7 +167,7 @@ const OrderDetails = () => {
               className={`inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide ${config.bg} ${config.color} ${config.border} border`}
             >
               <StatusIcon className="w-3.5 h-3.5" />
-              {order.status}
+              {order.statusLabel}
             </span>
           </div>
 
@@ -259,12 +276,14 @@ const OrderDetails = () => {
               </h3>
             </div>
             <p className="text-sm text-[#0F172A] font-medium leading-relaxed">
-              {order.customer ? `${order.customer.fullName}, ${order.customer.address}, ${order.customer.city} - ${order.customer.pincode}` : order.address || "NearMart HQ, Srinagar, Jammu & Kashmir, India"}
+              {order.deliveryAddress || order.address?.full || order.address?.line1 || "Delivery address unavailable"}
             </p>
             <p className="text-xs text-[#64748B] mt-2">
               Estimated delivery:{" "}
               <span className="font-semibold text-[#1B4332]">
-                20–30 mins
+                {order.estimatedDelivery
+                  ? new Date(order.estimatedDelivery).toLocaleString()
+                  : "We’ll keep you updated"}
               </span>
             </p>
           </motion.div>

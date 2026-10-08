@@ -5,7 +5,7 @@ import { requireAuth } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
 import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
-import { repo } from "../../config/db.js";
+import { AppDataSource, repo } from "../../config/db.js";
 
 const router = Router();
 
@@ -79,26 +79,25 @@ router.post(
       }
     }
 
-    const reviews = repo("Review");
-    const created = await reviews.save(
-      reviews.create({
-        shopId,
-        productId: productId || null,
-        orderId: orderId || null,
-        rating,
-        comment,
-        reviewerId: req.user.id,
-      })
-    );
-    // Recompute shop aggregate
-    try {
+    const created = await AppDataSource.transaction(async (manager) => {
+      const reviews = manager.getRepository("Review");
+      const createdReview = await reviews.save(
+        reviews.create({
+          shopId,
+          productId: productId || null,
+          orderId: orderId || null,
+          rating,
+          comment,
+          reviewerId: req.user.id,
+        })
+      );
       const agg = await reviews
         .createQueryBuilder("r")
         .select("AVG(r.rating)", "avg")
         .addSelect("COUNT(*)", "count")
         .where("r.shopId = :sid", { sid: shopId })
         .getRawOne();
-      const shops = repo("Shop");
+      const shops = manager.getRepository("Shop");
       const shop = await shops.findOne({ where: { id: shopId } });
       if (shop) {
         shop.rating = Number(Number(agg?.avg || 0).toFixed(2));
@@ -112,7 +111,7 @@ router.post(
           .addSelect("COUNT(*)", "count")
           .where("r.productId = :pid", { pid: productId })
           .getRawOne();
-        const products = repo("Product");
+        const products = manager.getRepository("Product");
         const product = await products.findOne({ where: { id: productId } });
         if (product) {
           product.rating = Number(Number(pAgg?.avg || 0).toFixed(2));
@@ -120,7 +119,8 @@ router.post(
           await products.save(product);
         }
       }
-    } catch { /* aggregate best-effort */ }
+      return createdReview;
+    });
     res.status(201).json({ ok: true, data: created });
   })
 );

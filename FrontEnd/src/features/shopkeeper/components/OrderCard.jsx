@@ -1,12 +1,15 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { IndianRupee, Clock, User, ChevronRight } from "lucide-react";
+import { IndianRupee, Clock, User, ChevronRight, MapPin, XCircle } from "lucide-react";
 import { orderStatusConfig, paymentStatusConfig } from "../data/dummyOrders";
 
-const OrderCard = ({ order, index = 0, onStatusUpdate, nextStatus }) => {
+const OrderCard = ({ order, index = 0, onStatusUpdate, nextStatus, isUpdating = false }) => {
   const navigate = useNavigate();
   const statusCfg = orderStatusConfig[order.status] || orderStatusConfig.New;
-  const paymentCfg = paymentStatusConfig[order.paymentStatus] || paymentStatusConfig.Paid;
+  const paymentStatusLabel = order.paymentStatusLabel || "Pending";
+  const paymentCfg = paymentStatusConfig[paymentStatusLabel] || paymentStatusConfig.Pending;
+  const showPaymentStatus = order.status !== "Completed" || paymentStatusLabel !== "Pending";
+  const canCancel = ["New", "Accepted", "Preparing"].includes(order.status);
 
   const timeAgo = (() => {
     if (!order.createdAt) return "";
@@ -39,29 +42,51 @@ const OrderCard = ({ order, index = 0, onStatusUpdate, nextStatus }) => {
                 <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
                 {order.status}
               </span>
-              <span className={`text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full ${paymentCfg.bg} ${paymentCfg.color}`}>
-                {order.paymentStatus}
-              </span>
+              {showPaymentStatus && (
+                <span className={`text-[0.6rem] font-bold px-1.5 py-0.5 rounded-full ${paymentCfg.bg} ${paymentCfg.color}`}>
+                  {paymentStatusLabel}
+                </span>
+              )}
             </div>
-            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-              <span className="flex items-center gap-1"><User className="w-3 h-3" />{order.customer}</span>
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+              <span className="flex items-center gap-1"><User className="w-3 h-3" />{order.customer || "Customer"}</span>
+              {order.phone && <span>{order.phone}</span>}
               <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{timeAgo}</span>
-              <span className="flex items-center gap-1"><IndianRupee className="w-3 h-3" />{order.total}</span>
+              <span className="flex items-center gap-1"><IndianRupee className="w-3 h-3" />{Number(order.total || 0).toLocaleString("en-IN")}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:pl-4">
+        <div className="flex flex-wrap items-center gap-2 sm:pl-4">
           {nextStatus && (
             <motion.button
               whileTap={{ scale: 0.95 }}
+              disabled={isUpdating}
               onClick={(e) => { e.stopPropagation(); onStatusUpdate?.(order.id, nextStatus); }}
-              className="px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20"
+              className="px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20 disabled:cursor-wait disabled:opacity-60"
             >
-              Move to {nextStatus}
+              {isUpdating ? "Updating…" : `Mark as ${nextStatus}`}
             </motion.button>
           )}
+          {canCancel && (
+            <button
+              type="button"
+              disabled={isUpdating}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (window.confirm(`Cancel order ${order.id}?`)) {
+                  onStatusUpdate?.(order.id, "Cancelled");
+                }
+              }}
+              className="inline-flex items-center gap-1 rounded-md border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-wait disabled:opacity-60"
+            >
+              <XCircle className="h-3.5 w-3.5" />
+              Cancel
+            </button>
+          )}
           <button
+            type="button"
+            aria-label={`View order ${order.id}`}
             onClick={() => navigate(`/shopkeeper/orders/${order.id}`)}
             className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all"
           >
@@ -69,6 +94,13 @@ const OrderCard = ({ order, index = 0, onStatusUpdate, nextStatus }) => {
           </button>
         </div>
       </div>
+
+      {order.deliveryAddress && (
+        <p className="mt-3 flex items-start gap-1.5 border-t border-gray-50 pt-3 text-xs text-gray-500">
+          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
+          <span className="line-clamp-2">{order.deliveryAddress}</span>
+        </p>
+      )}
 
       {/* Items preview */}
       {order.items?.length > 0 && (
