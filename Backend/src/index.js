@@ -54,6 +54,15 @@ export function buildApp() {
     })
   );
 
+  app.get("/", (_req, res) => {
+    res.json({
+      success: true,
+      message: "MultiVendor NearMart Backend Running Successfully",
+      service: "NearMart API",
+      version: "2.0.0"
+    });
+  });
+
   app.get("/health", (_req, res) => {
     res.json({ ok: true, service: "nearmart-api", version: "2.0.0" });
   });
