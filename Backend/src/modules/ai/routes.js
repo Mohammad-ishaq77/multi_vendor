@@ -33,7 +33,7 @@ async function getMarketplaceContext() {
 
     const catNames = categories.map((c) => c.name).join(", ");
     const shopList = shops.map((s) => `${s.name} (${s.city || "Local"})`).join(", ");
-    const prodList = products.map((p) => `${p.name} - â‚¹${p.price}`).join("; ");
+    const prodList = products.map((p) => `${p.name} - Ôé¦${p.price}`).join("; ");
 
     return `Available Categories: ${catNames || "General Store, Groceries, Electronics"}.
 Featured Approved Shops: ${shopList || "Local Express, Daily Mart"}.
@@ -81,7 +81,7 @@ function getFallbackResponse(message, contextInfo) {
 }
 
 /**
- * POST /api/ai/chat â€” Send user prompt & history to backend AI (Ollama with fallback)
+ * POST /api/ai/chat ÔÇö Send user prompt & history to backend AI (Ollama with fallback)
  */
 router.post(
   "/chat",
@@ -113,7 +113,12 @@ ${contextInfo}`;
     try {
       const response = await fetch(`${config.ai.ollamaHost}/api/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+      "Content-Type": "application/json",
+      ...(config.ai.apiKey
+        ? { Authorization: `Bearer ${config.ai.apiKey}` }
+        : {}),
+    },
         body: JSON.stringify({
           model: config.ai.model,
           messages,
@@ -152,3 +157,4 @@ ${contextInfo}`;
 );
 
 export default router;
+
