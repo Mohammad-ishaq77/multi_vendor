@@ -142,7 +142,14 @@ ${contextInfo}`;
       }
       throw new Error(`Ollama status ${response.status}`);
     } catch (error) {
-      console.error("OLLAMA AI ERROR:", error?.message || error);
+      console.error("OLLAMA AI ERROR:", {
+        message: error?.message,
+        name: error?.name,
+        code: error?.code,
+        cause: error?.cause?.message,
+        causeCode: error?.cause?.code,
+        causeName: error?.cause?.name,
+      });
       // Graceful fallback response if Ollama is not running locally
       const fallbackReply = getFallbackResponse(message, contextInfo);
       return res.json({
@@ -158,6 +165,7 @@ ${contextInfo}`;
 );
 
 export default router;
+
 
 
 
