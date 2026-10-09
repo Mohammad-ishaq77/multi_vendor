@@ -45,7 +45,6 @@ const MarketplaceSearch = ({
     const onPointerDown = (event) => {
       if (wrapRef.current && !wrapRef.current.contains(event.target)) {
         setOpen(false);
-        setShowLangMenu(false);
       }
     };
     document.addEventListener("pointerdown", onPointerDown);
