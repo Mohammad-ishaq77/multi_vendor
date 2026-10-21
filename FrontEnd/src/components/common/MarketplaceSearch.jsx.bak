@@ -1,0 +1,271 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutGrid, Package, Search, Store, X } from "lucide-react";
+import { getVendorMarketplacePath, searchCatalog } from "../../utils/marketplace";
+import { useVoiceSearch } from "../../hooks/useVoiceSearch";
+import VoiceSearchButton, { VoiceSearchToast } from "./VoiceSearchButton";
+
+const MarketplaceSearch = ({
+  variant = "nav",
+  placeholder = "Search products, shops and categories",
+  autoFocus = false,
+}) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const wrapRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const {
+    isListening,
+    isSpeechSupported,
+    selectedLang,
+    setSelectedLang,
+    speechToast,
+    startVoiceSearch,
+    showToast,
+    SPEECH_LANGUAGES,
+  } = useVoiceSearch((transcript, isFinal) => {
+    setQuery(transcript);
+    setOpen(true);
+    if (isFinal && transcript.trim()) {
+      goToSearch(transcript);
+    }
+  });
+
+  useEffect(() => {
+    if (location.pathname === "/marketplace") {
+      setQuery(new URLSearchParams(location.search).get("q") || "");
+    }
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const onPointerDown = (event) => {
+      if (wrapRef.current && !wrapRef.current.contains(event.target)) {
+        setOpen(false);
+        setShowLangMenu(false);
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, []);
+
+
+
+  const results = useMemo(() => {
+    const term = query.trim();
+    if (term.length < 1) return { products: [], vendors: [], categories: [] };
+    const matched = searchCatalog(term);
+    return {
+      products: matched.products.slice(0, 5),
+      vendors: matched.vendors.slice(0, 3),
+      categories: matched.categories.slice(0, 3),
+    };
+  }, [query]);
+
+  const hasResults = results.products.length + results.vendors.length + results.categories.length > 0;
+  const showPanel = open && query.trim().length > 0;
+
+  const goToSearch = (term = query) => {
+    const next = term.trim();
+    setOpen(false);
+    navigate(next ? `/marketplace?q=${encodeURIComponent(next)}` : "/marketplace");
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    goToSearch();
+  };
+
+  const hero = variant === "hero";
+  const mobile = variant === "mobile";
+
+  return (
+    <div ref={wrapRef} className={`relative ${hero || mobile ? "w-full" : "min-w-0 flex-1"}`}>
+      <form onSubmit={handleSubmit} role="search" className="relative">
+        <Search
+          className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-(--color-text-muted) ${
+            hero ? "left-3 h-3.5 w-3.5 lg:left-4 lg:h-4 lg:w-4" : mobile ? "left-4 h-4 w-4" : "left-3.5 h-4 w-4"
+          }`}
+        />
+        <input
+          type="search"
+          value={query}
+          autoFocus={autoFocus}
+          enterKeyHint="search"
+          autoComplete="off"
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder={isListening ? "Listening..." : placeholder}
+          aria-label="Search marketplace"
+          className={
+            hero
+              ? `h-9 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-white/70"} bg-white pl-9 pr-[8.5rem] text-xs text-(--color-text) outline-none placeholder:text-(--color-text-muted) focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[10.5rem] lg:text-sm`
+              : mobile
+                ? `h-11 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-11 pr-[9rem] text-sm outline-none`
+                : `h-10 w-full rounded-full border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-10 pr-[9.5rem] text-sm text-(--color-text) outline-none focus:border-(--color-green) focus:bg-white focus:ring-4 focus:ring-(--color-green-light)/15`
+          }
+        />
+
+        {/* Action icons & Voice controls inside input */}
+        <div
+          className={`absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 ${
+            hero ? "right-[4.2rem] lg:right-[5.5rem]" : mobile ? "right-[5rem]" : "right-[5.5rem]"
+          }`}
+        >
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setOpen(false);
+              }}
+              aria-label="Clear search"
+              className="rounded-full p-1 text-(--color-text-muted) hover:bg-(--color-green-bg) hover:text-(--color-text)"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+
+          <div className="relative">
+            <VoiceSearchButton
+              isSpeechSupported={isSpeechSupported}
+              isListening={isListening}
+              startVoiceSearch={startVoiceSearch}
+              selectedLang={selectedLang}
+              setSelectedLang={setSelectedLang}
+              SPEECH_LANGUAGES={SPEECH_LANGUAGES}
+              showToast={showToast}
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className={
+            hero
+              ? "btn-on-green absolute right-1 top-1/2 !min-h-7 -translate-y-1/2 !rounded-lg !px-2.5 !text-[11px] lg:right-1.5 lg:!min-h-9 lg:!rounded-xl lg:!px-3.5 lg:!text-sm"
+              : "absolute right-1 top-1/2 inline-flex h-7 -translate-y-1/2 items-center rounded-lg bg-(--color-primary) px-3 text-xs font-semibold text-white hover:bg-(--color-primary-dark)"
+          }
+        >
+          Search
+        </button>
+      </form>
+
+      <VoiceSearchToast speechToast={speechToast} isListening={isListening} />
+
+      {showPanel && (
+        <div
+          className={`absolute z-50 mt-2 overflow-hidden rounded-2xl border border-(--color-green-soft) bg-white shadow-[0_18px_40px_-20px_rgba(6,78,59,0.35)] ${
+            hero ? "left-0 right-0" : "inset-x-0"
+          }`}
+        >
+          {hasResults ? (
+            <div className="max-h-80 overflow-y-auto py-2">
+              {results.categories.length > 0 && (
+                <SuggestionGroup title="Categories">
+                  {results.categories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      to={`/marketplace/${category.slug}`}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-(--color-green-bg)"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--color-green-bg) text-(--color-primary)">
+                        <LayoutGrid className="h-4 w-4" />
+                      </span>
+                      <span>
+                        <span className="block font-semibold text-(--color-text)">{category.name}</span>
+                        <span className="block text-[11px] text-(--color-text-muted)">{category.description}</span>
+                      </span>
+                    </Link>
+                  ))}
+                </SuggestionGroup>
+              )}
+              {results.vendors.length > 0 && (
+                <SuggestionGroup title="Shops">
+                  {results.vendors.map((shop) => (
+                    <Link
+                      key={shop.id}
+                      to={getVendorMarketplacePath(shop)}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-(--color-green-bg)"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--color-green-bg) text-(--color-primary)">
+                        <Store className="h-4 w-4" />
+                      </span>
+                      <span>
+                        <span className="block font-semibold text-(--color-text)">{shop.name}</span>
+                        <span className="block text-[11px] text-(--color-text-muted)">
+                          {shop.category} · {shop.location}
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </SuggestionGroup>
+              )}
+              {results.products.length > 0 && (
+                <SuggestionGroup title="Products">
+                  {results.products.map((product) => (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => goToSearch(product.name)}
+                      className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-(--color-green-bg)"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-(--color-green-bg) text-(--color-primary)">
+                        <Package className="h-4 w-4" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold text-(--color-text)">{product.name}</span>
+                        <span className="block text-[11px] text-(--color-text-muted)">
+                          {product.shop} · ₹{product.price}
+                        </span>
+                      </span>
+                    </button>
+                  ))}
+                </SuggestionGroup>
+              )}
+            </div>
+          ) : (
+            <p className="px-4 py-6 text-center text-sm text-(--color-text-muted)">
+              No matches for “{query.trim()}”
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={() => goToSearch()}
+            className="flex w-full items-center justify-center gap-2 border-t border-(--color-green-soft) bg-(--color-surface) px-3 py-2.5 text-xs font-semibold text-(--color-primary-dark) hover:bg-(--color-green-bg)"
+          >
+            <Search className="h-3.5 w-3.5" />
+            Search all results for “{query.trim()}”
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const SuggestionGroup = ({ title, children }) => (
+  <div className="px-1 py-1">
+    <p className="px-3 pb-1 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-(--color-text-muted)">
+      {title}
+    </p>
+    {children}
+  </div>
+);
+
+export default MarketplaceSearch;

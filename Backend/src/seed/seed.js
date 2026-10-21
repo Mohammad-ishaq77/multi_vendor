@@ -110,11 +110,14 @@ if (!testUser) {
       role: "customer",
       allowedRoles: ["customer", "shopkeeper", "delivery", "admin"],
       phone: "9876543210",
+      // Seeded demo accounts skip OTP verification.
+      emailVerified: true,
     })
   );
   console.log("seeded user test@gmail.com (all roles / 1122)");
-} else if (!testUser.allowedRoles?.length) {
+} else if (!testUser.allowedRoles?.length || !testUser.emailVerified) {
   testUser.allowedRoles = ["customer", "shopkeeper", "delivery", "admin"];
+  testUser.emailVerified = true;
   await users.save(testUser);
   console.log("updated test@gmail.com with all roles");
 }

@@ -346,21 +346,24 @@ export function AdminProvider({ children }) {
     return approvals.map((approval) => enrichApproval(approval, { usersById, shopsByOwnerId }));
   }, [approvals, shops, users]);
 
-  const deliveries = useMemo(
-    () =>
-      assignments.map((assignment) => ({
+  const deliveries = useMemo(() => {
+    const ordersById = new Map(orders.map((order) => [order.id, order]));
+    return assignments.map((assignment) => {
+      const order = ordersById.get(assignment.orderId);
+      const orderIsComplete = ["delivered", "completed"].includes(order?.status);
+      return {
         ...assignment,
         id: assignment.id,
         orderId: assignment.orderId,
-        status: assignment.status || null,
+        status: orderIsComplete ? "delivered" : assignment.status || null,
         partnerId: assignment.userId || assignment.deliveryPartnerId || null,
         partnerEarning: num(assignment.partnerEarning),
         pickedUpAt: assignment.pickedUpAt || null,
-        deliveredAt: assignment.deliveredAt || null,
+        deliveredAt: assignment.deliveredAt || order?.deliveredAt || null,
         createdAt: assignment.createdAt || null,
-      })),
-    [assignments]
-  );
+      };
+    });
+  }, [assignments, orders]);
 
   const recentActivities = useMemo(() => {
     const events = [];
@@ -503,6 +506,16 @@ export function AdminProvider({ children }) {
     (orderId, status) =>
       runAction(() => adminService.updateOrderStatus(orderId, status), {
         successMessage: `Order status set to ${status}`,
+        after: (updated) =>
+          setOrders((prev) => prev.map((o) => (o.id === updated?.id ? normalizeOrder(updated) : o))),
+      }),
+    [runAction]
+  );
+
+  const completeDelivery = useCallback(
+    (orderId) =>
+      runAction(() => adminService.completeDelivery(orderId), {
+        successMessage: "Delivery marked completed by admin",
         after: (updated) =>
           setOrders((prev) => prev.map((o) => (o.id === updated?.id ? normalizeOrder(updated) : o))),
       }),
@@ -734,6 +747,7 @@ export function AdminProvider({ children }) {
       enableProduct,
 
       updateOrderStatus,
+      completeDelivery,
 
       stats,
       openReportsCount,
@@ -795,6 +809,7 @@ export function AdminProvider({ children }) {
       disableProduct,
       enableProduct,
       updateOrderStatus,
+      completeDelivery,
       stats,
       openReportsCount,
       totalRevenue,

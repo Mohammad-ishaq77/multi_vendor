@@ -9,6 +9,7 @@ import {
   Clock,
   FileText,
   IndianRupee,
+  Loader2,
   MapPin,
   Package,
   Shield,
@@ -118,6 +119,7 @@ export default function DeliveryPartnerDashboard() {
     earnings,
     deliveryHistory,
   } = useDeliveryPartner();
+  const [availabilityUpdating, setAvailabilityUpdating] = useState(false);
 
   const [greeting, setGreeting] = useState("Good morning");
   useEffect(() => setGreeting(getGreeting()), []);
@@ -133,6 +135,15 @@ export default function DeliveryPartnerDashboard() {
   const completionRate = profile.totalDeliveries
     ? Math.round((completed / num(profile.totalDeliveries)) * 100)
     : 0;
+
+  const handleAvailabilityToggle = async () => {
+    setAvailabilityUpdating(true);
+    try {
+      await toggleAvailability();
+    } finally {
+      setAvailabilityUpdating(false);
+    }
+  };
 
   const quickActions = useMemo(
     () => [
@@ -166,18 +177,36 @@ export default function DeliveryPartnerDashboard() {
                   : "Go online to start receiving delivery requests from nearby shops."}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={toggleAvailability}
-              className={`inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-[12px] px-5 text-sm font-semibold shadow-lg transition ${
-                isOnline
-                  ? "bg-white text-(--color-primary-dark) hover:bg-emerald-50"
-                  : "bg-emerald-500 text-white hover:bg-emerald-400"
-              }`}
-            >
-              {isOnline ? <WifiOff className="h-4 w-4" /> : <Wifi className="h-4 w-4" />}
-              {isOnline ? "Go offline" : "Go online"}
-            </button>
+            {activeDelivery ? (
+              <button
+                type="button"
+                onClick={() => navigate("/delivery/active")}
+                className="inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-[12px] bg-emerald-500 px-5 text-sm font-semibold text-white shadow-lg transition hover:bg-emerald-400"
+              >
+                <Truck className="h-4 w-4" />
+                Complete active delivery
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAvailabilityToggle}
+                disabled={availabilityUpdating}
+                className={`inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-[12px] px-5 text-sm font-semibold shadow-lg transition disabled:cursor-wait disabled:opacity-70 ${
+                  isOnline
+                    ? "bg-white text-(--color-primary-dark) hover:bg-emerald-50"
+                    : "bg-emerald-500 text-white hover:bg-emerald-400"
+                }`}
+              >
+                {availabilityUpdating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : isOnline ? (
+                  <WifiOff className="h-4 w-4" />
+                ) : (
+                  <Wifi className="h-4 w-4" />
+                )}
+                {availabilityUpdating ? "Updating..." : isOnline ? "Go offline" : "Go online"}
+              </button>
+            )}
           </div>
         </section>
 

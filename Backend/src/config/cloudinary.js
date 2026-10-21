@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { Readable } from "stream";
 import { v2 as cloudinary } from "cloudinary";
 import { config } from "./env.js";
 
@@ -42,10 +43,16 @@ export async function uploadBuffer(buffer, { folder = "nearmart", filename = `up
     const url = await writeLocalStub(buffer, { folder, filename });
     return { url, publicId: null, stub: true };
   }
-  const b64 = buffer.toString("base64");
-  const res = await cloudinary.uploader.upload(
-    `data:application/octet-stream;base64,${b64}`,
-    { folder, public_id: filename, resource_type: "auto" }
-  );
+  const res = await new Promise((resolve, reject) => {
+    const upload = cloudinary.uploader.upload_stream(
+      { folder, public_id: filename, resource_type: "auto", timeout: 150_000 },
+      (error, result) => {
+        if (error) return reject(error);
+        if (!result) return reject(new Error("Cloudinary returned no upload result."));
+        resolve(result);
+      }
+    );
+    Readable.from([buffer]).pipe(upload);
+  });
   return { url: res.secure_url, publicId: res.public_id, stub: false };
 }

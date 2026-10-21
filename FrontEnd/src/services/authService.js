@@ -60,10 +60,17 @@ const storeSession = ({ user, accessToken, refreshToken }) => {
   return decorated;
 };
 
+/**
+ * Email verification is a first-class state, not an error string: when the
+ * backend refuses a login because the address is unverified, the caller needs
+ * the email to route the user to the verification screen.
+ */
+const EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED";
+
 export const authService = {
   /**
    * Sign in. Returns `{ ok, user, error }` — `ok` is true only when the
-   * backend accepted the credentials.
+   * backend accepted the credentials and the session is live.
    */
   async login({ email, password, role, remember = true } = {}) {
     if (!email?.trim() || !password) {
@@ -93,11 +100,22 @@ export const authService = {
         redirectTo: this.getPostAuthPath(user),
       };
     } catch (error) {
+      if (error instanceof ApiError && error.code === EMAIL_NOT_VERIFIED) {
+        return {
+          ok: false,
+          error: error.message || "Please verify your email address before signing in.",
+          needsVerification: true,
+          email: email.trim(),
+        };
+      }
       return { ok: false, error: friendlyError(error, "Unable to sign in right now.") };
     }
   },
 
-  /** Create an account and sign in immediately (backend returns a session). */
+  /**
+   * Create an account. The backend emails a verification OTP and does NOT
+   * return a session — the caller must route the user to /verify-email.
+   */
   async register({ name, email, password, phone, role, remember = true } = {}) {
     if (!name?.trim() || !email?.trim() || !password) {
       return { ok: false, error: "Please complete all required fields." };
@@ -111,12 +129,14 @@ export const authService = {
       return { ok: false, error: "Password must be at least 4 characters long." };
     }
 
+    const trimmedEmail = email.trim();
+
     try {
-      const session = await apiClient.post(
+      const result = await apiClient.post(
         "/auth/register",
         {
           name: name.trim(),
-          email: email.trim(),
+          email: trimmedEmail,
           password,
           role,
           ...(phone?.trim() ? { phone: phone.trim() } : {}),
@@ -124,18 +144,104 @@ export const authService = {
         { auth: false, retry: false }
       );
 
-      const user = storeSession(session);
+      // No tokenService writes: an unverified account has no session yet.
       return {
         ok: true,
-        user,
+        pending: true,
         remember,
-        redirectTo: this.getPostAuthPath(user),
+        email: result?.email || trimmedEmail,
+        role: result?.role || role,
       };
     } catch (error) {
       return {
         ok: false,
         error: friendlyError(error, "Unable to create your account right now."),
       };
+    }
+  },
+
+  /** Confirm a registration OTP and start the session. */
+  async verifyEmail({ email, otp } = {}) {
+    if (!email?.trim() || !otp) {
+      return { ok: false, error: "Enter the 6-digit code from your email." };
+    }
+
+    try {
+      const session = await apiClient.post(
+        "/auth/verify-email",
+        { email: email.trim(), otp },
+        { auth: false, retry: false }
+      );
+      const user = storeSession(session);
+      return { ok: true, user, redirectTo: this.getPostAuthPath(user) };
+    } catch (error) {
+      return { ok: false, error: friendlyError(error, "That code could not be verified.") };
+    }
+  },
+
+  /** Ask for another verification code. Generic on the server; keep it silent. */
+  async resendVerification({ email } = {}) {
+    if (!email?.trim()) return { ok: false, error: "Enter your email address first." };
+    try {
+      await apiClient.post("/auth/resend-verification", { email: email.trim() }, { auth: false, retry: false });
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: friendlyError(error, "We could not send a new code right now.") };
+    }
+  },
+
+  /**
+   * Start a password reset. The backend answers identically for known and
+   * unknown emails, so this never confirms whether an account exists.
+   */
+  async forgotPassword({ email } = {}) {
+    if (!email?.trim()) return { ok: false, error: "Enter your email address." };
+    try {
+      await apiClient.post("/auth/forgot-password", { email: email.trim() }, { auth: false, retry: false });
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: friendlyError(error, "We could not send the reset code right now.") };
+    }
+  },
+
+  /** Swap a password-reset OTP for a single-use reset token. */
+  async verifyResetOtp({ email, otp } = {}) {
+    if (!email?.trim() || !otp) return { ok: false, error: "Enter the 6-digit code from your email." };
+    try {
+      const result = await apiClient.post(
+        "/auth/verify-reset-otp",
+        { email: email.trim(), otp },
+        { auth: false, retry: false }
+      );
+      return {
+        ok: true,
+        resetToken: result?.resetToken || result?.token,
+        expiresInMinutes: result?.expiresInMinutes,
+      };
+    } catch (error) {
+      return { ok: false, error: friendlyError(error, "That code could not be verified.") };
+    }
+  },
+
+  /** Set the new password using the reset token. */
+  async resetPassword({ email, resetToken, newPassword } = {}) {
+    if (!email?.trim() || !resetToken) {
+      return { ok: false, error: "This password reset link is invalid or has expired." };
+    }
+    if (String(newPassword || "").length < 4) {
+      return { ok: false, error: "Password must be at least 4 characters long." };
+    }
+    try {
+      await apiClient.post(
+        "/auth/reset-password",
+        { email: email.trim(), resetToken, newPassword },
+        { auth: false, retry: false }
+      );
+      // Any previously stored token belonged to the old password's session.
+      tokenService.clear();
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: friendlyError(error, "Unable to update your password right now.") };
     }
   },
 

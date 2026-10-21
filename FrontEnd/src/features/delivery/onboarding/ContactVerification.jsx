@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bike, Car, ChevronRight, Info, Loader2, Mail, Phone, User } from "lucide-react";
+import { ChevronRight, Loader2, Mail, Phone, User } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import { useAuth } from "../../../hooks/useAuth";
 import OnboardingLayout from "./OnboardingLayout";
@@ -8,25 +8,16 @@ import OnboardingLayout from "./OnboardingLayout";
 const PHONE_RE = /^(\+91[\s-]?)?[6-9]\d{9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const vehicles = [
-  { id: "Motorcycle", label: "Bike", icon: Bike },
-  { id: "Scooter", label: "Scooter", icon: Bike },
-  { id: "Bicycle", label: "Cycle", icon: Bike },
-  { id: "Car", label: "Car", icon: Car },
-];
-
 const fieldClass = (error) => `input-field ${error ? "border-rose-300 bg-rose-50/70" : ""}`;
 
 export default function ContactVerification() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { contactData, setContactVerified, updateProfile, actionError } = useDeliveryPartner();
+  const { contactData, setContactVerified, actionError } = useDeliveryPartner();
   const [form, setForm] = useState({
     fullName: contactData?.fullName || user?.name || "",
     phone: contactData?.phone || user?.phone || "",
     email: contactData?.email || user?.email || "",
-    vehicleType: contactData?.vehicleType || "",
-    vehicleNumber: contactData?.vehicleNumber || "",
   });
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
@@ -49,21 +40,12 @@ export default function ContactVerification() {
       fullName: form.fullName.trim(),
       phone: form.phone.trim(),
       email: form.email.trim(),
-      ...(form.vehicleType ? { vehicleType: form.vehicleType } : {}),
-      ...(form.vehicleNumber.trim() ? { vehicleNumber: form.vehicleNumber.trim() } : {}),
     };
     try {
       // POST /delivery/onboarding stores the contact payload on the partner row.
       const result = await setContactVerified(payload);
       if (!result?.ok) return;
 
-      if (payload.vehicleType || payload.vehicleNumber) {
-        const profileResult = await updateProfile({
-          ...(payload.vehicleType ? { vehicleType: payload.vehicleType } : {}),
-          ...(payload.vehicleNumber ? { vehicleNumber: payload.vehicleNumber } : {}),
-        });
-        if (!profileResult?.ok) return;
-      }
       navigate("/delivery/onboarding/identity");
     } finally {
       setSaving(false);
@@ -114,63 +96,6 @@ export default function ContactVerification() {
 
         {fieldRow("phone", "Mobile number", Phone, "tel", "+91 98765 43210")}
         {fieldRow("email", "Email address", Mail, "email", "you@example.com")}
-
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wider">Vehicle</p>
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-500">
-              Optional
-            </span>
-          </div>
-          <div className="grid grid-cols-4 gap-2">
-            {vehicles.map((item) => {
-              const Icon = item.icon;
-              const active = form.vehicleType === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => update("vehicleType", item.id)}
-                  className={`flex min-h-[72px] flex-col items-center justify-center gap-1 rounded-[12px] border text-xs font-semibold ${
-                    active
-                      ? "border-(--color-primary) bg-(--color-green-bg) text-(--color-primary-dark)"
-                      : "border-(--color-border-soft) bg-white text-(--color-text-muted)"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
-          {errors.vehicleType && <p className="mt-1 text-xs text-rose-600">{errors.vehicleType}</p>}
-        </div>
-
-        {form.vehicleType && form.vehicleType !== "Bicycle" && (
-          <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider">
-              Vehicle number <span className="normal-case text-gray-400">(optional)</span>
-            </label>
-            <input
-              value={form.vehicleNumber}
-              onChange={(e) => update("vehicleNumber", e.target.value.toUpperCase())}
-              placeholder="JK01AB1234"
-              className={fieldClass(errors.vehicleNumber)}
-            />
-            {errors.vehicleNumber && <p className="text-xs text-rose-600">{errors.vehicleNumber}</p>}
-          </div>
-        )}
-        <p className="text-xs text-(--color-text-muted)">
-          You can continue without adding a vehicle and provide these details later.
-        </p>
-
-        <div className="flex items-start gap-2 rounded-[12px] border border-(--color-border-soft) bg-(--color-surface-soft) px-3 py-2.5 text-xs text-(--color-text-muted)">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-(--color-primary)" />
-          <span>
-            NearMart does not send OTPs, so there is no code to enter here. An admin confirms your mobile number
-            while reviewing your application.
-          </span>
-        </div>
 
         {actionError && <p className="text-xs text-rose-600">{actionError}</p>}
 

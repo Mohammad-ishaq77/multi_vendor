@@ -388,7 +388,12 @@ const CustomerDashboard = () => {
   const orders = ordersState.data || [];
   const wishlistCount = wishlistState.data || 0;
 
-  const activeOrder = orders.find((order) => ordersInGroup([order], "Placed").length > 0 || ordersInGroup([order], "Processing").length > 0 || ordersInGroup([order], "Shipped").length > 0);
+  const activeOrder = orders.find((order) => {
+    if (!order.id || !Array.isArray(order.items) || order.items.length === 0) return false;
+    return ["Placed", "Processing", "Ready for pickup", "Shipped", "Out for Delivery"].some(
+      (group) => ordersInGroup([order], group).length > 0
+    );
+  });
 
   useEffect(() => {
     const hour = new Date().getHours();

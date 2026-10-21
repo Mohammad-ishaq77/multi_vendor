@@ -72,7 +72,17 @@ const STATUS_MESSAGES = {
 };
 
 /** Paths where a 401 must never trigger a refresh/retry cycle. */
-const NO_REFRESH_PATHS = ["/auth/refresh", "/auth/login", "/auth/register"];
+const NO_REFRESH_PATHS = [
+  "/auth/refresh",
+  "/auth/login",
+  "/auth/register",
+  // Unauthenticated OTP/reset calls: they have no token to refresh with.
+  "/auth/verify-email",
+  "/auth/resend-verification",
+  "/auth/forgot-password",
+  "/auth/verify-reset-otp",
+  "/auth/reset-password",
+];
 
 export const AUTH_EXPIRED_EVENT = "nearmart-auth-expired";
 
@@ -127,6 +137,9 @@ const toApiError = (response, payload, fallbackMessage) => {
 
   return new ApiError(message, {
     status,
+    // Machine-readable server codes (e.g. EMAIL_NOT_VERIFIED, OTP_COOLDOWN)
+    // let callers react precisely instead of pattern-matching messages.
+    code: typeof payload?.code === "string" ? payload.code : null,
     issues: Array.isArray(payload?.issues) ? payload.issues : null,
   });
 };
@@ -351,7 +364,7 @@ export const apiClient = {
 
   /** Multipart upload — Content-Type is left to the browser. */
   upload: (path, formData, options = {}) =>
-    request("POST", path, { timeoutMs: 120_000, ...options, body: formData }),
+    request("POST", path, { timeoutMs: 180_000, ...options, body: formData }),
 
   /** Escape hatch when a caller needs the whole envelope. */
   request,

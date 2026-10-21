@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Navigation,
   Timer,
+  Loader2,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
@@ -30,6 +31,7 @@ const statusConfig = {
   confirmed: { label: "Confirmed", color: "bg-blue-50 text-blue-700 border border-blue-200", dot: "bg-blue-500" },
   out_for_delivery: { label: "Out for Delivery", color: "bg-indigo-50 text-indigo-700 border border-indigo-200", dot: "bg-indigo-500" },
   delivered: { label: "Delivered", color: "bg-emerald-50 text-emerald-700 border border-emerald-200", dot: "bg-emerald-500" },
+  completed: { label: "Completed", color: "bg-emerald-50 text-emerald-700 border border-emerald-200", dot: "bg-emerald-500" },
   cancelled: { label: "Cancelled", color: "bg-rose-50 text-rose-700 border border-rose-200", dot: "bg-rose-500" },
 };
 
@@ -41,7 +43,7 @@ const timelineSteps = [
   { key: "delivered", label: "Delivered", icon: CheckCircle },
 ];
 
-const statusOrder = { pending: 0, confirmed: 1, preparing: 2, out_for_delivery: 3, delivered: 4, cancelled: -1 };
+const statusOrder = { pending: 0, confirmed: 1, preparing: 2, out_for_delivery: 3, delivered: 4, completed: 4, cancelled: -1 };
 
 function formatCurrency(amount) {
   if (amount == null) return "₹0";
@@ -66,8 +68,10 @@ function formatDateTime(dateStr) {
 export default function OrderDetails() {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { orders, shops, customers, deliveryPartners, updateOrderStatus } = useAdmin();
+  const { orders, shops, customers, deliveryPartners, updateOrderStatus, completeDelivery, actionError } = useAdmin();
   const [confirmStatus, setConfirmStatus] = useState(null);
+  const [confirmDeliveryComplete, setConfirmDeliveryComplete] = useState(false);
+  const [completingDelivery, setCompletingDelivery] = useState(false);
 
   const order = useMemo(() => orders.find((o) => o.id === orderId), [orders, orderId]);
   const shop = useMemo(() => shops.find((s) => s.id === order?.shopId), [shops, order]);
@@ -114,6 +118,14 @@ export default function OrderDetails() {
       updateOrderStatus(order.id, confirmStatus);
     }
     setConfirmStatus(null);
+  };
+
+  const confirmDeliveryCompletion = async () => {
+    if (!order) return;
+    setCompletingDelivery(true);
+    const result = await completeDelivery(order.id);
+    setCompletingDelivery(false);
+    if (result.success) setConfirmDeliveryComplete(false);
   };
 
   if (!order) {
@@ -176,7 +188,23 @@ export default function OrderDetails() {
               Mark as {statusConfig[nextStatusMap[order.status]]?.label}
             </button>
           )}
+          {!["completed", "cancelled"].includes(order.status) && (
+            <button
+              type="button"
+              onClick={() => setConfirmDeliveryComplete(true)}
+              className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-800 transition-colors hover:bg-emerald-100"
+            >
+              <CheckCircle size={16} />
+              Mark delivery completed
+            </button>
+          )}
         </motion.div>
+
+        {actionError && (
+          <p role="alert" className="rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+            {actionError}
+          </p>
+        )}
 
         {/* Order Info + Payment Method */}
         <motion.div
@@ -228,7 +256,7 @@ export default function OrderDetails() {
                 {timelineSteps.map((step, idx) => {
                   const stepStatus = statusOrder[step.key] ?? -1;
                   const isCompleted = order.status !== "cancelled" && currentStepIndex >= stepStatus;
-                  const isCurrent = order.status === step.key;
+                  const isCurrent = order.status === step.key || (order.status === "completed" && step.key === "delivered");
 
                   return (
                     <div key={step.key} className="flex items-start gap-4 relative">
@@ -700,6 +728,49 @@ export default function OrderDetails() {
                     className="px-4 py-2 text-sm font-semibold text-white bg-[#155c43] rounded-md hover:bg-[#114a36] transition-colors"
                   >
                     Confirm
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {confirmDeliveryComplete && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+              onClick={() => !completingDelivery && setConfirmDeliveryComplete(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="w-full max-w-md rounded-lg bg-white p-6 shadow-2xl"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <h3 className="text-lg font-bold text-gray-900">Mark delivery completed?</h3>
+                <p className="mb-6 mt-3 text-sm text-gray-600">
+                  This admin action will complete order <span className="font-semibold">{order.id}</span> without a customer OTP and close its delivery assignment. Use it only after confirming the customer received the order.
+                </p>
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    disabled={completingDelivery}
+                    onClick={() => setConfirmDeliveryComplete(false)}
+                    className="rounded-md bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-200 disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={completingDelivery}
+                    onClick={confirmDeliveryCompletion}
+                    className="inline-flex items-center gap-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {completingDelivery && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {completingDelivery ? "Completing..." : "Confirm completion"}
                   </button>
                 </div>
               </motion.div>

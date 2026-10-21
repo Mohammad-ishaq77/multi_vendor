@@ -166,7 +166,9 @@ export function DeliveryPartnerProvider({ children }) {
           ...assignment,
           id: assignment.orderId,
           orderId: assignment.orderId,
-          status: ORDER_STATUS_TO_UI[assignment.status] || assignment.status,
+          status: assignment.status === "delivered"
+            ? "completed"
+            : ORDER_STATUS_TO_UI[assignment.status] || assignment.status,
           partnerEarning: num(assignment.partnerEarning),
           distance: assignment.distanceKm != null ? num(assignment.distanceKm) : null,
           estimatedTime: ESTIMATED_DELIVERY_TIME,
@@ -372,6 +374,9 @@ export function DeliveryPartnerProvider({ children }) {
     if (!isApproved) {
       return { ok: false, error: "Your account must be approved before going online." };
     }
+    if (activeDelivery && isOnline) {
+      return { ok: false, error: "Complete your active delivery before going offline." };
+    }
     setActionError(null);
     const next = !isOnline;
     try {
@@ -384,7 +389,7 @@ export function DeliveryPartnerProvider({ children }) {
       setActionError(message);
       return { ok: false, error: message };
     }
-  }, [isApproved, isOnline, loadAll]);
+  }, [activeDelivery, isApproved, isOnline, loadAll]);
 
   /* ----------------------------- deliveries ---------------------------- */
 
@@ -452,6 +457,17 @@ export function DeliveryPartnerProvider({ children }) {
     [activeDelivery, runDeliveryAction]
   );
 
+  const markReadyForPickup = useCallback(
+    () =>
+      runDeliveryAction(async () => {
+        if (!activeDelivery) throw new Error("No active delivery.");
+        return deliveryService.updateStatus(activeDelivery.id, "ready_for_pickup");
+      }).then((result) =>
+        result.success ? { ...result, message: "Order marked ready for pickup." } : result
+      ),
+    [activeDelivery, runDeliveryAction]
+  );
+
   const startDelivery = useCallback(() => {
     if (!activeDelivery) return { success: false, message: "No active delivery." };
     if (activeDelivery.status !== "picked_up") {
@@ -462,21 +478,46 @@ export function DeliveryPartnerProvider({ children }) {
     );
   }, [activeDelivery, runDeliveryAction]);
 
-  /** No customer OTP exists server-side; completion is confirmed by the partner. */
-  const verifyDeliveryOtp = useCallback(
-    () =>
-      ({ success: true, message: "Delivery confirmed by you." }),
-    []
-  );
+  /**
+   * Ask the server to email the customer a delivery confirmation OTP.
+   *
+   * Nothing is generated locally: the code lives on the server, is scoped to
+   * this order and is only revealed to the customer.
+   */
+  const requestDeliveryOtp = useCallback(async (orderId = activeDelivery?.id) => {
+    if (!orderId) return { success: false, message: "No delivery selected." };
+    setActionError(null);
+    try {
+      const data = await deliveryService.requestOtp(orderId);
+      return {
+        success: true,
+        message: data?.maskedEmail
+          ? `A delivery code was sent to ${data.maskedEmail}.`
+          : "A delivery code was sent to the customer.",
+        data,
+      };
+    } catch (err) {
+      const message = err?.message || "We could not send the delivery code.";
+      setActionError(message);
+      return { success: false, message };
+    }
+  }, [activeDelivery?.id]);
 
-  const completeDelivery = useCallback(() => {
-    if (!activeDelivery) return { success: false, message: "No active delivery." };
-    if (!["out_for_delivery", "picked_up"].includes(activeDelivery.status)) {
+  /**
+   * Complete the delivery. The OTP is the customer's, verified by the server —
+   * the app never checks it against a local value.
+   */
+  const completeDelivery = useCallback((otp, orderId = activeDelivery?.id) => {
+    if (!orderId) return { success: false, message: "No delivery selected." };
+    if (activeDelivery?.id === orderId && activeDelivery.status !== "out_for_delivery") {
       return { success: false, message: "Start the delivery before completing it." };
     }
-    return runDeliveryAction(() => deliveryService.updateStatus(activeDelivery.id, "delivered")).then((result) =>
-      result.success ? { ...result, message: "Delivery completed." } : result
-    );
+    if (!/^\d{6}$/.test(String(otp || ""))) {
+      return { success: false, message: "Enter the 6-digit code the customer received." };
+    }
+    return runDeliveryAction(() =>
+      deliveryService.updateStatus(orderId, "delivered", { otp })
+    ).then((result) => (result.success ? { ...result, message: "Delivery completed." } : result));
   }, [activeDelivery, runDeliveryAction]);
 
   /* ---------------------------- notifications -------------------------- */
@@ -538,8 +579,9 @@ export function DeliveryPartnerProvider({ children }) {
       acceptDelivery,
       cancelDelivery,
       verifyPickup,
+      markReadyForPickup,
       startDelivery,
-      verifyDeliveryOtp,
+      requestDeliveryOtp,
       completeDelivery,
       markNotificationRead,
       markAllNotificationsRead,
@@ -576,8 +618,9 @@ export function DeliveryPartnerProvider({ children }) {
       acceptDelivery,
       cancelDelivery,
       verifyPickup,
+      markReadyForPickup,
       startDelivery,
-      verifyDeliveryOtp,
+      requestDeliveryOtp,
       completeDelivery,
       markNotificationRead,
       markAllNotificationsRead,

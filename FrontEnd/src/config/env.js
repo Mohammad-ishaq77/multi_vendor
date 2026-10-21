@@ -8,11 +8,16 @@
  */
 
 const trimTrailingSlash = (value) => String(value || "").replace(/\/+$/, "");
+const normalizeApiBaseUrl = (value) => {
+  const baseUrl = trimTrailingSlash(value);
+  if (!baseUrl) return "/api";
+  return /\/api$/i.test(baseUrl) ? baseUrl : `${baseUrl}/api`;
+};
 
 const env = import.meta.env || {};
 
 /** Base URL for every REST call. Defaults to "/api" so the Vite proxy applies. */
-export const API_BASE_URL = trimTrailingSlash((env.VITE_API_URL ? `${env.VITE_API_URL}/api` : "/api"));
+export const API_BASE_URL = normalizeApiBaseUrl(env.VITE_API_BASE_URL || env.VITE_API_URL);
 
 /**
  * Absolute origin used for relative API URLs and for the Socket.IO handshake.

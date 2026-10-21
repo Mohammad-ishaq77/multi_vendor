@@ -74,7 +74,6 @@ const OrderDetails = () => {
             {actionError}
           </div>
         )}
-
         {/* Status Progress */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm mb-6">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Order Progress</h3>

@@ -2,8 +2,11 @@ import { Router } from "express";
 import { asyncHandler } from "../../common/middleware/asyncHandler.js";
 import { requireAuth } from "../../common/middleware/auth.js";
 import { requireRole } from "../../common/middleware/roles.js";
+import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
-import { repo } from "../../config/db.js";
+import { AppDataSource, repo } from "../../config/db.js";
+import { emitToRole, emitToUser } from "../../realtime/socket.js";
+import { z } from "zod";
 
 const router = Router();
 router.use(requireAuth, requireRole("admin"));
@@ -141,6 +144,91 @@ router.get(
     });
     if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
     res.json({ ok: true, data: order });
+  })
+);
+
+/** POST /api/admin/orders/:id/complete — administrative delivery completion override. */
+router.post(
+  "/orders/:id/complete",
+  validate({ params: z.object({ id: z.string().uuid() }) }),
+  asyncHandler(async (req, res) => {
+    const result = await AppDataSource.transaction(async (manager) => {
+      const orders = manager.getRepository("Order");
+      const order = await orders.findOne({
+        where: { id: req.params.id },
+        lock: { mode: "pessimistic_write" },
+      });
+      if (!order) return { status: 404, error: "Order not found." };
+      if (order.status === "cancelled") {
+        return { status: 400, error: "A cancelled order cannot be marked completed." };
+      }
+      const assignments = manager.getRepository("DeliveryAssignment");
+      const assignment = await assignments.findOne({
+        where: { orderId: order.id },
+        lock: { mode: "pessimistic_write" },
+      });
+      let partnerUserId = null;
+      if (assignment?.partnerId && assignment.status !== "delivered" && !assignment.deliveredAt) {
+        const partners = manager.getRepository("DeliveryPartner");
+        const partner = await partners.findOne({
+          where: { id: assignment.partnerId },
+          lock: { mode: "pessimistic_write" },
+        });
+        if (!partner) return { status: 409, error: "The assigned delivery partner could not be found." };
+        const earning = Number(assignment.partnerEarning || 0);
+        partner.completedDeliveries += 1;
+        partner.totalDeliveries += 1;
+        partner.todayDeliveries += 1;
+        partner.totalEarnings = Number(partner.totalEarnings) + earning;
+        partner.todayEarnings = Number(partner.todayEarnings) + earning;
+        await partners.save(partner);
+        partnerUserId = partner.userId;
+      } else if (assignment?.partnerId) {
+        const partner = await manager.getRepository("DeliveryPartner").findOne({
+          where: { id: assignment.partnerId },
+          select: { userId: true },
+        });
+        partnerUserId = partner?.userId || null;
+      }
+
+      const completedAt = order.deliveredAt || new Date();
+      order.status = "completed";
+      order.deliveredAt = completedAt;
+      await orders.save(order);
+
+      if (assignment) {
+        assignment.status = "delivered";
+        assignment.deliveredAt = assignment.deliveredAt || completedAt;
+        await assignments.save(assignment);
+      }
+
+      return { order, partnerUserId };
+    });
+
+    if (result.status) {
+      return res.status(result.status).json({ ok: false, error: result.error });
+    }
+
+    const [order, assignment] = await Promise.all([
+      repo("Order").findOne({
+        where: { id: result.order.id },
+        relations: { items: true, shop: true, customer: true },
+      }),
+      repo("DeliveryAssignment").findOne({ where: { orderId: result.order.id } }),
+    ]);
+    const update = {
+      orderId: order.id,
+      shopId: order.shopId,
+      status: order.status,
+      adminCompleted: true,
+    };
+    emitToUser(order.customerId, "order:status_update", update);
+    emitToRole("shopkeeper", "order:status_update", update);
+    if (result.partnerUserId) {
+      emitToUser(result.partnerUserId, "delivery:status_update", update);
+    }
+
+    res.json({ ok: true, data: { ...order, assignment } });
   })
 );
 

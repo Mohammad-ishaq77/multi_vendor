@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
   MapPin,
@@ -19,6 +19,7 @@ import {
   Plus,
   AlertCircle,
   Loader2,
+  Volume2,
 } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import CustomerShell from "../components/CustomerShell";
@@ -54,6 +55,7 @@ const EMPTY_ADDRESS = {
   email: "",
   phone: "",
   address: "",
+  line2: "",
   city: "",
   state: "",
   pincode: "",
@@ -64,9 +66,15 @@ const Checkout = () => {
   const { cart, cartCount, cartTotal, shops, unavailableItems, reload: reloadCart } = useCart();
   const { showToast } = useToast();
   const { user } = useAuth();
+  const reducedMotion = useReducedMotion();
   const [isPlacing, setIsPlacing] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("razorpay");
+  const [confirmation, setConfirmation] = useState(null); // { orders, checkoutId }
+  const [canReplaySuccessSound, setCanReplaySuccessSound] = useState(false);
+  const successSoundAttempted = useRef(new Set());
+  const successAudio = useRef(null);
+  const [checkoutId] = useState(() => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `chk_${Date.now()}`));
 
   const [address, setAddress] = useState(EMPTY_ADDRESS);
   const [savedAddresses, setSavedAddresses] = useState([]);
@@ -75,6 +83,8 @@ const Checkout = () => {
   const [addressesError, setAddressesError] = useState("");
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(null);
   const [isNewAddress, setIsNewAddress] = useState(false);
+  const [editingSavedAddressId, setEditingSavedAddressId] = useState(null);
+  const [addressRevision, setAddressRevision] = useState(0);
   const [checkoutShop, setCheckoutShop] = useState(null);
   const [shopDetailsError, setShopDetailsError] = useState("");
 
@@ -85,9 +95,35 @@ const Checkout = () => {
   const [pendingSavedLocation, setPendingSavedLocation] = useState(null);
   const [pendingSavedPlace, setPendingSavedPlace] = useState(null);
   const [savingLocation, setSavingLocation] = useState(false);
+  const [savingAddress, setSavingAddress] = useState(false);
 
   /** Whether the SERVER is actually able to take a payment right now. */
   const [paymentsConfigured, setPaymentsConfigured] = useState(null);
+
+  useEffect(() => {
+    if (!confirmation?.checkoutId || successSoundAttempted.current.has(confirmation.checkoutId)) return;
+    successSoundAttempted.current.add(confirmation.checkoutId);
+
+    const playedKey = `nearmart:order-success:${confirmation.checkoutId}`;
+    try {
+      if (window.sessionStorage.getItem(playedKey)) return;
+      window.sessionStorage.setItem(playedKey, "attempted");
+    } catch {
+      // The in-memory guard still prevents duplicate playback if storage is unavailable.
+    }
+
+    try {
+      const audio = new Audio("/order-success.mp3");
+      audio.volume = 0.7;
+      successAudio.current = audio;
+      audio.play().then(
+        () => setCanReplaySuccessSound(false),
+        () => setCanReplaySuccessSound(true)
+      );
+    } catch {
+      setCanReplaySuccessSound(false);
+    }
+  }, [confirmation]);
 
   // Addresses live on the server (GET /api/addresses).
   useEffect(() => {
@@ -108,6 +144,7 @@ const Checkout = () => {
             email: user?.email || "",
             phone: saved.phone || "",
             address: saved.line1 || "",
+            line2: saved.line2 || "",
             city: saved.city || "",
             state: saved.state || "",
             pincode: saved.pincode || "",
@@ -140,7 +177,8 @@ const Checkout = () => {
     error: quoteError,
   } = useDeliveryQuote(
     isNewAddress || selectedMissingLocation ? null : singleShop?.shopId || null,
-    isNewAddress || selectedMissingLocation ? null : addressId
+    isNewAddress || selectedMissingLocation ? null : addressId,
+    addressRevision
   );
 
   useEffect(() => {
@@ -218,7 +256,10 @@ const Checkout = () => {
     const saved = savedAddresses[index];
     setSelectedAddressIndex(index);
     setIsNewAddress(false);
+    setEditingSavedAddressId(null);
     setAddressId(saved.id);
+    setNewAddressLocation(null);
+    setNewAddressPlace(null);
     setPendingSavedLocation(null);
     setPendingSavedPlace(null);
     setAddress({
@@ -226,6 +267,7 @@ const Checkout = () => {
       email: user?.email || "",
       phone: saved.phone || "",
       address: saved.line1 || "",
+      line2: saved.line2 || "",
       city: saved.city || "",
       state: saved.state || "",
       pincode: saved.pincode || "",
@@ -236,8 +278,32 @@ const Checkout = () => {
     setSelectedAddressIndex(null);
     setAddressId(null);
     setIsNewAddress(true);
+    setEditingSavedAddressId(null);
     setAddress({ ...EMPTY_ADDRESS, email: user?.email || "" });
     setNewAddressLocation(null);
+    setNewAddressPlace(null);
+    setPendingSavedLocation(null);
+    setPendingSavedPlace(null);
+  };
+
+  const editSavedAddress = (index) => {
+    const saved = savedAddresses[index];
+    if (!saved) return;
+    setSelectedAddressIndex(index);
+    setIsNewAddress(false);
+    setEditingSavedAddressId(saved.id);
+    setAddressId(saved.id);
+    setAddress({
+      fullName: saved.fullName || "",
+      email: user?.email || "",
+      phone: saved.phone || "",
+      address: saved.line1 || "",
+      line2: saved.line2 || "",
+      city: saved.city || "",
+      state: saved.state || "",
+      pincode: saved.pincode || "",
+    });
+    setNewAddressLocation(saved.hasLocation ? { lat: saved.lat, lng: saved.lng } : null);
     setNewAddressPlace(null);
     setPendingSavedLocation(null);
     setPendingSavedPlace(null);
@@ -268,34 +334,47 @@ const Checkout = () => {
     if (!newAddressLocation) {
       return showToast("Please select your delivery location on the map.", "error");
     }
+    setSavingAddress(true);
     try {
       // The reverse geocode may have landed after the user started typing —
       // fill anything they left blank from the located place.
-      const created = await addressService.create({
+      const payload = {
         fullName: address.fullName.trim(),
         phone: address.phone.trim(),
         line1: address.address.trim(),
-        line2: "",
+        line2: address.line2.trim(),
         city: address.city.trim() || (newAddressPlace?.city ?? ""),
         state: address.state.trim() || (newAddressPlace?.state ?? ""),
         pincode: address.pincode.trim() || (newAddressPlace?.pincode ?? ""),
-        label: "Home",
         lat: newAddressLocation.lat,
         lng: newAddressLocation.lng,
-        isDefault: savedAddresses.length === 0,
-      });
+      };
+      const wasEditing = Boolean(editingSavedAddressId);
+      const savedAddress = wasEditing
+        ? await addressService.update(editingSavedAddressId, payload)
+        : await addressService.create({
+            ...payload,
+            label: "Home",
+            isDefault: savedAddresses.length === 0,
+          });
 
-      const normalized = normalizeAddresses([created])[0];
-      const next = [...savedAddresses, normalized];
+      const normalized = normalizeAddresses([savedAddress])[0];
+      const next = wasEditing
+        ? savedAddresses.map((saved) => (saved.id === normalized.id ? normalized : saved))
+        : [...savedAddresses, normalized];
       setSavedAddresses(next);
-      setSelectedAddressIndex(next.length - 1);
+      setSelectedAddressIndex(next.findIndex((saved) => saved.id === normalized.id));
       setAddressId(normalized.id);
       setIsNewAddress(false);
+      setEditingSavedAddressId(null);
+      if (wasEditing) setAddressRevision((revision) => revision + 1);
       setNewAddressLocation(null);
       setNewAddressPlace(null);
-      showToast("Address saved");
+      showToast(wasEditing ? "Address updated" : "Address saved");
     } catch (error) {
       showToast(error?.message || "We could not save that address.", "error");
+    } finally {
+      setSavingAddress(false);
     }
   };
 
@@ -332,16 +411,14 @@ const Checkout = () => {
     if (unavailableItems.length > 0) {
       return showToast("Remove unavailable or out-of-stock items before placing your order.", "error");
     }
-    if (multiShop) {
-      return showToast("Please check out one shop at a time.", "error");
-    }
-    if (!singleShop?.shopId) {
+    // Multi-shop carts are supported: each shop gets its own order.
+    if (shops.length === 0 || shops.some((s) => !s.shopId)) {
       return showToast("Your cart items are not linked to a shop yet. Refresh and try again.", "error");
     }
-    if (!checkoutShop) {
+    if (shops.length === 1 && !checkoutShop) {
       return showToast("Shop details are still loading. Please try again.", "error");
     }
-    if (minimumOrderShortfall) {
+    if (shops.length === 1 && minimumOrderShortfall) {
       return showToast(
         `Orders from ${checkoutShop.name} start at ₹${minimumOrder.toFixed(2)}. Add ₹${(minimumOrder - cartTotal).toFixed(2)} more.`,
         "error"
@@ -358,34 +435,48 @@ const Checkout = () => {
     }
     setIsPlacing(true);
     setPaymentError("");
+    let paymentVerified = false;
 
     try {
-      // 1. The server prices the order and reserves stock.
+      // 1. The server prices the orders (one per shop) and reserves stock.
       const created = await orderService.create({
-        shopId: singleShop.shopId,
         addressId,
-        items: singleShop.items,
+        items: cart.map((item) => ({ productId: item.productId, quantity: item.quantity })),
         paymentMethod: selectedPaymentMethod,
+        checkoutId,
       });
-      const order = normalizeOrder(created);
+      const orders = (Array.isArray(created) ? created : created?.data || [created]).map(normalizeOrder);
+      const primary = orders[0];
 
       if (selectedPaymentMethod === "razorpay") {
-        // 2. Pay that exact, server-computed amount.
-        await paymentService.checkout({
-          amount: order.total,
-          orderId: order.id,
+        // 2. Pay the combined server-computed amount once.
+        const combinedTotal = orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+        const paymentResult = await paymentService.checkout({
+          amount: combinedTotal,
+          orderId: primary.id,
+          checkoutId,
           customer: {
             fullName: address.fullName,
             email: user?.email || address.email,
             phone: address.phone,
           },
-          description: `NearMart order ${order.id.slice(0, 8)}`,
+          description: `NearMart order ${primary.id.slice(0, 8)}`,
         });
+        paymentVerified = paymentResult?.verified === true;
       }
 
+      setConfirmation({
+        orders,
+        checkoutId,
+        paymentMethod: selectedPaymentMethod,
+        paymentVerified,
+      });
       await reloadCart();
-      showToast(selectedPaymentMethod === "razorpay" ? "Payment successful. Your order has been placed." : "Your order has been placed successfully.");
-      navigate(`/customer/orders/${order.id}`);
+      const message =
+        selectedPaymentMethod === "razorpay"
+          ? "Payment successful. Your order has been placed."
+          : "Your order has been placed successfully.";
+      showToast(message);
     } catch (error) {
       const message = error?.cancelled
         ? "Payment was cancelled before completion. The order is saved with a pending payment."
@@ -409,6 +500,212 @@ const Checkout = () => {
 
   /** The server must confirm Razorpay before the pay button can work. */
   const isRazorpayAvailable = paymentsConfigured === true && hasRazorpayPublicKey();
+
+  if (confirmation) {
+    const primaryOrder = confirmation.orders[0];
+    const hasSingleOrder = confirmation.orders.length === 1;
+    const combinedTotal = confirmation.orders.reduce(
+      (sum, order) => sum + Number(order.total ?? order.totalAmount ?? 0),
+      0
+    );
+    const shopNames = [...new Set(confirmation.orders.map((order) => order.shopName).filter(Boolean))];
+    const orderDate = primaryOrder?.createdAt ? new Date(primaryOrder.createdAt) : null;
+    const formattedOrderDate =
+      orderDate && Number.isFinite(orderDate.getTime()) ? orderDate.toLocaleString() : null;
+    const paymentMethodLabel =
+      confirmation.paymentMethod === "cod" ? "Cash on Delivery" : "Razorpay";
+    const paymentStatusLabel = confirmation.paymentVerified
+      ? "Paid"
+      : confirmation.paymentMethod === "cod"
+        ? "Due on delivery"
+        : null;
+    const trackPath = hasSingleOrder
+      ? `/customer/orders/${primaryOrder.id}/track`
+      : "/customer/orders";
+    const replaySuccessSound = () => {
+      const audio = successAudio.current;
+      if (!audio) return;
+      try {
+        audio.currentTime = 0;
+        audio.play().then(
+          () => setCanReplaySuccessSound(false),
+          () => setCanReplaySuccessSound(true)
+        );
+      } catch {
+        setCanReplaySuccessSound(true);
+      }
+    };
+
+    return (
+      <CustomerShell>
+        <div className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-[#f7fbf8] px-3 py-8 sm:px-6 sm:py-12">
+          {!reducedMotion && (
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+              <div className="absolute -left-20 top-12 h-56 w-56 rounded-full bg-emerald-100/60 blur-3xl" />
+              <div className="absolute -right-16 bottom-8 h-64 w-64 rounded-full bg-lime-100/50 blur-3xl" />
+            </div>
+          )}
+          <motion.section
+            initial={reducedMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.4, ease: "easeOut" }}
+            className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-emerald-100/80 bg-white px-5 py-7 text-center shadow-xl shadow-emerald-950/5 sm:px-10 sm:py-9"
+            role="status"
+            aria-live="polite"
+          >
+            <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-green-700 to-lime-400" />
+            <div className="relative mx-auto mb-5 flex h-24 w-24 items-center justify-center">
+              {!reducedMotion && (
+                <>
+                  <motion.span
+                    aria-hidden="true"
+                    className="absolute -left-2 top-3 h-2.5 w-2.5 rounded-full bg-lime-400"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.4, 1, 0.6], y: [5, -5, -12] }}
+                    transition={{ duration: 0.9, delay: 0.35 }}
+                  />
+                  <motion.span
+                    aria-hidden="true"
+                    className="absolute -right-2 top-5 h-2 w-2 rounded-sm bg-emerald-300"
+                    initial={{ opacity: 0, scale: 0, rotate: 0 }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.4, 1, 0.7], y: [6, -4, -11], rotate: 90 }}
+                    transition={{ duration: 1, delay: 0.45 }}
+                  />
+                  <motion.span
+                    aria-hidden="true"
+                    className="absolute bottom-1 left-1 h-2 w-2 rounded-full bg-green-300"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.4, 1, 0.6], y: [3, -5, -10] }}
+                    transition={{ duration: 0.85, delay: 0.55 }}
+                  />
+                </>
+              )}
+              <motion.div
+                initial={reducedMotion ? false : { scale: 0.65 }}
+                animate={{ scale: 1 }}
+                transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 16 }}
+                className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-700 shadow-lg shadow-emerald-700/20 ring-8 ring-emerald-50"
+              >
+                <svg viewBox="0 0 24 24" className="h-10 w-10" fill="none" aria-hidden="true">
+                  <motion.path
+                    d="M5 12.5 9.5 17 19 7.5"
+                    stroke="white"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={reducedMotion ? false : { pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={reducedMotion ? { duration: 0 } : { duration: 0.55, delay: 0.2, ease: "easeOut" }}
+                  />
+                </svg>
+              </motion.div>
+            </div>
+            <motion.div
+              initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.35, delay: reducedMotion ? 0 : 0.15 }}
+            >
+              <h1 className="text-2xl font-bold tracking-tight text-[#155c43] sm:text-3xl">
+                Congratulations! <span aria-hidden="true">🎉</span>
+              </h1>
+              <p className="mt-2 text-base font-semibold text-[#14261f] sm:text-lg">
+                Your order has been successfully received!
+              </p>
+              <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-gray-600">
+                Thank you for shopping with NearMart. Your order is now on its way to the shop for processing.
+              </p>
+            </motion.div>
+
+            <div className="mx-auto mt-6 max-w-lg rounded-xl border border-emerald-100 bg-[#f7fbf8] p-4 text-left sm:p-5">
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#155c43]">
+                <ShoppingBag className="h-4 w-4" />
+                Order summary
+              </div>
+              <dl className="space-y-2.5 text-sm">
+                <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                  <dt className="text-gray-500">Checkout reference</dt>
+                  <dd className="break-all text-right font-mono text-xs font-medium text-[#14261f] sm:text-sm">
+                    {confirmation.checkoutId}
+                  </dd>
+                </div>
+                {formattedOrderDate && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-gray-500">Order date</dt>
+                    <dd className="text-right font-medium text-[#14261f]">{formattedOrderDate}</dd>
+                  </div>
+                )}
+                {shopNames.length > 0 && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-gray-500">{shopNames.length > 1 ? "Shops" : "Shop"}</dt>
+                    <dd className="text-right font-medium text-[#14261f]">{shopNames.join(", ")}</dd>
+                  </div>
+                )}
+                <div className="flex justify-between gap-4">
+                  <dt className="text-gray-500">Payment method</dt>
+                  <dd className="text-right font-medium text-[#14261f]">{paymentMethodLabel}</dd>
+                </div>
+                {paymentStatusLabel && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-gray-500">Payment status</dt>
+                    <dd className="text-right font-semibold text-emerald-700">{paymentStatusLabel}</dd>
+                  </div>
+                )}
+                <div className="flex justify-between gap-4 border-t border-emerald-100 pt-3">
+                  <dt className="font-semibold text-[#14261f]">Total {confirmation.paymentVerified ? "paid" : "payable"}</dt>
+                  <dd className="font-bold text-[#155c43]">₹{combinedTotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</dd>
+                </div>
+              </dl>
+              {confirmation.orders.length > 0 && (
+                <div className="mt-3 border-t border-emerald-100 pt-3">
+                  <p className="mb-1.5 text-xs font-medium text-gray-500">
+                    {hasSingleOrder ? "Order ID" : `Shop orders (${confirmation.orders.length})`}
+                  </p>
+                  <div className="space-y-1">
+                    {confirmation.orders.map((order) => (
+                      <p key={order.id} className="break-all font-mono text-xs font-semibold text-[#155c43]">
+                        #{order.id}
+                        {confirmation.orders.length > 1 && order.shopName ? ` · ${order.shopName}` : ""}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {canReplaySuccessSound && (
+              <button
+                type="button"
+                onClick={replaySuccessSound}
+                className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 px-3 py-2 text-xs font-semibold text-[#155c43] transition hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                aria-label="Play order confirmation sound"
+              >
+                <Volume2 className="h-4 w-4" />
+                Play confirmation sound
+              </button>
+            )}
+
+            <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => navigate(trackPath, { replace: true })}
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-[#155c43] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-900/15 transition hover:bg-[#104b36] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+              >
+                <Truck className="h-4 w-4" />
+                Track My Order
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/customer/products", { replace: true })}
+                className="inline-flex items-center justify-center rounded-md border border-emerald-200 px-5 py-3 text-sm font-semibold text-[#155c43] transition hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+              >
+                Continue Shopping
+              </button>
+            </div>
+          </motion.section>
+        </div>
+      </CustomerShell>
+    );
+  }
 
   if (cart.length === 0) {
     return (
@@ -466,7 +763,7 @@ const Checkout = () => {
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>
               Your cart has items from {shops.length} different shops. Orders are placed per shop, so please
-              check out one shop at a time.
+              We will place a separate order for each shop with one combined payment.
             </span>
           </div>
         )}
@@ -496,7 +793,7 @@ const Checkout = () => {
                   <p className="text-xs text-gray-500">Where should we deliver your order?</p>
                 </div>
                 </div>
-                {savedAddresses.length > 0 && !isNewAddress && (
+                {savedAddresses.length > 0 && !isNewAddress && !editingSavedAddressId && (
                   <button
                     type="button"
                     onClick={startNewAddress}
@@ -517,64 +814,77 @@ const Checkout = () => {
               {savedAddresses.length > 0 && !isNewAddress && (
                 <div className="space-y-3">
                   {savedAddresses.map((saved, index) => (
-                    <button
+                    <div
                       key={saved.id}
-                      type="button"
-                      onClick={() => selectSavedAddress(index)}
-                      className={`w-full text-left border rounded-md p-4 transition-all ${
+                      className={`flex items-start gap-3 border rounded-md p-4 transition-all ${
                         selectedAddressIndex === index
                           ? "border-[#155c43] bg-[#f0f8f3] ring-2 ring-[#155c43]/10"
                           : "border-gray-200 hover:border-[#155c43]/50"
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="font-semibold text-[#14261f]">{saved.fullName}</p>
-                          <p className="text-sm text-gray-500 mt-1">{saved.line1}</p>
-                          <p className="text-sm text-gray-500">
-                            {saved.city}, {saved.state} - {saved.pincode}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-2">{saved.phone}</p>
-                          {!saved.hasLocation && (
-                            <span className="mt-2 inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[0.65rem] font-semibold text-amber-700">
-                              <AlertCircle className="h-3 w-3" /> No map location yet
-                            </span>
-                          )}
+                      <button
+                        type="button"
+                        onClick={() => selectSavedAddress(index)}
+                        className="min-w-0 flex-1 text-left"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-semibold text-[#14261f]">{saved.fullName}</p>
+                            <p className="mt-1 text-sm text-gray-500">{saved.line1}</p>
+                            {saved.line2 && <p className="text-sm text-gray-500">{saved.line2}</p>}
+                            <p className="text-sm text-gray-500">
+                              {saved.city}, {saved.state} - {saved.pincode}
+                            </p>
+                            <p className="mt-2 text-xs text-gray-400">{saved.phone}</p>
+                            {!saved.hasLocation && (
+                              <span className="mt-2 inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[0.65rem] font-semibold text-amber-700">
+                                <AlertCircle className="h-3 w-3" /> No map location yet
+                              </span>
+                            )}
+                          </div>
+                          <span className={`text-xs font-semibold ${selectedAddressIndex === index ? "text-[#155c43]" : "text-gray-400"}`}>
+                            {selectedAddressIndex === index ? "Selected" : "Use this"}
+                          </span>
                         </div>
-                        <span className={`text-xs font-semibold ${selectedAddressIndex === index ? "text-[#155c43]" : "text-gray-400"}`}>
-                          {selectedAddressIndex === index ? "Selected" : "Use this"}
-                        </span>
-                      </div>
                       </button>
-                    ))}
-                    {selectedMissingLocation && (
-                      <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
-                        <p className="mb-3 flex items-start gap-2 text-xs font-semibold text-amber-800">
-                          <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                          This address has no map location yet. Set it so we can calculate the real road
-                          distance and delivery fee.
-                        </p>
-                        <LocationPicker
-                          label="Set delivery location"
-                          value={pendingSavedLocation}
-                          onChange={setPendingSavedLocation}
-                          onAddressChange={setPendingSavedPlace}
-                          mapHeight="h-56 sm:h-64"
-                        />
-                        <button
-                          type="button"
-                          onClick={saveSelectedAddressLocation}
-                          disabled={savingLocation}
-                          className="mt-3 w-full bg-[#155c43] text-white py-2.5 rounded-md text-sm font-semibold hover:bg-[#104b36] transition-colors disabled:opacity-60"
-                        >
-                          {savingLocation ? "Saving location…" : "Save location"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => editSavedAddress(index)}
+                        aria-label={`Edit address for ${saved.fullName}`}
+                        className="shrink-0 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#155c43] transition hover:border-[#155c43] hover:bg-[#f0f8f3]"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  ))}
+                  {selectedMissingLocation && !editingSavedAddressId && (
+                    <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
+                      <p className="mb-3 flex items-start gap-2 text-xs font-semibold text-amber-800">
+                        <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                        This address has no map location yet. Set it so we can calculate the real road
+                        distance and delivery fee.
+                      </p>
+                      <LocationPicker
+                        label="Set delivery location"
+                        value={pendingSavedLocation}
+                        onChange={setPendingSavedLocation}
+                        onAddressChange={setPendingSavedPlace}
+                        mapHeight="h-56 sm:h-64"
+                      />
+                      <button
+                        type="button"
+                        onClick={saveSelectedAddressLocation}
+                        disabled={savingLocation}
+                        className="mt-3 w-full bg-[#155c43] text-white py-2.5 rounded-md text-sm font-semibold hover:bg-[#104b36] transition-colors disabled:opacity-60"
+                      >
+                        {savingLocation ? "Saving location…" : "Save location"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {(savedAddresses.length === 0 || isNewAddress) && (
+              {(savedAddresses.length === 0 || isNewAddress || editingSavedAddressId) && (
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="relative group">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#155c43] transition-colors" />
@@ -620,6 +930,17 @@ const Checkout = () => {
                     className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none resize-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
                   />
                 </div>
+                <div className="relative md:col-span-2 group">
+                  <Home className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#155c43] transition-colors" />
+                  <input
+                    type="text"
+                    name="line2"
+                    value={address.line2}
+                    onChange={handleChange}
+                    placeholder="Apartment, suite, landmark (optional)"
+                    className="w-full bg-[#f8faf9] border border-gray-200 rounded-md pl-10 pr-4 py-3 text-sm outline-none focus:border-[#155c43] focus:ring-[3px] focus:ring-[#155c43]/10 transition-all"
+                  />
+                </div>
                 <div className="relative group">
                   <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#155c43] transition-colors" />
                   <input
@@ -655,7 +976,7 @@ const Checkout = () => {
                 </div>
                 <div className="md:col-span-2">
                   <LocationPicker
-                    label="Delivery location on the map"
+                    label={editingSavedAddressId ? "Update delivery location" : "Delivery location on the map"}
                     hint="Search for your area or tap the map — this is the exact point we price delivery from."
                     value={newAddressLocation}
                     onChange={setNewAddressLocation}
@@ -670,14 +991,21 @@ const Checkout = () => {
                   )}
                 </div>
                 <div className="md:col-span-2 flex items-center justify-between gap-3 pt-1">
-                  <span className="text-xs text-gray-400">This address will be saved to your Addresses.</span>
+                  <span className="text-xs text-gray-400">
+                    {editingSavedAddressId ? "Changes will update this saved address." : "This address will be saved to your Addresses."}
+                  </span>
                   <div className="flex items-center gap-3">
                     {savedAddresses.length > 0 && (
                       <button
                         type="button"
                         onClick={() => {
-                          const defaultIndex = savedAddresses.findIndex((item) => item.isDefault);
-                          selectSavedAddress(defaultIndex >= 0 ? defaultIndex : 0);
+                          if (editingSavedAddressId) {
+                            const index = savedAddresses.findIndex((item) => item.id === editingSavedAddressId);
+                            if (index >= 0) selectSavedAddress(index);
+                          } else {
+                            const defaultIndex = savedAddresses.findIndex((item) => item.isDefault);
+                            selectSavedAddress(defaultIndex >= 0 ? defaultIndex : 0);
+                          }
                         }}
                         className="text-sm font-semibold text-gray-500 hover:text-gray-700"
                       >
@@ -687,9 +1015,12 @@ const Checkout = () => {
                     <button
                       type="button"
                       onClick={saveNewAddress}
-                      className="bg-[#155c43] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#104b36] transition-colors"
+                      disabled={savingAddress}
+                      className="bg-[#155c43] text-white px-4 py-2.5 rounded-md text-sm font-semibold hover:bg-[#104b36] transition-colors disabled:cursor-wait disabled:opacity-60"
                     >
-                      Save address
+                      {savingAddress
+                        ? editingSavedAddressId ? "Saving changes…" : "Saving…"
+                        : editingSavedAddressId ? "Save changes" : "Save address"}
                     </button>
                   </div>
                 </div>
@@ -966,7 +1297,6 @@ const Checkout = () => {
                 type="submit"
                 disabled={
                   isPlacing ||
-                  multiShop ||
                   unavailableItems.length > 0 ||
                   minimumOrderShortfall ||
                   !checkoutShop ||
@@ -1004,6 +1334,7 @@ const Checkout = () => {
             </div>
           </motion.aside>
         </form>
+
       </motion.div>
     </CustomerShell>
   );

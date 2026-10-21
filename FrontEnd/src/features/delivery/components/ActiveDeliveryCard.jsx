@@ -6,19 +6,24 @@ export default function ActiveDeliveryCard({ delivery }) {
   const navigate = useNavigate();
   if (!delivery) return null;
 
-  const progressSteps = ["accepted", "pickup_verified", "picked_up", "out_for_delivery", "otp_verified", "completed"];
-  const currentStepIndex = progressSteps.indexOf(delivery.status);
+  const assignmentStatus = delivery.assignment?.status;
+  const isPickedUp = ["picked_up", "out_for_delivery"].includes(assignmentStatus);
+  const progressSteps = ["preparing", "ready_for_pickup", "picked_up", "out_for_delivery", "delivered"];
+  const progressStatus = isPickedUp
+    ? assignmentStatus
+    : delivery.status === "accepted"
+      ? "preparing"
+      : delivery.status;
+  const currentStepIndex = progressSteps.indexOf(progressStatus);
   const progress = currentStepIndex >= 0 ? ((currentStepIndex + 1) / progressSteps.length) * 100 : 0;
-
-  const actionLabels = {
-    accepted: { label: "Go to Pickup", path: "/delivery/pickup" },
-    pickup_verified: { label: "Confirm Pickup", path: "/delivery/pickup-confirmed" },
-    picked_up: { label: "Start Delivery", path: "/delivery/pickup-confirmed" },
-    out_for_delivery: { label: "Verify OTP", path: "/delivery/verify" },
-    otp_verified: { label: "Complete Delivery", path: "/delivery/completed" },
-  };
-
-  const action = actionLabels[delivery.status];
+  const actionLabel = isPickedUp
+    ? "Complete delivery with OTP"
+    : delivery.status === "ready_for_pickup"
+      ? "Mark as picked up"
+      : delivery.status === "preparing"
+        ? "Mark ready for pickup"
+        : "Continue delivery";
+  const statusLabel = progressStatus.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
   return (
     <motion.div whileHover={{ y: -2 }} className="bg-white rounded-md border border-gray-100 p-3.5 shadow-sm hover:shadow-md transition-all sm:rounded-lg sm:p-5">
@@ -45,7 +50,7 @@ export default function ActiveDeliveryCard({ delivery }) {
             className="h-full bg-linear-to-r from-emerald-500 to-teal-500 rounded-full"
           />
         </div>
-        <p className="text-[0.65rem] text-gray-400 mt-1">{delivery.status.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}</p>
+        <p className="text-[0.65rem] text-gray-400 mt-1">{statusLabel}</p>
       </div>
 
       <div className="space-y-2 mb-4">
@@ -67,15 +72,14 @@ export default function ActiveDeliveryCard({ delivery }) {
         <div className="flex items-center gap-1"><IndianRupee className="w-3.5 h-3.5" /><span>₹{delivery.orderAmount}</span></div>
       </div>
 
-      {action && (
-        <button
-          onClick={() => navigate(action.path)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
-        >
-          {action.label}
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => navigate(`/delivery/details/${delivery.id}`)}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all"
+      >
+        {actionLabel}
+        <ArrowRight className="w-4 h-4" />
+      </button>
     </motion.div>
   );
 }

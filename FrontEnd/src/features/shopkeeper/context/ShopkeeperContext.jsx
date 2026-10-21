@@ -538,11 +538,12 @@ export function ShopkeeperProvider({ children }) {
     [loadOrders]
   );
 
-  const getNextStatus = useCallback((currentStatus) => {
-    const idx = ORDER_FLOW_UI.indexOf(currentStatus);
-    if (idx < 0 || idx >= ORDER_FLOW_UI.length - 1) return null;
-    return ORDER_FLOW_UI[idx + 1];
-  }, []);
+  const getNextStatus = useCallback((currentStatus) => ({
+    New: "Accepted",
+    Accepted: "Preparing",
+    Preparing: "Ready for Pickup",
+    Delivered: "Completed",
+  }[currentStatus] || null), []);
 
   const addOffer = useCallback(
     (offer) =>

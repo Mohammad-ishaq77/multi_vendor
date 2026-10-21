@@ -9,6 +9,11 @@ import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { DELIVERY_PARTNER_SHARE_PERCENT } from "../../common/utils/deliveryPricing.js";
 import { AppDataSource, repo } from "../../config/db.js";
 import { emitToRole, emitToUser } from "../../realtime/socket.js";
+import { canDeliveryTransition } from "../orders/status.js";
+import { maskEmail } from "../../common/utils/helpers.js";
+import { OTP_PURPOSES, createOtp, consumeActiveOtps, verifyOtp } from "../../common/utils/otp.js";
+import { sendDeliveryOtpEmail } from "../../common/email/service.js";
+import { deliveryOtpLimiter } from "../../common/middleware/rateLimit.js";
 
 const router = Router();
 router.use(requireAuth, requireRole("delivery", "admin"));
@@ -193,7 +198,11 @@ router.get(
         `SELECT o.id, ST_Distance(s.location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography) AS distance_m
          FROM orders o
          JOIN shops s ON s.id = o.shop_id
-         WHERE o.status = 'ready_for_pickup'
+         WHERE o.status IN ('preparing', 'ready_for_pickup')
+           AND NOT EXISTS (
+             SELECT 1 FROM delivery_assignments da
+             WHERE da.order_id = o.id AND da.partner_id IS NOT NULL
+           )
            AND s.location IS NOT NULL
            AND ST_DWithin(s.location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography, $3)
          ORDER BY distance_m ASC
@@ -224,7 +233,8 @@ router.get(
       .leftJoinAndSelect("o.customer", "customer")
       .leftJoinAndSelect("o.address", "address")
       .leftJoinAndSelect("o.items", "items");
-    qb.where("o.status = :s", { s: "ready_for_pickup" });
+    qb.where("o.status IN (:...statuses)", { statuses: ["preparing", "ready_for_pickup"] })
+      .andWhere("NOT EXISTS (SELECT 1 FROM delivery_assignments da WHERE da.order_id = o.id AND da.partner_id IS NOT NULL)");
     if (city) qb.andWhere("shop.city = :city", { city });
     qb.orderBy("o.createdAt", "ASC").limit(50);
     res.json({ ok: true, data: (await qb.getMany()).map(deliveryOrderView) });
@@ -245,7 +255,7 @@ router.get(
       relations: { shop: true, customer: true, address: true, items: true },
     });
     if (!order) return res.status(404).json({ ok: false, error: "Delivery not found." });
-    if (order.status !== "ready_for_pickup" && order.deliveryPartnerId !== req.user.id) {
+    if (!["preparing", "ready_for_pickup"].includes(order.status) && order.deliveryPartnerId !== req.user.id) {
       return res.status(404).json({ ok: false, error: "Delivery not found." });
     }
     const assignment = await repo("DeliveryAssignment").findOne({
@@ -282,6 +292,12 @@ router.get(
       where: { id: assignment.orderId },
       relations: { items: true, shop: true },
     });
+    if (["delivered", "completed"].includes(order?.status)) {
+      assignment.status = "delivered";
+      assignment.deliveredAt = assignment.deliveredAt || order.deliveredAt || new Date();
+      await repo("DeliveryAssignment").save(assignment);
+      return res.json({ ok: true, data: null });
+    }
     res.json({ ok: true, data: { assignment, order } });
   })
 );
@@ -297,8 +313,8 @@ router.post(
     const orders = repo("Order");
     const order = await orders.findOne({ where: { id: req.params.orderId } });
     if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
-    if (order.status !== "ready_for_pickup") {
-      return res.status(400).json({ ok: false, error: "Order is not ready for pickup." });
+    if (!["preparing", "ready_for_pickup"].includes(order.status)) {
+      return res.status(400).json({ ok: false, error: "Order is not ready for a delivery partner." });
     }
     const assignments = repo("DeliveryAssignment");
     const existing = await assignments.findOne({ where: { orderId: order.id } }).catch(() => null);
@@ -329,10 +345,72 @@ router.post(
   })
 );
 
-/** PATCH /api/delivery/orders/:id/status — picked_up → out_for_delivery → delivered. */
+/**
+ * POST /api/delivery/orders/:id/request-otp — email a delivery OTP to the
+ * customer who placed the order. Only the assigned partner can trigger it, and
+ * the OTP is bound to this order so it cannot complete any other.
+ */
+router.post(
+  "/orders/:id/request-otp",
+  deliveryOtpLimiter,
+  asyncHandler(async (req, res) => {
+    const partner = await myPartner(req.user.id);
+    if (!partner.isApproved) {
+      return res.status(403).json({ ok: false, error: "Your delivery application must be approved to update deliveries." });
+    }
+    const assignment = await repo("DeliveryAssignment").findOne({
+      where: { orderId: req.params.id, partnerId: partner.id },
+    });
+    if (!assignment) return res.status(404).json({ ok: false, error: "Assignment not found." });
+    const order = await repo("Order").findOne({
+      where: { id: req.params.id },
+      relations: { customer: true },
+    });
+    if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
+    if (order.status !== "out_for_delivery") {
+      return res.status(400).json({ ok: false, error: "Start the delivery before requesting a confirmation code." });
+    }
+    const email = order.customer?.email;
+    if (!email) {
+      return res.status(400).json({ ok: false, error: "The customer has no email address on file." });
+    }
+    if (!order.customer.emailVerified) {
+      return res.status(400).json({ ok: false, error: "The customer's email address has not been verified." });
+    }
+    const { code, ttlMinutes } = await createOtp({
+      email,
+      purpose: OTP_PURPOSES.DELIVERY,
+      userId: order.customerId,
+      orderId: order.id,
+    });
+    try {
+      await sendDeliveryOtpEmail({
+        to: email,
+        orderReference: `#${String(order.id).slice(0, 8).toUpperCase()}`,
+        code,
+        expiresInMinutes: ttlMinutes,
+      });
+    } catch {
+      await consumeActiveOtps({ email, purpose: OTP_PURPOSES.DELIVERY, orderId: order.id }).catch(() => {});
+      return res.status(502).json({ ok: false, error: "We could not send the delivery code. Please try again." });
+    }
+    res.json({
+      ok: true,
+      data: { sent: true, maskedEmail: maskEmail(email), expiresInMinutes: ttlMinutes },
+    });
+  })
+);
+
+/** PATCH /api/delivery/orders/:id/status — partner controls pickup readiness and delivery. */
 router.patch(
   "/orders/:id/status",
-  validate({ body: z.object({ status: z.enum(["picked_up", "out_for_delivery", "delivered", "failed"]) }) }),
+  validate({
+    body: z.object({
+      status: z.enum(["ready_for_pickup", "picked_up", "out_for_delivery", "delivered", "failed"]),
+      // Required only for "delivered": the customer's emailed confirmation code.
+      otp: z.string().regex(/^\d{6}$/).optional(),
+    }),
+  }),
   asyncHandler(async (req, res) => {
     const partner = await myPartner(req.user.id);
     if (!partner.isApproved) {
@@ -343,16 +421,52 @@ router.patch(
       where: { orderId: req.params.id, partnerId: partner.id },
     });
     if (!assignment) return res.status(404).json({ ok: false, error: "Assignment not found." });
-    const order = await repo("Order").findOne({ where: { id: req.params.id } });
-    assignment.status = req.body.status;
-    if (req.body.status === "picked_up") assignment.pickedUpAt = new Date();
-    if (req.body.status === "delivered") {
-      assignment.deliveredAt = new Date();
-      if (order) {
-        order.status = "delivered";
-        order.deliveredAt = new Date();
-        await repo("Order").save(order);
+    const order = await repo("Order").findOne({
+      where: { id: req.params.id },
+      relations: { customer: true },
+    });
+    if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
+    const { status } = req.body;
+    if (!canDeliveryTransition(order.status, assignment.status, status)) {
+      return res.status(400).json({ ok: false, error: `Cannot mark this delivery ${status.replace(/_/g, " ")} from its current status.` });
+    }
+
+    // Delivery is confirmed by the customer's emailed OTP, never by the client.
+    if (status === "delivered") {
+      if (!req.body.otp) {
+        return res.status(400).json({ ok: false, error: "Enter the delivery verification code the customer received." });
       }
+      const customerEmail = order.customer?.email;
+      if (!customerEmail) {
+        return res.status(400).json({ ok: false, error: "The customer has no email address on file." });
+      }
+      await verifyOtp({
+        email: customerEmail,
+        purpose: OTP_PURPOSES.DELIVERY,
+        orderId: order.id,
+        code: req.body.otp,
+      });
+    }
+
+    if (status === "ready_for_pickup") {
+      order.status = status;
+      await repo("Order").save(order);
+    }
+    assignment.status = status === "ready_for_pickup" ? "assigned" : status;
+    if (status === "picked_up") {
+      assignment.pickedUpAt = new Date();
+      order.status = "out_for_delivery";
+      await repo("Order").save(order);
+    }
+    if (status === "out_for_delivery") {
+      order.status = "out_for_delivery";
+      await repo("Order").save(order);
+    }
+    if (status === "delivered") {
+      assignment.deliveredAt = new Date();
+      order.status = "delivered";
+      order.deliveredAt = new Date();
+      await repo("Order").save(order);
       const partners = repo("DeliveryPartner");
       partner.completedDeliveries += 1;
       partner.totalDeliveries += 1;
@@ -360,12 +474,9 @@ router.patch(
       partner.totalEarnings = Number(partner.totalEarnings) + Number(assignment.partnerEarning || 0);
       partner.todayEarnings = Number(partner.todayEarnings) + Number(assignment.partnerEarning || 0);
       await partners.save(partner);
-    } else if (order) {
-      order.status = req.body.status === "failed" ? order.status : "out_for_delivery";
-      await repo("Order").save(order);
     }
     const saved = await assignments.save(assignment);
-    if (order) emitToUser(order.customerId, "delivery:status_update", { orderId: order.id, status: order.status });
+    emitToUser(order.customerId, "delivery:status_update", { orderId: order.id, status: order.status });
     res.json({ ok: true, data: saved });
   })
 );
@@ -382,7 +493,24 @@ router.get(
       skip,
       take,
     });
-    res.json(pagedResponse(items, total, page, limit));
+    const orderIds = items.map((assignment) => assignment.orderId);
+    const orders = orderIds.length
+      ? await repo("Order").find({
+          where: { id: In(orderIds) },
+          select: { id: true, status: true, deliveredAt: true },
+        })
+      : [];
+    const ordersById = new Map(orders.map((order) => [order.id, order]));
+    const syncedItems = items.map((assignment) => {
+      const order = ordersById.get(assignment.orderId);
+      if (!["delivered", "completed"].includes(order?.status)) return assignment;
+      return {
+        ...assignment,
+        status: "delivered",
+        deliveredAt: assignment.deliveredAt || order.deliveredAt || null,
+      };
+    });
+    res.json(pagedResponse(syncedItems, total, page, limit));
   })
 );
 

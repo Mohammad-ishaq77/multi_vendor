@@ -1,6 +1,8 @@
+import { API_BASE_URL, RAZORPAY_PUBLIC_KEY } from "./env";
+
 export const RAZORPAY_CONFIG = {
-  keyId: import.meta.env.VITE_RAZORPAY_KEY_ID || "",
-  apiBaseUrl: (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, ""),
+  keyId: RAZORPAY_PUBLIC_KEY,
+  apiBaseUrl: API_BASE_URL,
   currency: "INR",
   companyName: "NearMart",
   themeColor: "#047857",

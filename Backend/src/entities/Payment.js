@@ -6,6 +6,7 @@ export const Payment = new EntitySchema({
   columns: {
     id: { type: "uuid", primary: true, generated: "uuid" },
     orderId: { type: "uuid", nullable: true, name: "order_id" },
+    checkoutId: { type: "uuid", nullable: true, name: "checkout_id" },
     userId: { type: "uuid", nullable: true, name: "user_id" },
     razorpayOrderId: { type: "varchar", length: 100, unique: true, nullable: true, name: "razorpay_order_id" },
     razorpayPaymentId: { type: "varchar", length: 100, nullable: true, name: "razorpay_payment_id" },

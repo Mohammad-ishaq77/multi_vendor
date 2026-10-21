@@ -20,6 +20,7 @@ import { Notification } from "../entities/Notification.js";
 import { ShopDocument } from "../entities/ShopDocument.js";
 import { DeliveryDocument } from "../entities/DeliveryDocument.js";
 import { RefreshToken } from "../entities/RefreshToken.js";
+import { OtpCode } from "../entities/OtpCode.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -44,6 +45,7 @@ export const AppDataSource = new DataSource({
     ShopDocument,
     DeliveryDocument,
     RefreshToken,
+    OtpCode,
   ],
   synchronize: config.typeormSync,
   logging: config.typeormLogging,

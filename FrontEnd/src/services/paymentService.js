@@ -75,7 +75,7 @@ export const razorpayCheckout = {
    * @returns {Promise<{ok:true, verified:true, payment:object, razorpay:object}>}
    * @throws  {ApiError} whenever the payment is not server-verified
    */
-  async checkout({ amount, orderId, customer, description }) {
+  async checkout({ amount, orderId, checkoutId, customer, description }) {
     if (!RAZORPAY_PUBLIC_KEY) throw notConfigured();
 
     const value = Number(amount);
@@ -87,6 +87,7 @@ export const razorpayCheckout = {
     const created = await paymentApi.createOrder({
       amount: value,
       orderId,
+      checkoutId,
       notes: {
         marketplace_order_id: orderId,
         ...(customer?.fullName ? { customer_name: customer.fullName } : {}),

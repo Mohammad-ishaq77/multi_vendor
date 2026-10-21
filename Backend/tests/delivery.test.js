@@ -11,6 +11,7 @@ import {
   RoadDistanceError,
   getRoadDistanceKm,
 } from "../src/common/utils/roadDistance.js";
+import { config } from "../src/config/env.js";
 
 describe("calculateDeliveryFee distance slabs", () => {
   const cases = [
@@ -180,6 +181,48 @@ describe("road distance via routing service", () => {
       message: DELIVERY_MESSAGES.ROUTING_FAILED,
       status: 502,
     });
+  });
+
+  test("uses the default routing service when the configured provider is unavailable", async () => {
+    const originalBaseUrl = config.routing.osrmBaseUrl;
+    const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+    config.routing.osrmBaseUrl = "https://unavailable.example";
+    global.fetch = jest
+      .fn()
+      .mockRejectedValueOnce(new Error("provider unavailable"))
+      .mockResolvedValueOnce(osrmOk(4700));
+
+    try {
+      await expect(getRoadDistanceKm(coords)).resolves.toBe(4.7);
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(global.fetch.mock.calls[1][0]).toContain("https://router.project-osrm.org/");
+    } finally {
+      config.routing.osrmBaseUrl = originalBaseUrl;
+      warn.mockRestore();
+    }
+  });
+
+  test("routing timeout also covers a stalled response body", async () => {
+    const originalTimeout = config.routing.timeoutMs;
+    jest.useFakeTimers();
+    config.routing.timeoutMs = 100;
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => new Promise(() => {}),
+    });
+
+    try {
+      const request = getRoadDistanceKm(coords);
+      const assertion = expect(request).rejects.toMatchObject({
+        message: DELIVERY_MESSAGES.ROUTING_FAILED,
+        status: 502,
+      });
+      await jest.advanceTimersByTimeAsync(100);
+      await assertion;
+    } finally {
+      config.routing.timeoutMs = originalTimeout;
+      jest.useRealTimers();
+    }
   });
 
   test("no drivable route between the points", async () => {

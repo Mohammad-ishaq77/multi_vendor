@@ -66,10 +66,16 @@ export const config = {
     osrmBaseUrl: (process.env.OSRM_BASE_URL || "https://router.project-osrm.org").replace(/\/+$/, ""),
     timeoutMs: num(process.env.ROUTING_TIMEOUT_MS, 8000),
   },
+  // Gmail SMTP credentials for transactional OTP emails. Optional so the API can
+  // still boot without them; the email service reports a clear failure instead.
+  mail: {
+    user: process.env.MAIL_USER || "",
+    pass: process.env.MAIL_PASS || "",
+  },
 };
+
+export const isMailConfigured = Boolean(config.mail.user && config.mail.pass);
 
 export const isDevSecret =
   config.jwt.accessSecret.includes("change-me") ||
   config.jwt.refreshSecret.includes("change-me");
-
-

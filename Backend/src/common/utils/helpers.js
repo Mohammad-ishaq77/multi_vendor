@@ -17,3 +17,14 @@ export const hasCoords = (lat, lng) => {
   if (lng === null || lng === undefined || lng === "") return false;
   return Number.isFinite(Number(lat)) && Number.isFinite(Number(lng));
 };
+
+/** Mask an email for display: "priya@shop.com" -> "p***@shop.com". */
+export function maskEmail(email) {
+  const value = String(email || "").trim();
+  const at = value.indexOf("@");
+  if (at <= 0) return "";
+  const local = value.slice(0, at);
+  const domain = value.slice(at + 1);
+  const visible = local.slice(0, 1);
+  return `${visible}${"*".repeat(Math.max(local.length - 1, 1))}@${domain}`;
+}

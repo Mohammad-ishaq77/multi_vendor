@@ -5,7 +5,7 @@ import ActiveDeliveryCard from "../components/ActiveDeliveryCard";
 
 export default function ActiveDelivery() {
   const navigate = useNavigate();
-  const { activeDelivery, cancelDelivery } = useDeliveryPartner();
+  const { activeDelivery } = useDeliveryPartner();
 
   if (!activeDelivery) {
     return (
@@ -27,12 +27,6 @@ export default function ActiveDelivery() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Active Delivery</h1>
-        <button
-          onClick={() => { cancelDelivery(); navigate("/delivery/available"); }}
-          className="px-4 py-2 rounded-md text-sm font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all"
-        >
-          Cancel Delivery
-        </button>
       </div>
       <ActiveDeliveryCard delivery={activeDelivery} />
     </div>

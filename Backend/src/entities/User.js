@@ -17,6 +17,9 @@ export const User = new EntitySchema({
     allowedRoles: { type: "text", array: true, default: [], name: "allowed_roles" },
     avatarUrl: { type: "varchar", length: 500, nullable: true, name: "avatar_url" },
     isActive: { type: "boolean", default: true, name: "is_active" },
+    // Set only after the user proves ownership of their email through an OTP.
+    // Never trust a client-provided value; login and protected routes require it.
+    emailVerified: { type: "boolean", default: false, name: "email_verified" },
     createdAt: { type: "timestamptz", createDate: true, name: "created_at" },
     updatedAt: { type: "timestamptz", updateDate: true, name: "updated_at" },
   },

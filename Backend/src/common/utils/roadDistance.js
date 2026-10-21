@@ -1,6 +1,8 @@
 import { config } from "../../config/env.js";
 import { hasCoords } from "./helpers.js";
 
+const DEFAULT_ROUTING_URL = "https://router.project-osrm.org";
+
 export const DELIVERY_MESSAGES = {
   SHOP_LOCATION: "Shop location is not available. Please ask the shopkeeper to set the shop location.",
   CUSTOMER_LOCATION: "Please select your delivery location on the map.",
@@ -29,38 +31,47 @@ export async function getRoadDistanceMeters({ originLat, originLng, destLat, des
     throw new RoadDistanceError(DELIVERY_MESSAGES.CUSTOMER_LOCATION, { code: "CUSTOMER_LOCATION_MISSING" });
   }
 
-  const url =
-    `${config.routing.osrmBaseUrl}/route/v1/driving/` +
-    `${Number(originLng)},${Number(originLat)};${Number(destLng)},${Number(destLat)}` +
-    `?overview=false&alternatives=false&steps=false`;
-
   const routingFailed = new RoadDistanceError(DELIVERY_MESSAGES.ROUTING_FAILED, {
     status: 502,
     code: "ROUTING_SERVICE_FAILED",
   });
 
-  let response;
-  try {
+  const providers = [...new Set([config.routing.osrmBaseUrl, DEFAULT_ROUTING_URL])];
+  let payload = null;
+  for (const provider of providers) {
+    const url =
+      `${provider}/route/v1/driving/` +
+      `${Number(originLng)},${Number(originLat)};${Number(destLng)},${Number(destLat)}` +
+      `?overview=false&alternatives=false&steps=false`;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), config.routing.timeoutMs);
+    let timer;
     try {
-      response = await fetch(url, {
-        signal: controller.signal,
-        headers: { accept: "application/json" },
+      const timedOut = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          controller.abort();
+          reject(routingFailed);
+        }, config.routing.timeoutMs);
       });
+      payload = await Promise.race([
+        (async () => {
+          const response = await fetch(url, {
+            signal: controller.signal,
+            headers: { accept: "application/json" },
+          });
+          if (!response.ok) throw routingFailed;
+          return response.json();
+        })(),
+        timedOut,
+      ]);
+      break;
+    } catch {
+      console.warn(`Road routing request failed for ${new URL(provider).host}.`);
     } finally {
       clearTimeout(timer);
     }
-  } catch {
-    throw routingFailed;
   }
 
-  if (!response.ok) throw routingFailed;
-
-  let payload;
-  try {
-    payload = await response.json();
-  } catch {
+  if (!payload) {
     throw routingFailed;
   }
 

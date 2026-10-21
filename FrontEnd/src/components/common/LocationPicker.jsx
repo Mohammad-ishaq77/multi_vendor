@@ -232,7 +232,7 @@ const LocationPicker = ({
         setLocating(false);
         setGeoError(error?.code === 1 ? PERMISSION_DENIED_MESSAGE : LOCATION_UNAVAILABLE_MESSAGE);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      { enableHighAccuracy: false, timeout: 20000, maximumAge: 300000 }
     );
   };
 

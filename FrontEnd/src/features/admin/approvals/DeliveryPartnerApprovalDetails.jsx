@@ -7,13 +7,11 @@ import {
   Mail,
   Phone,
   Calendar,
-  Truck,
   CheckCircle2,
   XCircle,
   MessageSquare,
   Loader2,
   Shield,
-  Car,
   AlertCircle,
   Clock,
   ShieldCheck,
@@ -295,28 +293,6 @@ const timeline = [
                 approval.addressData?.state,
                 approval.addressData?.pinCode,
               ].filter(Boolean).join(", ")}
-            />
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Car className="w-4 h-4 text-[#155c43]" /> Vehicle Information
-          </h3>
-          <div className="space-y-4">
-            <InfoRow icon={Truck} label="Vehicle Type" value={approval.vehicleType} />
-            <InfoRow icon={Car} label="Vehicle Number" value={approval.vehicleNumber} />
-            <InfoRow
-              icon={Shield}
-              label="Documents"
-              value={
-                documentsLoading
-                  ? "Loading…"
-                  : documents.length
-                    ? `${documents.length} uploaded (${documents.filter((d) => d.isVerified).length} verified)`
-                    : "None uploaded"
-              }
             />
           </div>
         </motion.div>

@@ -2,9 +2,15 @@ import { jest } from "@jest/globals";
 import request from "supertest";
 import { buildApp } from "../src/index.js";
 import { resolveActiveRole } from "../src/modules/auth/service.js";
-import { canTransition, allowedNextStatuses } from "../src/modules/orders/status.js";
+import {
+  canDeliveryTransition,
+  canShopkeeperTransition,
+  canTransition,
+  allowedNextStatuses,
+} from "../src/modules/orders/status.js";
 import { isUuid, idOrSlugParam, uuidParam } from "../src/common/middleware/params.js";
 import { productSchema } from "../src/modules/products/routes.js";
+import { CANCELLATION_REASONS, cancellationRequestSchema } from "../src/modules/orders/cancellation.js";
 
 const app = buildApp();
 
@@ -34,6 +40,32 @@ describe("order status transitions", () => {
     expect(canTransition("delivered", "completed")).toBe(true);
   });
 
+  describe("order cancellation reason validation", () => {
+    test("accepts each supported reason and optional details", () => {
+      for (const reason of CANCELLATION_REASONS.filter((value) => value !== "Other")) {
+        expect(cancellationRequestSchema.safeParse({ reason }).success).toBe(true);
+      }
+      expect(
+        cancellationRequestSchema.safeParse({ reason: "Other", details: "Please explain" }).success
+      ).toBe(true);
+    });
+
+    test("requires an explanation for Other and rejects unknown reasons or oversized details", () => {
+      expect(cancellationRequestSchema.safeParse({ reason: "Other" }).success).toBe(false);
+      expect(cancellationRequestSchema.safeParse({ reason: "Not a supported reason" }).success).toBe(false);
+      expect(
+        cancellationRequestSchema.safeParse({ reason: "Ordered by mistake", details: "x".repeat(1001) }).success
+      ).toBe(false);
+    });
+
+    test("trims and stores cancellation details", () => {
+      expect(cancellationRequestSchema.parse({ reason: "Other", details: "  Wrong item  " })).toEqual({
+        reason: "Other",
+        details: "Wrong item",
+      });
+    });
+  });
+
   test("cancellation only from early states, and only once", () => {
     expect(canTransition("pending", "cancelled")).toBe(true);
     expect(canTransition("preparing", "cancelled")).toBe(true);
@@ -46,6 +78,25 @@ describe("order status transitions", () => {
     expect(allowedNextStatuses("confirmed")).toEqual(["cancelled", "preparing"]);
     expect(allowedNextStatuses("delivered")).toEqual(["completed"]);
     expect(allowedNextStatuses("completed")).toEqual([]);
+  });
+
+  test("allows shopkeepers to mark prepared orders ready for pickup", () => {
+    expect(canShopkeeperTransition("pending", "confirmed")).toBe(true);
+    expect(canShopkeeperTransition("confirmed", "preparing")).toBe(true);
+    expect(canShopkeeperTransition("preparing", "ready_for_pickup")).toBe(true);
+    expect(canShopkeeperTransition("ready_for_pickup", "out_for_delivery")).toBe(false);
+    expect(canShopkeeperTransition("out_for_delivery", "delivered")).toBe(false);
+    expect(canShopkeeperTransition("delivered", "completed")).toBe(true);
+    expect(canShopkeeperTransition("preparing", "cancelled")).toBe(true);
+  });
+
+  test("allows delivery partners to control pickup readiness and delivery", () => {
+    expect(canDeliveryTransition("preparing", "assigned", "ready_for_pickup")).toBe(true);
+    expect(canDeliveryTransition("ready_for_pickup", "assigned", "picked_up")).toBe(true);
+    expect(canDeliveryTransition("out_for_delivery", "picked_up", "delivered")).toBe(true);
+    expect(canDeliveryTransition("preparing", "assigned", "picked_up")).toBe(false);
+    expect(canDeliveryTransition("ready_for_pickup", "assigned", "delivered")).toBe(false);
+    expect(canDeliveryTransition("delivered", "delivered", "ready_for_pickup")).toBe(false);
   });
 });
 

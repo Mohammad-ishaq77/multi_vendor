@@ -1,17 +1,37 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle, Info, Loader2, MapPin, PackageCheck, User, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Info,
+  Loader2,
+  Mail,
+  MapPin,
+  PackageCheck,
+  RefreshCw,
+  User,
+} from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import { useToast } from "../components/Toast";
+import OtpInputs from "../../../components/auth/OtpInputs";
+import useCountdown from "../../../hooks/useCountdown";
+
+const RESEND_COOLDOWN_SECONDS = 30;
+const EMPTY_DIGITS = Array.from({ length: 6 }, () => "");
 
 export default function DeliveryVerification() {
   const navigate = useNavigate();
-  const { activeDelivery, completeDelivery } = useDeliveryPartner();
+  const { activeDelivery, requestDeliveryOtp, completeDelivery } = useDeliveryPartner();
   const { addToast } = useToast();
+  const countdown = useCountdown();
+
   const [verifying, setVerifying] = useState(false);
+  const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
-  const [otp, setOtp] = useState("");
+  const [digits, setDigits] = useState(EMPTY_DIGITS);
+  const [maskedEmail, setMaskedEmail] = useState("");
+  const verificationInProgress = useRef(false);
 
   if (!activeDelivery) {
     return (
@@ -24,21 +44,52 @@ export default function DeliveryVerification() {
     );
   }
 
-  const handleComplete = async () => {
-    if (otp !== "1234") {
-      const invalidResult = { success: false, message: "Enter the valid 4-digit demo OTP." };
-      setResult(invalidResult);
-      addToast(invalidResult.message, "error");
-      return;
-    }
+  const code = digits.join("");
+  const isComplete = /^\d{6}$/.test(code);
 
-    setVerifying(true);
-    const res = await completeDelivery();
-    setVerifying(false);
+  const handleSendCode = async () => {
+    setSending(true);
+    const res = await requestDeliveryOtp();
+    setSending(false);
     setResult(res);
     addToast(res.message, res.success ? "success" : "error");
     if (res.success) {
-      setTimeout(() => navigate("/delivery/completed"), 1200);
+      setMaskedEmail(res.data?.maskedEmail || "");
+      setDigits(EMPTY_DIGITS);
+      countdown.start(RESEND_COOLDOWN_SECONDS);
+    }
+  };
+
+  const handleComplete = async (submittedCode = code) => {
+    if (verificationInProgress.current) return;
+    const value = String(submittedCode).trim();
+    if (!/^\d{6}$/.test(value)) {
+      setResult({ success: false, message: "Enter the 6-digit code the customer received." });
+      return;
+    }
+
+    verificationInProgress.current = true;
+    setVerifying(true);
+    try {
+      const res = await completeDelivery(value);
+      setResult(res);
+      addToast(res.message, res.success ? "success" : "error");
+      if (res.success) {
+        setDigits(EMPTY_DIGITS);
+        navigate("/delivery/completed", {
+          state: {
+            delivery: {
+              id: activeDelivery.id,
+              partnerEarning: activeDelivery.partnerEarning ?? activeDelivery.assignment?.partnerEarning,
+              distance: activeDelivery.distance,
+              estimatedTime: activeDelivery.estimatedTime,
+            },
+          },
+        });
+      }
+    } finally {
+      verificationInProgress.current = false;
+      setVerifying(false);
     }
   };
 
@@ -73,55 +124,66 @@ export default function DeliveryVerification() {
           <div className="flex items-start gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-md p-3">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
             <span>
-              Enter the customer&apos;s 4-digit delivery OTP. For this demo, use <strong className="text-gray-700">1234</strong>.
-              Successful verification marks the order delivered, credits your earnings and updates the order status.
+              The customer receives a 6-digit code by email once you request it. Ask them for it at the door and enter it
+              below. On success the order is marked delivered, your earnings are credited and the customer&apos;s tracking updates.
             </span>
+          </div>
+
+          <div className="rounded-md border border-gray-100 bg-white p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm text-gray-700">
+                <Mail className="h-4 w-4 text-emerald-600" />
+                {maskedEmail ? (
+                  <span>
+                    Code sent to <span className="font-semibold">{maskedEmail}</span>
+                  </span>
+                ) : (
+                  <span>No code sent yet</span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={handleSendCode}
+                disabled={sending || countdown.isRunning}
+                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                {countdown.isRunning ? `Resend in ${countdown.secondsLeft}s` : maskedEmail ? "Resend code" : "Send code"}
+              </button>
+            </div>
           </div>
 
           <div>
             <label htmlFor="delivery-otp" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-700">
-              Customer delivery OTP
+              Customer delivery code
             </label>
-            <input
-              id="delivery-otp"
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={4}
-              value={otp}
-              onChange={(event) => {
-                setOtp(event.target.value.replace(/\D/g, "").slice(0, 4));
-                setResult(null);
+            <OtpInputs
+              value={digits}
+              onChange={(next) => {
+                setDigits(next);
+                if (result && !result.success) setResult(null);
               }}
-              placeholder="Enter 4-digit OTP"
-              aria-describedby="delivery-otp-hint"
-              className="w-full rounded-md border border-gray-200 px-4 py-3 text-center text-xl font-semibold tracking-[0.5em] text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+              error={result && !result.success ? result.message : ""}
+              disabled={verifying}
+              autoFocus
+              onComplete={(submittedCode) => handleComplete(submittedCode)}
             />
-            <p id="delivery-otp-hint" className="mt-2 text-xs text-gray-500">
-              Demo OTP: <span className="font-semibold tracking-widest text-emerald-700">1234</span>
-            </p>
           </div>
 
-          {result && (
+          {result?.success && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={`flex items-center gap-3 p-4 rounded-md border ${result.success ? "bg-emerald-50 border-emerald-200" : "bg-rose-50 border-rose-200"}`}
+              className="flex items-center gap-3 p-4 rounded-md border bg-emerald-50 border-emerald-200"
             >
-              {result.success ? (
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
-              ) : (
-                <XCircle className="w-5 h-5 text-rose-500" />
-              )}
-              <p className={`text-sm font-medium ${result.success ? "text-emerald-800" : "text-rose-800"}`}>
-                {result.message}
-              </p>
+              <CheckCircle className="w-5 h-5 text-emerald-500" />
+              <p className="text-sm font-medium text-emerald-800">{result.message}</p>
             </motion.div>
           )}
 
           <button
-            onClick={handleComplete}
-            disabled={verifying || result?.success || otp.length !== 4}
+            onClick={() => handleComplete()}
+            disabled={verifying || result?.success || !isComplete}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
           >
             {verifying ? (
@@ -132,7 +194,7 @@ export default function DeliveryVerification() {
             ) : (
               <>
                 <PackageCheck className="w-4 h-4" />
-                Verify OTP and complete delivery
+                Verify code and complete delivery
               </>
             )}
           </button>

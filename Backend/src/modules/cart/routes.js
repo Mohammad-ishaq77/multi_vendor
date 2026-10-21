@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { Router } from "express";
 import { z } from "zod";
 import { asyncHandler } from "../../common/middleware/asyncHandler.js";
@@ -49,6 +50,7 @@ router.post(
     }
     const created = await items.save(
       items.create({
+        id: randomUUID(),
         userId: req.user.id,
         productId: product.id,
         shopId: product.shopId,

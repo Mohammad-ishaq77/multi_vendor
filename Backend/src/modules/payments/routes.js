@@ -30,10 +30,11 @@ router.post(
   requireAuth,
   validate({
     body: z.object({
-      amount: z.coerce.number().positive(),
+      amount: z.coerce.number().positive().optional(),
       currency: z.string().default("INR"),
       receipt: z.string().optional(),
       orderId: z.string().uuid().optional(),
+      checkoutId: z.string().uuid().optional(),
       notes: z.record(z.string()).optional(),
     }),
   }),
@@ -42,7 +43,39 @@ router.post(
     if (!client) {
       return res.status(503).json({ ok: false, error: "Razorpay credentials are not configured on the server." });
     }
-    const { amount, currency = "INR", receipt, notes = {}, orderId } = req.body;
+    const { currency = "INR", receipt, notes = {}, orderId, checkoutId } = req.body;
+
+    // Idempotency: return an existing, still-created Razorpay order instead of
+    // creating a second one for the same checkout.
+    if (isDbReady()) {
+      try {
+        const payments = repo("Payment");
+        const existing = await payments.findOne({
+          where: checkoutId ? { checkoutId, userId: req.user.id } : { orderId: orderId || null, userId: req.user.id },
+        });
+        if (existing && existing.razorpayOrderId && existing.status !== "captured" && existing.status !== "failed") {
+          return res.json({
+            ok: true,
+            order: { id: existing.razorpayOrderId, amount: toPaise(existing.amount), currency: existing.currency, receipt: receipt || existing.razorpayOrderId, status: "created" },
+            keyId: config.razorpay.keyId,
+          });
+        }
+      } catch { /* best-effort */ }
+    }
+
+    // Trust server-side order data for the payable amount.
+    let amount = req.body.amount;
+    if (checkoutId && isDbReady()) {
+      try {
+        const owned = await repo("Order").find({ where: { checkoutId, customerId: req.user.id } });
+        if (owned.length) amount = owned.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+      } catch { /* fall back to supplied amount */ }
+    } else if (orderId && isDbReady()) {
+      try {
+        const owned = await repo("Order").findOne({ where: { id: orderId, customerId: req.user.id } });
+        if (owned) amount = Number(owned.totalAmount || amount);
+      } catch { /* fall back */ }
+    }
     const paise = toPaise(amount);
     if (!Number.isFinite(paise) || paise < 100) {
       return res.status(400).json({ ok: false, error: "A valid amount of at least ₹1 is required." });
@@ -60,9 +93,10 @@ router.post(
           await payments.save(
             payments.create({
               orderId: orderId || null,
+              checkoutId: checkoutId || null,
               userId: req.user.id,
               razorpayOrderId: order.id,
-              amount,
+              amount: Number(amount),
               currency: order.currency,
               status: "created",
               email: notes.customer_email,
@@ -111,12 +145,12 @@ router.post(
       return res.status(400).json({ ok: false, verified: false, error: "Payment signature mismatch." });
     }
     const client = getRazorpayClient();
-    let payment = null;
+    let paymentGateway = null;
     if (client) {
       try {
-        payment = await client.payments.fetch(razorpay_payment_id);
+        paymentGateway = await client.payments.fetch(razorpay_payment_id);
       } catch {
-        payment = null;
+        paymentGateway = null;
       }
     }
     if (isDbReady()) {
@@ -124,19 +158,27 @@ router.post(
         const payments = repo("Payment");
         const record = await payments.findOne({ where: { razorpayOrderId: razorpay_order_id } });
         if (record) {
+          if (record.userId && record.userId !== req.user.id) {
+            return res.status(403).json({ ok: false, verified: false, error: "Forbidden." });
+          }
+          // Already captured: do not reprocess or double update.
+          if (record.status === "captured") {
+            return res.json({ ok: true, verified: true, payment: paymentGateway ? { id: paymentGateway.id, status: paymentGateway.status } : { id: razorpay_payment_id, status: "captured" } });
+          }
           record.razorpayPaymentId = razorpay_payment_id;
           record.razorpaySignature = razorpay_signature;
           record.status = "captured";
-          record.method = payment?.method;
-          record.email = payment?.email || record.email;
-          record.contact = payment?.contact || record.contact;
+          record.method = paymentGateway?.method || record.method;
+          record.email = paymentGateway?.email || record.email;
+          record.contact = paymentGateway?.contact || record.contact;
           record.capturedAt = new Date();
           await payments.save(record);
-          if (record.orderId) {
-            await repo("Order").update(
-              { id: record.orderId },
-              { paymentStatus: "paid" }
-            );
+
+          // Mark every shop order under this checkout as paid.
+          if (record.checkoutId) {
+            await repo("Order").update({ checkoutId: record.checkoutId }, { paymentStatus: "paid" });
+          } else if (record.orderId) {
+            await repo("Order").update({ id: record.orderId }, { paymentStatus: "paid" });
           }
         }
       } catch { /* best-effort */ }
@@ -144,12 +186,12 @@ router.post(
     return res.json({
       ok: true,
       verified: true,
-      payment: payment
+      payment: paymentGateway
         ? {
-            id: payment.id, status: payment.status, method: payment.method,
-            amount: payment.amount, currency: payment.currency, email: payment.email,
-            contact: payment.contact, vpa: payment.vpa, wallet: payment.wallet,
-            bank: payment.bank, captured: payment.captured,
+            id: paymentGateway.id, status: paymentGateway.status, method: paymentGateway.method,
+            amount: paymentGateway.amount, currency: paymentGateway.currency, email: paymentGateway.email,
+            contact: paymentGateway.contact, vpa: paymentGateway.vpa, wallet: paymentGateway.wallet,
+            bank: paymentGateway.bank, captured: paymentGateway.captured,
           }
         : { id: razorpay_payment_id, status: "captured" },
     });

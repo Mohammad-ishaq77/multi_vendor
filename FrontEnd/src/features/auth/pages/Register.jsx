@@ -138,17 +138,21 @@ const Register = () => {
       return;
     }
 
-    showToast(`Welcome to ${APP_CONFIG.name}, ${result.user.name}`);
-    navigate(result.redirectTo, { replace: true });
+    // No session yet: the account is pending until the emailed OTP is verified.
+    showToast(`We sent a 6-digit code to ${result.email}. Verify to finish.`);
+    navigate("/verify-email", {
+      state: { email: result.email, role: result.role },
+      replace: true,
+    });
   };
 
   const inputErrorClass = (field) =>
     errors[field] ? "border-rose-300 bg-rose-50/70 focus:border-rose-400" : "";
 
   const nextLabel = useMemo(() => {
-    if (selectedRole === ROLES.SHOPKEEPER) return "Continue to shop setup";
-    if (selectedRole === ROLES.DELIVERY) return "Continue to partner setup";
-    return "Continue";
+    if (selectedRole === ROLES.SHOPKEEPER) return "Create shopkeeper account";
+    if (selectedRole === ROLES.DELIVERY) return "Create delivery account";
+    return "Create account";
   }, [selectedRole]);
 
   return (

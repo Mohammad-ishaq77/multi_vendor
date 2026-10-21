@@ -13,7 +13,7 @@ import { orderService } from "../services/orderService";
  * @param {string|null} addressId
  * @returns {{quote: object|null, loading: boolean, error: string}}
  */
-export const useDeliveryQuote = (shopId, addressId) => {
+export const useDeliveryQuote = (shopId, addressId, refreshKey = 0) => {
   const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,7 +46,7 @@ export const useDeliveryQuote = (shopId, addressId) => {
     return () => {
       active = false;
     };
-  }, [shopId, addressId]);
+  }, [shopId, addressId, refreshKey]);
 
   return { quote, loading, error };
 };

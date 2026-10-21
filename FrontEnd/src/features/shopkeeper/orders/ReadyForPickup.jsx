@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Truck, CheckCircle2, ArrowRight, QrCode } from "lucide-react";
+import { Truck, ArrowRight, QrCode } from "lucide-react";
 import ShopkeeperShell from "../components/ShopkeeperShell";
 import { useShopkeeper } from "../context/ShopkeeperContext";
 import { orderStatusConfig } from "../data/dummyOrders";
 
 const ReadyForPickup = () => {
   const navigate = useNavigate();
-  const { orders, updateOrderStatus } = useShopkeeper();
+  const { orders } = useShopkeeper();
   const readyOrders = orders.filter((o) => o.status === "Ready for Pickup");
 
   return (
@@ -15,7 +15,7 @@ const ReadyForPickup = () => {
       <div className="w-full">
         <div className="mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Ready for Pickup</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Orders packed and ready for delivery partner pickup</p>
+          <p className="text-xs text-gray-500 mt-0.5">Orders currently being handled by delivery partners</p>
         </div>
 
         {readyOrders.length === 0 ? (
@@ -24,7 +24,7 @@ const ReadyForPickup = () => {
               <Truck className="w-11 h-11 text-gray-300" />
             </motion.div>
             <h2 className="text-xl font-bold text-gray-900">No orders ready</h2>
-            <p className="text-sm text-gray-500 mt-2 max-w-xs text-center">Orders will appear here when you mark them as ready for pickup.</p>
+            <p className="text-sm text-gray-500 mt-2 max-w-xs text-center">Orders appear here after a delivery partner accepts an order being prepared.</p>
             <button onClick={() => navigate("/shopkeeper/orders")} className="mt-6 text-emerald-600 font-semibold text-sm hover:underline">View All Orders</button>
           </motion.div>
         ) : (
@@ -57,13 +57,7 @@ const ReadyForPickup = () => {
                     </div>
 
                     <div className="flex items-center gap-2 sm:pl-4">
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => updateOrderStatus(order.id, "Picked Up")}
-                        className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-md text-sm font-semibold shadow-sm shadow-emerald-600/20 hover:bg-emerald-700 transition-colors"
-                      >
-                        <CheckCircle2 className="w-4 h-4" /> Mark Picked Up
-                      </motion.button>
+                      <span className="text-sm font-medium text-gray-500">Delivery partner in progress</span>
                       <button
                         onClick={() => navigate(`/shopkeeper/orders/${order.id}`)}
                         className="p-2.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all border border-gray-200"

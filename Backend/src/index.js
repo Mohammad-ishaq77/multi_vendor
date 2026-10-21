@@ -4,7 +4,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import swaggerUi from "swagger-ui-express";
 import { createServer } from "http";
-import { config, isDevSecret } from "./config/env.js";
+import { config, isDevSecret, isMailConfigured } from "./config/env.js";
 import { initDb } from "./config/db.js";
 import { LOCAL_UPLOAD_DIR } from "./config/cloudinary.js";
 import { swaggerSpec } from "./config/swagger.js";
@@ -116,6 +116,9 @@ if (process.env.JEST_WORKER_ID === undefined && isMain) {
   await initDb();
   if (isDevSecret) {
     console.warn("WARNING: using default JWT secrets — set JWT_ACCESS_SECRET/JWT_REFRESH_SECRET in .env");
+  }
+  if (!isMailConfigured) {
+    console.warn("WARNING: MAIL_USER/MAIL_PASS not set — OTP and reset emails will fail to send.");
   }
   server.listen(config.port, () => {
     console.log(`NearMart API running on http://localhost:${config.port} (docs: /docs)`);

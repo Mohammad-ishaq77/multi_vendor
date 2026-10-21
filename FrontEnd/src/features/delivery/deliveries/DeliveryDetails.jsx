@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Clock, IndianRupee, Store, User, Phone, Package, MessageSquare, Loader2, RefreshCw, CheckCircle, PackageCheck } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, IndianRupee, Store, User, Phone, Package, MessageSquare, Loader2, RefreshCw, CheckCircle, PackageCheck, Mail } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import { useToast } from "../components/Toast";
 import { deliveryService } from "../../../services/orderService";
+import OtpInputs from "../../../components/auth/OtpInputs";
+import useCountdown from "../../../hooks/useCountdown";
+
+const RESEND_COOLDOWN_SECONDS = 30;
+const EMPTY_DIGITS = Array.from({ length: 6 }, () => "");
 
 export default function DeliveryDetails() {
   const { deliveryId: routeDeliveryId } = useParams();
@@ -13,12 +18,16 @@ export default function DeliveryDetails() {
     availableDeliveries,
     activeDelivery,
     acceptDelivery,
+    markReadyForPickup,
     verifyPickup,
+    startDelivery,
+    requestDeliveryOtp,
     completeDelivery,
     isOnline,
   } = useDeliveryPartner();
   const deliveryId = String(routeDeliveryId || activeDelivery?.id || "");
   const { addToast } = useToast();
+  const otpCountdown = useCountdown();
 
   const listedDelivery =
     availableDeliveries.find((item) => String(item.id) === deliveryId) ||
@@ -28,7 +37,11 @@ export default function DeliveryDetails() {
   const [loadError, setLoadError] = useState("");
   const [accepting, setAccepting] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [requestingOtp, setRequestingOtp] = useState(false);
+  const [otpDigits, setOtpDigits] = useState(EMPTY_DIGITS);
+  const [maskedEmail, setMaskedEmail] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const otpVerificationInProgress = useRef(false);
 
   const loadDelivery = useCallback(async () => {
     setLoading(true);
@@ -153,7 +166,7 @@ export default function DeliveryDetails() {
     try {
       const result = await acceptDelivery(delivery.id);
       if (result.success) {
-        setDelivery((current) => ({ ...current, status: "assigned" }));
+        setDelivery((current) => ({ ...current, status: "preparing" }));
         addToast(result.message, "success");
         navigate(`/delivery/details/${delivery.id}`);
       } else {
@@ -170,6 +183,19 @@ export default function DeliveryDetails() {
       const result = await verifyPickup();
       addToast(result.message, result.success ? "success" : "error");
       if (result.success) {
+        setDelivery((current) => ({ ...current, status: "picked_up" }));
+      }
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const handleStartDelivery = async () => {
+    setUpdatingStatus(true);
+    try {
+      const result = await startDelivery();
+      addToast(result.message, result.success ? "success" : "error");
+      if (result.success) {
         setDelivery((current) => ({ ...current, status: "out_for_delivery" }));
       }
     } finally {
@@ -177,31 +203,88 @@ export default function DeliveryDetails() {
     }
   };
 
-  const handleCompleteDelivery = async () => {
-    if (otp !== "1234") {
-      addToast("Enter the valid 4-digit demo OTP: 1234.", "error");
-      return;
-    }
-
+  const handleMarkReady = async () => {
     setUpdatingStatus(true);
     try {
-      const result = await completeDelivery();
+      const result = await markReadyForPickup();
       addToast(result.message, result.success ? "success" : "error");
       if (result.success) {
-        setDelivery((current) => ({ ...current, status: "delivered" }));
-        setOtp("");
+        setDelivery((current) => ({ ...current, status: "ready_for_pickup" }));
       }
     } finally {
       setUpdatingStatus(false);
     }
   };
 
-  const canAccept = isOnline && !activeDelivery && delivery.status === "ready_for_pickup";
+  const handleRequestOtp = async () => {
+    setOtpError("");
+    setRequestingOtp(true);
+    try {
+      const result = await requestDeliveryOtp(deliveryId);
+      addToast(result.message, result.success ? "success" : "error");
+      if (result.success) {
+        setMaskedEmail(result.data?.maskedEmail || "");
+        setOtpDigits(EMPTY_DIGITS);
+        otpCountdown.start(RESEND_COOLDOWN_SECONDS);
+      } else {
+        setOtpError(result.message);
+      }
+    } finally {
+      setRequestingOtp(false);
+    }
+  };
+
+  const handleCompleteDelivery = async (submittedCode = otpDigits.join("")) => {
+    if (otpVerificationInProgress.current) return;
+    const code = String(submittedCode).trim();
+    if (!/^\d{6}$/.test(code)) {
+      setOtpError("Enter the 6-digit code the customer received.");
+      return;
+    }
+
+    otpVerificationInProgress.current = true;
+    setUpdatingStatus(true);
+    setOtpError("");
+    try {
+      const result = await completeDelivery(code, deliveryId);
+      addToast(result.message, result.success ? "success" : "error");
+      if (result.success) {
+        setDelivery((current) => ({ ...current, status: "delivered" }));
+        setOtpDigits(EMPTY_DIGITS);
+        setMaskedEmail("");
+        navigate("/delivery/completed", {
+          state: {
+            delivery: {
+              id: delivery.id,
+              partnerEarning: earning,
+              distance: delivery.distance,
+              estimatedTime,
+            },
+          },
+        });
+      } else {
+        setOtpError(result.message);
+        setOtpDigits(EMPTY_DIGITS);
+      }
+    } finally {
+      otpVerificationInProgress.current = false;
+      setUpdatingStatus(false);
+    }
+  };
+
+  const canAccept = isOnline && !activeDelivery && ["preparing", "ready_for_pickup"].includes(delivery.status);
   const isAssignedDelivery = String(activeDelivery?.id) === deliveryId;
   const assignmentStatus = activeDelivery?.assignment?.status;
-  const canConfirmPickup = isAssignedDelivery && assignmentStatus === "assigned";
-  const canConfirmDelivery =
-    isAssignedDelivery && ["picked_up", "out_for_delivery"].includes(assignmentStatus);
+  const canMarkReady =
+    isAssignedDelivery && assignmentStatus === "assigned" && delivery.status === "preparing";
+  const canConfirmPickup =
+    isAssignedDelivery && assignmentStatus === "assigned" && delivery.status === "ready_for_pickup";
+  const canStartDelivery =
+    isAssignedDelivery && ["picked_up", "out_for_delivery"].includes(assignmentStatus) && delivery.status === "picked_up";
+  // The server refuses "delivered" unless the order is out for delivery and the
+  // customer's emailed OTP is supplied, so the UI gates on the same state.
+  const canConfirmDelivery = isAssignedDelivery && delivery.status === "out_for_delivery";
+  const isCodeComplete = /^\d{6}$/.test(otpDigits.join(""));
   const earning = Number(delivery.partnerEarning ?? delivery.assignment?.partnerEarning ?? 0);
   const estimatedTime = delivery.estimatedTime || "25-30 mins";
 
@@ -312,9 +395,18 @@ export default function DeliveryDetails() {
             Showing saved delivery information; latest details could not be refreshed: {loadError}
           </p>
         )}
-        {(canConfirmPickup || canConfirmDelivery) && (
+        {(canMarkReady || canConfirmPickup || canStartDelivery || canConfirmDelivery) && (
           <div className="border-t border-gray-100 p-5">
-            {canConfirmPickup ? (
+            {canMarkReady ? (
+              <button
+                onClick={handleMarkReady}
+                disabled={updatingStatus}
+                className="flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60"
+              >
+                {updatingStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackageCheck className="h-4 w-4" />}
+                {updatingStatus ? "Updating..." : "Mark Ready for Pickup"}
+              </button>
+            ) : canConfirmPickup ? (
               <button
                 onClick={handlePickup}
                 disabled={updatingStatus}
@@ -323,33 +415,65 @@ export default function DeliveryDetails() {
                 {updatingStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackageCheck className="h-4 w-4" />}
                 {updatingStatus ? "Updating..." : "Mark as Picked Up"}
               </button>
+            ) : canStartDelivery ? (
+              <button
+                onClick={handleStartDelivery}
+                disabled={updatingStatus}
+                className="flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60"
+              >
+                {updatingStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <PackageCheck className="h-4 w-4" />}
+                {updatingStatus ? "Updating..." : "Start Delivery"}
+              </button>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
                   <CheckCircle className="h-4 w-4" />
-                  Picked up. Enter the customer&apos;s demo OTP to confirm delivery.
+                  Out for delivery. Send the confirmation code to the email on the customer's NearMart account.
                 </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-md border border-gray-100 bg-white px-3 py-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Mail className="h-4 w-4 text-emerald-600" />
+                      {maskedEmail ? (
+                        <span>
+                          Code sent to <span className="font-semibold">{maskedEmail}</span>
+                        </span>
+                      ) : (
+                        <span>Customer's registered account email</span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRequestOtp}
+                      disabled={requestingOtp || updatingStatus || otpCountdown.isRunning}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {requestingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                      {requestingOtp ? "Sending..." : otpCountdown.isRunning ? `Resend in ${otpCountdown.secondsLeft}s` : maskedEmail ? "Resend code" : "Send code"}
+                    </button>
+                </div>
+
                 <label htmlFor="details-delivery-otp" className="block text-xs font-semibold uppercase tracking-wide text-gray-700">
-                  Delivery OTP
+                  Delivery code
                 </label>
-                <input
-                  id="details-delivery-otp"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  maxLength={4}
-                  value={otp}
-                  onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 4))}
-                  placeholder="Demo OTP: 1234"
-                  className="w-full rounded-md border border-gray-200 px-4 py-3 text-center text-xl font-semibold tracking-[0.5em] text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                <OtpInputs
+                  value={otpDigits}
+                  onChange={(next) => {
+                    setOtpDigits(next);
+                    if (otpError) setOtpError("");
+                  }}
+                  error={otpError}
+                  disabled={updatingStatus}
+                  autoFocus
+                  onComplete={(submittedCode) => handleCompleteDelivery(submittedCode)}
                 />
                 <button
-                  onClick={handleCompleteDelivery}
-                  disabled={updatingStatus || otp.length !== 4}
+                  onClick={() => handleCompleteDelivery()}
+                  disabled={updatingStatus || !isCodeComplete}
                   className="flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60"
                 >
                   {updatingStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
-                  {updatingStatus ? "Verifying..." : "Verify OTP and Mark Delivered"}
+                  {updatingStatus ? "Verifying..." : "Verify code and Mark Delivered"}
                 </button>
               </div>
             )}

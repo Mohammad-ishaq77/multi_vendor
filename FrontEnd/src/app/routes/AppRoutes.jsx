@@ -16,6 +16,8 @@ const MarketplaceCategoryPage = lazy(() => import("../../pages/marketplace/Marke
 
 const Login = lazy(() => import("../../features/auth/pages/Login"));
 const Register = lazy(() => import("../../features/auth/pages/Register"));
+const EmailVerification = lazy(() => import("../../features/auth/pages/EmailVerification"));
+const ForgotPassword = lazy(() => import("../../features/auth/pages/ForgotPassword"));
 const AdminLogin = lazy(() => import("../../features/auth/pages/AdminLogin"));
 
 const CustomerDashboard = lazy(() => import("../../features/customer/pages/Dashboard"));
@@ -74,6 +76,9 @@ const AppRoutes = () => {
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          {/* Unauthenticated OTP + password-reset flows. */}
+          <Route path="/verify-email" element={<EmailVerification />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
 
         {/* Administrator portal: public sign-in screen for admin accounts only. */}

@@ -35,6 +35,17 @@ const Login = () => {
     const result = await login({ email, password, role, remember });
     setIsLoading(false);
 
+    // An unverified account is not an auth failure — send the user to finish
+    // verifying instead of leaving them stuck at the sign-in form.
+    if (result.needsVerification) {
+      showToast(result.error, "error");
+      navigate("/verify-email", {
+        state: { email: result.email || email.trim() },
+        replace: true,
+      });
+      return;
+    }
+
     if (!result.ok) {
       setError(result.error);
       showToast(result.error, "error");
@@ -143,6 +154,12 @@ const Login = () => {
                 />
                 Keep me signed in
               </label>
+              <Link
+                to="/forgot-password"
+                className="text-sm font-semibold text-(--color-primary) hover:underline"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <AnimatePresence>

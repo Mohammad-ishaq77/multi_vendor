@@ -12,14 +12,11 @@ import { toPage as paged } from "../utils/pagination";
 export const orderService = {
   /**
    * POST /api/orders
-   * @param {{shopId:string, addressId?:string, items:{productId:string,quantity:number}[],
+   * @param {{shopId?:string, addressId?:string, items:{productId:string,quantity:number}[],
    *          paymentMethod?:string, notes?:string, offerCode?:string}} payload
    * @returns the persisted order, including server-computed totals
    */
   async create(payload) {
-    if (!payload?.shopId) {
-      throw new ApiError("A shop is required to place an order.", { status: 400 });
-    }
     if (!Array.isArray(payload.items) || payload.items.length === 0) {
       throw new ApiError("Your cart is empty.", { status: 400 });
     }
@@ -55,8 +52,8 @@ export const orderService = {
   },
 
   /** POST /api/orders/:id/cancel */
-  async cancel(id, reason) {
-    return apiClient.post(`/orders/${encodeURIComponent(id)}/cancel`, reason ? { reason } : {});
+  async cancel(id, { reason, details = "" }) {
+    return apiClient.post(`/orders/${encodeURIComponent(id)}/cancel`, { reason, details });
   },
 
   /** PATCH /api/orders/:id/status — shopkeeper/admin flow. */
@@ -83,12 +80,13 @@ export const paymentApi = {
   },
 
   /** POST /api/payments/create-order */
-  async createOrder({ amount, orderId, notes = {} }) {
+  async createOrder({ amount, orderId, checkoutId, notes = {} }) {
     return apiClient.post("/payments/create-order", {
       amount,
       currency: "INR",
       receipt: orderId,
       orderId,
+      checkoutId,
       notes,
     });
   },
@@ -193,9 +191,21 @@ export const deliveryService = {
   /** POST /api/delivery/accept/:orderId */
   accept: (orderId) => apiClient.post(`/delivery/accept/${encodeURIComponent(orderId)}`),
 
-  /** PATCH /api/delivery/orders/:id/status */
-  updateStatus: (orderId, status) =>
-    apiClient.patch(`/delivery/orders/${encodeURIComponent(orderId)}/status`, { status }),
+  /**
+   * POST /api/delivery/orders/:id/request-otp — asks the server to email the
+   * customer a 6-digit confirmation code. The code is bound to this order and
+   * never appears in the app.
+   */
+  requestOtp: (orderId) =>
+    apiClient.post(`/delivery/orders/${encodeURIComponent(orderId)}/request-otp`),
+
+  /**
+   * PATCH /api/delivery/orders/:id/status — `extra.otp` is required when
+   * marking the order `delivered`; the server verifies it against the emailed
+   * code before the assignment can be closed.
+   */
+  updateStatus: (orderId, status, extra = {}) =>
+    apiClient.patch(`/delivery/orders/${encodeURIComponent(orderId)}/status`, { status, ...extra }),
 
   /** GET /api/delivery/history */
   history: (params = {}) => apiClient.get("/delivery/history", { query: params }).then(paged),
@@ -248,6 +258,10 @@ export const adminService = {
   /** PATCH /api/orders/:id/status — admin moderation of an order. */
   updateOrderStatus: (id, status) =>
     apiClient.patch(`/orders/${encodeURIComponent(id)}/status`, { status }),
+
+  /** POST /api/admin/orders/:id/complete — admin completion override for deliveries. */
+  completeDelivery: (id) =>
+    apiClient.post(`/admin/orders/${encodeURIComponent(id)}/complete`),
 
   /** GET /api/admin/deliveries */
   deliveries: (params = {}) => apiClient.get("/admin/deliveries", { query: params }).then(paged),

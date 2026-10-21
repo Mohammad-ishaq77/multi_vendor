@@ -11,13 +11,14 @@ import {
 import { useAdmin } from "../context/AdminContext";
 import PageTransition from "../components/PageTransition";
 
-const statusOptions = ["All", "pending", "confirmed", "out_for_delivery", "delivered", "cancelled"];
+const statusOptions = ["All", "pending", "confirmed", "out_for_delivery", "delivered", "completed", "cancelled"];
 const statusLabels = {
   All: "All",
   pending: "Pending",
   confirmed: "Confirmed",
   out_for_delivery: "Out for Delivery",
   delivered: "Delivered",
+  completed: "Completed",
   cancelled: "Cancelled",
 };
 const statusBadge = {
@@ -25,6 +26,7 @@ const statusBadge = {
   confirmed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   out_for_delivery: "bg-teal-50 text-teal-700 border border-teal-200",
   delivered: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  completed: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   cancelled: "bg-rose-50 text-rose-700 border border-rose-200",
 };
 
@@ -33,6 +35,7 @@ const statusDot = {
   confirmed: "bg-emerald-500",
   out_for_delivery: "bg-teal-500",
   delivered: "bg-emerald-500",
+  completed: "bg-emerald-500",
   cancelled: "bg-rose-500",
 };
 
@@ -152,7 +155,7 @@ export default function Orders() {
             { label: "Pending", value: orders.filter((o) => o.status === "pending").length, color: "bg-amber-50 text-amber-700" },
             { label: "Confirmed", value: orders.filter((o) => o.status === "confirmed").length, color: "bg-blue-50 text-blue-700" },
             { label: "Out for Delivery", value: orders.filter((o) => o.status === "out_for_delivery").length, color: "bg-indigo-50 text-indigo-700" },
-            { label: "Delivered", value: orders.filter((o) => o.status === "delivered").length, color: "bg-emerald-50 text-emerald-700" },
+            { label: "Delivered", value: orders.filter((o) => ["delivered", "completed"].includes(o.status)).length, color: "bg-emerald-50 text-emerald-700" },
           ].map((stat) => (
             <div key={stat.label} className={`p-4 rounded-md ${stat.color}`}>
               <p className="text-xs font-medium opacity-70">{stat.label}</p>

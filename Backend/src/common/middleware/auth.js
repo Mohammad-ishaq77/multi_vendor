@@ -16,18 +16,23 @@ export function invalidateActiveCache(userId) {
   else activeCache.clear();
 }
 
-async function isAccountActive(userId) {
+async function getAccountState(userId) {
   const cached = activeCache.get(userId);
-  if (cached && Date.now() - cached.checkedAt < ACTIVE_TTL_MS) return cached.isActive;
+  if (cached && Date.now() - cached.checkedAt < ACTIVE_TTL_MS) return cached;
   try {
     const user = await repo("User").findOne({ where: { id: userId } });
-    if (!user) return false;
+    if (!user) return { isActive: false, emailVerified: false, checkedAt: Date.now() };
     if (activeCache.size >= MAX_CACHE) activeCache.clear();
-    activeCache.set(userId, { isActive: Boolean(user.isActive), checkedAt: Date.now() });
-    return Boolean(user.isActive);
+    const state = {
+      isActive: Boolean(user.isActive),
+      emailVerified: Boolean(user.emailVerified),
+      checkedAt: Date.now(),
+    };
+    activeCache.set(userId, state);
+    return state;
   } catch {
     // Never lock everyone out because of a transient database problem.
-    return true;
+    return { isActive: true, emailVerified: true, checkedAt: Date.now() };
   }
 }
 
@@ -45,8 +50,18 @@ export async function requireAuth(req, res, next) {
     return res.status(401).json({ ok: false, error: "Invalid or expired token." });
   }
   try {
-    if (!(await isAccountActive(payload.sub))) {
+    const account = await getAccountState(payload.sub);
+    if (!account.isActive) {
       return res.status(403).json({ ok: false, error: "Account is disabled." });
+    }
+    // Email ownership must be proven server-side; a token is never issued to an
+    // unverified account, and this guards against any stale token.
+    if (!account.emailVerified) {
+      return res.status(403).json({
+        ok: false,
+        error: "Please verify your email address to continue.",
+        code: "EMAIL_NOT_VERIFIED",
+      });
     }
   } catch (err) {
     return next(err);

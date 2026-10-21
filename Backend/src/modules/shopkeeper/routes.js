@@ -7,9 +7,9 @@ import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { AppDataSource, repo } from "../../config/db.js";
 import { ORDER_STATUSES } from "../../entities/Order.js";
-import { canTransition } from "../orders/status.js";
+import { canShopkeeperTransition, canTransition } from "../orders/status.js";
 import { releaseOrderStock } from "../orders/stock.js";
-import { emitToUser } from "../../realtime/socket.js";
+import { emitToRole, emitToUser } from "../../realtime/socket.js";
 
 const router = Router();
 router.use(requireAuth, requireRole("shopkeeper", "admin"));
@@ -260,10 +260,16 @@ router.patch(
     const orders = repo("Order");
     const order = await orders.findOne({ where: { id: req.params.id, shopId: shop.id } });
     if (!order) return res.status(404).json({ ok: false, error: "Order not found." });
-    if (!canTransition(order.status, req.body.status)) {
+    const allowed = req.user.role === "admin"
+      ? canTransition(order.status, req.body.status)
+      : canShopkeeperTransition(order.status, req.body.status);
+    if (!allowed) {
       return res.status(400).json({ ok: false, error: `Cannot move ${order.status} to ${req.body.status}.` });
     }
     order.status = req.body.status;
+    if (req.body.status === "completed") {
+      order.deliveredAt = order.deliveredAt || new Date();
+    }
     if (req.body.status === "cancelled") {
       order.cancelledAt = new Date();
       order.cancelReason = "Cancelled by shop";
@@ -271,6 +277,9 @@ router.patch(
     }
     const saved = await orders.save(order);
     emitToUser(order.customerId, "order:status_update", { orderId: order.id, status: order.status });
+    if (order.status === "preparing" || order.status === "ready_for_pickup") {
+      emitToRole("delivery", "delivery:request", { orderId: order.id, shopId: order.shopId });
+    }
     res.json({ ok: true, data: saved });
   })
 );

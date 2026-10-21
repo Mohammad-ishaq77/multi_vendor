@@ -83,11 +83,33 @@ export const AuthProvider = ({ children }) => {
   const register = useCallback(
     async (payload) => {
       const result = await authService.register(payload);
+      // A pending registration deliberately has no user: the account only
+      // becomes a session after the email OTP is verified.
+      if (result.ok && result.user) applyUser(result.user);
+      return result;
+    },
+    [applyUser]
+  );
+
+  /**
+   * Confirm the emailed registration OTP and adopt the returned session.
+   * The context is the only place React auth state is written, so this lives
+   * next to login/register instead of the page calling the service directly.
+   */
+  const verifyEmail = useCallback(
+    async (payload) => {
+      const result = await authService.verifyEmail(payload);
       if (result.ok) applyUser(result.user);
       return result;
     },
     [applyUser]
   );
+
+  /** Re-send the registration OTP. Pure pass-through — no auth state changes. */
+  const resendVerification = useCallback(async (payload) => {
+    const result = await authService.resendVerification(payload);
+    return result;
+  }, []);
 
   const logout = useCallback(async () => {
     await authService.logout();
@@ -114,11 +136,13 @@ export const AuthProvider = ({ children }) => {
       status,
       login,
       register,
+      verifyEmail,
+      resendVerification,
       logout,
       reloadUser,
       dashboardPath: user ? getDashboardPath(user.activeRole || user.role) : "/",
     }),
-    [user, status, login, register, logout, reloadUser]
+    [user, status, login, register, verifyEmail, resendVerification, logout, reloadUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
