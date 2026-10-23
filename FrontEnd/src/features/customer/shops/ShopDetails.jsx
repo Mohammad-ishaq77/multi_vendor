@@ -71,9 +71,9 @@ const ShopDetails = () => {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-4">
-                  <div>
+                  <div className="min-w-0">
                     {shop.category && <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">{shop.category}</p>}
-                    <h1 className="mt-1 text-2xl font-bold text-gray-900">{shop.name}</h1>
+                    <h1 className="mt-1 break-words text-2xl font-bold text-gray-900">{shop.name}</h1>
                   </div>
                   <button
                     type="button"
@@ -97,9 +97,9 @@ const ShopDetails = () => {
             </div>
 
             <div className="mt-8">
-              <div className="mb-4 flex items-end justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Products from {shop.name}</h2>
-                <span className="text-sm text-gray-500">{products.length} products</span>
+              <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+                <h2 className="min-w-0 text-xl font-bold text-gray-900">Products from {shop.name}</h2>
+                <span className="shrink-0 text-sm text-gray-500">{products.length} products</span>
               </div>
               {products.length ? (
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">

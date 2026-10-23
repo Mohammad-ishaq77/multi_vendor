@@ -213,7 +213,7 @@ const OrderDetails = () => {
                     Qty: {item.quantity}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="shrink-0 whitespace-nowrap text-right">
                   <p className="text-sm font-bold text-[#0F172A]">
                     ₹{item.price * item.quantity}
                   </p>

@@ -775,15 +775,15 @@ const Checkout = () => {
           </div>
         )}
 
-        <form onSubmit={handlePlaceOrder} className="grid lg:grid-cols-3 gap-8">
+        <form onSubmit={handlePlaceOrder} className="grid xl:grid-cols-3 gap-8">
           {/* LEFT SIDE */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-6">
             {/* Delivery Address */}
             <motion.section
               variants={itemVariants}
               className="bg-white border border-gray-100 rounded-lg p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="flex items-center justify-between gap-3 mb-6">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-md bg-[#e9f5ef] flex items-center justify-center text-[#155c43]">
                   <MapPin className="w-5 h-5" />
@@ -797,7 +797,7 @@ const Checkout = () => {
                   <button
                     type="button"
                     onClick={startNewAddress}
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#155c43] hover:underline"
+                    className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-[#155c43] hover:underline"
                   >
                     <Plus className="w-4 h-4" /> New address
                   </button>
@@ -828,11 +828,11 @@ const Checkout = () => {
                         className="min-w-0 flex-1 text-left"
                       >
                         <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-semibold text-[#14261f]">{saved.fullName}</p>
-                            <p className="mt-1 text-sm text-gray-500">{saved.line1}</p>
-                            {saved.line2 && <p className="text-sm text-gray-500">{saved.line2}</p>}
-                            <p className="text-sm text-gray-500">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-[#14261f] break-words">{saved.fullName}</p>
+                            <p className="mt-1 break-words text-sm text-gray-500">{saved.line1}</p>
+                            {saved.line2 && <p className="break-words text-sm text-gray-500">{saved.line2}</p>}
+                            <p className="break-words text-sm text-gray-500">
                               {saved.city}, {saved.state} - {saved.pincode}
                             </p>
                             <p className="mt-2 text-xs text-gray-400">{saved.phone}</p>
@@ -842,7 +842,7 @@ const Checkout = () => {
                               </span>
                             )}
                           </div>
-                          <span className={`text-xs font-semibold ${selectedAddressIndex === index ? "text-[#155c43]" : "text-gray-400"}`}>
+                          <span className={`shrink-0 text-xs font-semibold ${selectedAddressIndex === index ? "text-[#155c43]" : "text-gray-400"}`}>
                             {selectedAddressIndex === index ? "Selected" : "Use this"}
                           </span>
                         </div>
@@ -851,7 +851,7 @@ const Checkout = () => {
                         type="button"
                         onClick={() => editSavedAddress(index)}
                         aria-label={`Edit address for ${saved.fullName}`}
-                        className="shrink-0 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#155c43] transition hover:border-[#155c43] hover:bg-[#f0f8f3]"
+                        className="shrink-0 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-[#155c43] transition hover:border-[#155c43] hover:bg-[#f0f8f3]"
                       >
                         Edit
                       </button>
@@ -990,7 +990,7 @@ const Checkout = () => {
                     </p>
                   )}
                 </div>
-                <div className="md:col-span-2 flex items-center justify-between gap-3 pt-1">
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-1 md:col-span-2">
                   <span className="text-xs text-gray-400">
                     {editingSavedAddressId ? "Changes will update this saved address." : "This address will be saved to your Addresses."}
                   </span>
@@ -1007,7 +1007,7 @@ const Checkout = () => {
                             selectSavedAddress(defaultIndex >= 0 ? defaultIndex : 0);
                           }
                         }}
-                        className="text-sm font-semibold text-gray-500 hover:text-gray-700"
+                        className="py-1 text-sm font-semibold text-gray-500 hover:text-gray-700"
                       >
                         Cancel
                       </button>
@@ -1215,7 +1215,7 @@ const Checkout = () => {
                         <h3 className="font-semibold text-sm text-[#14261f] truncate">{item.name}</h3>
                         <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
                       </div>
-                      <p className="font-bold text-[#155c43] text-sm">₹{item.price * item.quantity}</p>
+                      <p className="shrink-0 whitespace-nowrap font-bold text-[#155c43] text-sm">₹{item.price * item.quantity}</p>
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -1226,7 +1226,7 @@ const Checkout = () => {
           {/* RIGHT SIDE - SUMMARY */}
           <motion.aside
             variants={slideInRight}
-            className="lg:sticky lg:top-6 h-fit"
+            className="xl:sticky xl:top-6 h-fit"
           >
             <div className="bg-white border border-gray-100 rounded-lg p-6 md:p-8 shadow-lg shadow-[#155c43]/5">
               <h2 className="text-lg font-bold text-[#14261f] mb-6 flex items-center gap-2">

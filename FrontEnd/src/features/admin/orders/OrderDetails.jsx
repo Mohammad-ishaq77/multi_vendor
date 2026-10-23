@@ -157,7 +157,7 @@ export default function OrderDetails() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col sm:flex-row sm:items-center gap-4"
+          className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap"
         >
           <button
             onClick={() => navigate("/admin/orders")}
@@ -224,14 +224,14 @@ export default function OrderDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-              className="bg-white rounded-lg border border-gray-100 shadow-sm p-5"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-3 sm:p-5"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
-                  <p className="mt-2 text-xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
+                  <p className="mt-2 text-lg sm:text-xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
                 </div>
-                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
                   <stat.icon className="w-4 h-4 text-white" />
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function OrderDetails() {
                 </h3>
               </div>
               <div className="overflow-x-auto mt-3">
-                <table className="w-full text-sm">
+                <table className="w-full min-w-[600px] text-sm">
                   <thead>
                     <tr className="border-b border-gray-100">
                       <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
@@ -379,44 +379,44 @@ export default function OrderDetails() {
                   Payment Breakdown
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-x-3 gap-y-1 flex-wrap p-3 rounded-md bg-gray-50">
+                    <div className="flex items-center gap-2 min-w-0">
                       <Package size={14} className="text-gray-400" />
-                      <span className="text-sm text-gray-600">Product Amount → Shopkeeper</span>
+                      <span className="text-sm text-gray-600 min-w-0 break-words">Product Amount → Shopkeeper</span>
                     </div>
                     <span className="text-sm font-bold text-[#155c43]">{formatCurrency(revenue.productAmount)}</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-x-3 gap-y-1 flex-wrap p-3 rounded-md bg-gray-50">
+                    <div className="flex items-center gap-2 min-w-0">
                       <Truck size={14} className="text-gray-400" />
-                      <span className="text-sm text-gray-600">Delivery Fee</span>
+                      <span className="text-sm text-gray-600 min-w-0 break-words">Delivery Fee</span>
                     </div>
                     <span className="text-sm font-bold" style={{ color: "#14261f" }}>{formatCurrency(revenue.deliveryFee)}</span>
                   </div>
 
-                  <div className="ml-6 flex items-center justify-between p-2.5 rounded-lg bg-blue-50/50">
-                    <span className="text-xs text-blue-600">→ 80% to Delivery Partner</span>
+                  <div className="ml-6 flex items-center justify-between gap-x-3 gap-y-1 flex-wrap p-2.5 rounded-lg bg-blue-50/50">
+                    <span className="text-xs text-blue-600 min-w-0 break-words">→ 80% to Delivery Partner</span>
                     <span className="text-xs font-bold text-blue-700">{formatCurrency(revenue.partnerShare)}</span>
                   </div>
-                  <div className="ml-6 flex items-center justify-between p-2.5 rounded-lg bg-emerald-50/50">
-                    <span className="text-xs text-emerald-600">→ 20% to NearMart</span>
+                  <div className="ml-6 flex items-center justify-between gap-x-3 gap-y-1 flex-wrap p-2.5 rounded-lg bg-emerald-50/50">
+                    <span className="text-xs text-emerald-600 min-w-0 break-words">→ 20% to NearMart</span>
                     <span className="text-xs font-bold text-emerald-700">{formatCurrency(revenue.platformShare)}</span>
                   </div>
 
                   {revenue.platformFee > 0 && (
-                    <div className="flex items-center justify-between p-3 rounded-md bg-gray-50">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-x-3 gap-y-1 flex-wrap p-3 rounded-md bg-gray-50">
+                      <div className="flex items-center gap-2 min-w-0">
                         <CreditCard size={14} className="text-gray-400" />
-                        <span className="text-sm text-gray-600">Platform Fee</span>
+                        <span className="text-sm text-gray-600 min-w-0 break-words">Platform Fee</span>
                       </div>
                       <span className="text-sm font-bold" style={{ color: "#14261f" }}>{formatCurrency(revenue.platformFee)}</span>
                     </div>
                   )}
 
                   <div className="border-t border-gray-200 pt-3 mt-3">
-                    <div className="flex items-center justify-between p-3 rounded-md bg-[#155c43]/5">
-                      <span className="text-sm font-bold" style={{ color: "#14261f" }}>Total Customer Payment</span>
+                    <div className="flex items-center justify-between gap-x-3 gap-y-1 flex-wrap p-3 rounded-md bg-[#155c43]/5">
+                      <span className="text-sm font-bold min-w-0 break-words" style={{ color: "#14261f" }}>Total Customer Payment</span>
                       <span className="text-lg font-bold text-[#155c43]">{formatCurrency(revenue.totalCustomerPayment)}</span>
                     </div>
                   </div>
@@ -716,7 +716,7 @@ export default function OrderDetails() {
                   <span className="font-semibold">{order.id}</span> to{" "}
                   <span className="font-semibold">{statusConfig[confirmStatus]?.label}</span>?
                 </p>
-                <div className="flex gap-3 justify-end">
+                <div className="flex gap-3 justify-end flex-wrap">
                   <button
                     onClick={() => setConfirmStatus(null)}
                     className="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
@@ -754,7 +754,7 @@ export default function OrderDetails() {
                 <p className="mb-6 mt-3 text-sm text-gray-600">
                   This admin action will complete order <span className="font-semibold">{order.id}</span> without a customer OTP and close its delivery assignment. Use it only after confirming the customer received the order.
                 </p>
-                <div className="flex justify-end gap-3">
+                <div className="flex justify-end gap-3 flex-wrap">
                   <button
                     type="button"
                     disabled={completingDelivery}

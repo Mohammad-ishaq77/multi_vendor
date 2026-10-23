@@ -364,7 +364,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="overflow-x-auto mt-2 sm:mt-3">
-              <table className="w-full text-xs sm:text-sm">
+              <table className="w-full min-w-[560px] text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="text-left px-3 py-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wider sm:px-5 sm:py-3 sm:text-xs">

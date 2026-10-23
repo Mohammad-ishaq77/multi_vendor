@@ -301,7 +301,7 @@ const LocationPicker = ({
             if (event.key === "Escape") setSearchOpen(false);
           }}
           placeholder="Search for a place, street or landmark…"
-          className="w-full rounded-md border border-gray-200 bg-gray-50 py-2.5 pl-9 pr-24 text-sm outline-none transition-all focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/10"
+          className="w-full rounded-md border border-gray-200 bg-gray-50 py-2.5 pl-9 pr-24 text-sm outline-none transition-all focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/10 sm:pr-32"
         />
         <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
           {searching && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}

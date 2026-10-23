@@ -40,6 +40,7 @@ export default function DeliveryDetails() {
   const [requestingOtp, setRequestingOtp] = useState(false);
   const [otpDigits, setOtpDigits] = useState(EMPTY_DIGITS);
   const [maskedEmail, setMaskedEmail] = useState("");
+  const [demoOtp, setDemoOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const otpVerificationInProgress = useRef(false);
 
@@ -224,6 +225,7 @@ export default function DeliveryDetails() {
       addToast(result.message, result.success ? "success" : "error");
       if (result.success) {
         setMaskedEmail(result.data?.maskedEmail || "");
+        setDemoOtp(result.data?.demoOtp || "");
         setOtpDigits(EMPTY_DIGITS);
         otpCountdown.start(RESEND_COOLDOWN_SECONDS);
       } else {
@@ -282,7 +284,7 @@ export default function DeliveryDetails() {
   const canStartDelivery =
     isAssignedDelivery && ["picked_up", "out_for_delivery"].includes(assignmentStatus) && delivery.status === "picked_up";
   // The server refuses "delivered" unless the order is out for delivery and the
-  // customer's emailed OTP is supplied, so the UI gates on the same state.
+  // customer's OTP is supplied, so the UI gates on the same state.
   const canConfirmDelivery = isAssignedDelivery && delivery.status === "out_for_delivery";
   const isCodeComplete = /^\d{6}$/.test(otpDigits.join(""));
   const earning = Number(delivery.partnerEarning ?? delivery.assignment?.partnerEarning ?? 0);
@@ -428,13 +430,21 @@ export default function DeliveryDetails() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
                   <CheckCircle className="h-4 w-4" />
-                  Out for delivery. Send the confirmation code to the email on the customer's NearMart account.
+                  Out for delivery. {demoOtp ? "Use the demo confirmation code below." : "Send the confirmation code to the email on the customer's NearMart account."}
                 </div>
+
+                {demoOtp && (
+                  <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
+                    Demo delivery code: <span className="font-bold tracking-wider">{demoOtp}</span>
+                  </p>
+                )}
 
                 <div className="flex items-center justify-between gap-3 rounded-md border border-gray-100 bg-white px-3 py-2">
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Mail className="h-4 w-4 text-emerald-600" />
-                      {maskedEmail ? (
+                      {demoOtp ? (
+                        <span>Demo code ready</span>
+                      ) : maskedEmail ? (
                         <span>
                           Code sent to <span className="font-semibold">{maskedEmail}</span>
                         </span>

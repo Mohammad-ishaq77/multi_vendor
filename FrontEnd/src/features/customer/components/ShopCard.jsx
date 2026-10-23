@@ -91,7 +91,7 @@ const ShopCard = ({ shop, onClick }) => {
             event.stopPropagation();
             onClick?.(event);
           }}
-          className="w-full mt-2 bg-[#155c43] text-white py-1.5 rounded-lg font-semibold text-[10px] hover:bg-[#104b36] transition-colors shadow-md shadow-[#155c43]/15 flex items-center justify-center gap-1 group/btn sm:mt-4 sm:py-2.5 sm:rounded-md sm:text-sm sm:gap-2"
+          className="w-full mt-2 bg-[#155c43] text-white py-2 rounded-lg font-semibold text-[10px] hover:bg-[#104b36] transition-colors shadow-md shadow-[#155c43]/15 flex items-center justify-center gap-1 group/btn sm:mt-4 sm:py-2.5 sm:rounded-md sm:text-sm sm:gap-2"
         >
           View Shop
           <motion.span

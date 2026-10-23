@@ -479,10 +479,7 @@ export function DeliveryPartnerProvider({ children }) {
   }, [activeDelivery, runDeliveryAction]);
 
   /**
-   * Ask the server to email the customer a delivery confirmation OTP.
-   *
-   * Nothing is generated locally: the code lives on the server, is scoped to
-   * this order and is only revealed to the customer.
+   * Ask the server for a delivery confirmation OTP scoped to this order.
    */
   const requestDeliveryOtp = useCallback(async (orderId = activeDelivery?.id) => {
     if (!orderId) return { success: false, message: "No delivery selected." };
@@ -491,7 +488,9 @@ export function DeliveryPartnerProvider({ children }) {
       const data = await deliveryService.requestOtp(orderId);
       return {
         success: true,
-        message: data?.maskedEmail
+        message: data?.demoOtp
+          ? `Demo delivery code: ${data.demoOtp}`
+          : data?.maskedEmail
           ? `A delivery code was sent to ${data.maskedEmail}.`
           : "A delivery code was sent to the customer.",
         data,

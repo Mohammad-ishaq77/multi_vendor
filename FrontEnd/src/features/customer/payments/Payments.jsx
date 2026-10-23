@@ -146,7 +146,7 @@ const Payments = () => {
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-bold text-[#14261f]">{payment.id}</p>
+                      <p className="break-all text-sm font-bold text-[#14261f]">{payment.id}</p>
                       <p className="text-xs text-gray-500">Order {payment.orderId}</p>
                     </div>
                     <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold capitalize ${statusStyles[payment.status] || statusStyles.pending}`}>
@@ -169,7 +169,7 @@ const Payments = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">Date</p>
-                      <p className="font-medium">{payment.createdAt ? new Date(payment.createdAt).toLocaleString("en-IN") : "—"}</p>
+                      <p className="break-words font-medium">{payment.createdAt ? new Date(payment.createdAt).toLocaleString("en-IN") : "—"}</p>
                     </div>
                   </div>
                   {payment.razorpayPaymentId && (

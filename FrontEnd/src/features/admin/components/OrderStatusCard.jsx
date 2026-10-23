@@ -53,7 +53,7 @@ export default function OrderStatusCard({ orders = [] }) {
               transition={{ duration: 0.3, delay: idx * 0.04 }}
               className="flex items-center gap-2 sm:gap-3"
             >
-              <span className={`inline-block px-1.5 py-0.5 rounded-md text-[9px] font-semibold w-[72px] text-center sm:px-2 sm:text-[11px] sm:w-[120px] ${config.textColor} ${config.bgColor}`}>
+              <span className={`inline-block whitespace-nowrap px-1.5 py-0.5 rounded-md text-[9px] font-semibold min-w-[72px] text-center sm:px-2 sm:text-[11px] sm:min-w-[120px] ${config.textColor} ${config.bgColor}`}>
                 {config.label}
               </span>
               <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden sm:h-6">

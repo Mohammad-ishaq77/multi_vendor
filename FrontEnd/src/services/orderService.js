@@ -192,9 +192,8 @@ export const deliveryService = {
   accept: (orderId) => apiClient.post(`/delivery/accept/${encodeURIComponent(orderId)}`),
 
   /**
-   * POST /api/delivery/orders/:id/request-otp — asks the server to email the
-   * customer a 6-digit confirmation code. The code is bound to this order and
-   * never appears in the app.
+   * POST /api/delivery/orders/:id/request-otp — asks the server for a 6-digit
+   * confirmation code bound to this order. Demo mode returns the code in-app.
    */
   requestOtp: (orderId) =>
     apiClient.post(`/delivery/orders/${encodeURIComponent(orderId)}/request-otp`),

@@ -31,6 +31,7 @@ export default function DeliveryVerification() {
   const [result, setResult] = useState(null);
   const [digits, setDigits] = useState(EMPTY_DIGITS);
   const [maskedEmail, setMaskedEmail] = useState("");
+  const [demoOtp, setDemoOtp] = useState("");
   const verificationInProgress = useRef(false);
 
   if (!activeDelivery) {
@@ -55,6 +56,7 @@ export default function DeliveryVerification() {
     addToast(res.message, res.success ? "success" : "error");
     if (res.success) {
       setMaskedEmail(res.data?.maskedEmail || "");
+      setDemoOtp(res.data?.demoOtp || "");
       setDigits(EMPTY_DIGITS);
       countdown.start(RESEND_COOLDOWN_SECONDS);
     }
@@ -124,16 +126,26 @@ export default function DeliveryVerification() {
           <div className="flex items-start gap-2 text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-md p-3">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
             <span>
-              The customer receives a 6-digit code by email once you request it. Ask them for it at the door and enter it
-              below. On success the order is marked delivered, your earnings are credited and the customer&apos;s tracking updates.
+              {demoOtp
+                ? "Use the demo confirmation code shown below to complete this delivery."
+                : "The customer receives a 6-digit code by email once you request it. Ask them for it at the door and enter it below."}{" "}
+              On success the order is marked delivered, your earnings are credited and the customer&apos;s tracking updates.
             </span>
           </div>
+
+          {demoOtp && (
+            <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
+              Demo delivery code: <span className="font-bold tracking-wider">{demoOtp}</span>
+            </p>
+          )}
 
           <div className="rounded-md border border-gray-100 bg-white p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-sm text-gray-700">
                 <Mail className="h-4 w-4 text-emerald-600" />
-                {maskedEmail ? (
+                {demoOtp ? (
+                  <span>Demo code ready</span>
+                ) : maskedEmail ? (
                   <span>
                     Code sent to <span className="font-semibold">{maskedEmail}</span>
                   </span>

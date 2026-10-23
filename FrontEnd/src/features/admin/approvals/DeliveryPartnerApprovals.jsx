@@ -367,7 +367,7 @@ export default function DeliveryPartnerApprovals() {
         ) : (
           <>
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[800px]">
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">Applicant</th>
@@ -456,7 +456,7 @@ export default function DeliveryPartnerApprovals() {
                     <p>Vehicle: {[app.vehicleType, app.vehicleNumber].filter(Boolean).join(" · ") || "Not provided"}</p>
                     <p>Applied: {formatDate(app.appliedAt)}</p>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <button
                       onClick={() => navigate(`/admin/approvals/delivery-partners/${app.id}`)}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"

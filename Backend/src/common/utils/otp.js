@@ -9,9 +9,8 @@ import { httpError } from "../middleware/error.js";
  * confirmation.
  *
  * Guarantees enforced here (not on the client):
- *  - six-digit codes from a CSPRNG (`crypto.randomInt`), never `Math.random`
- *  - only keyed hashes are persisted; the plaintext code exists only long
- *    enough to be emailed
+ *  - six-digit codes from a CSPRNG, except when explicit demo mode is enabled
+ *  - only keyed hashes are persisted; plaintext codes are never stored
  *  - codes expire, are single-use, and are superseded when re-requested
  *  - a resend cooldown and an hourly cap throttle abuse
  *  - verification attempts are counted and locked out
@@ -32,14 +31,16 @@ export const OTP_POLICY = Object.freeze({
 });
 
 export const RESET_TOKEN_TTL_MINUTES = 10;
+export const DEMO_OTP_CODE = "123456";
 
 const otpSecret = () => config.jwt.accessSecret;
 const normalizeEmail = (email) => String(email || "").toLowerCase().trim();
 
 /* ------------------------------ pure helpers ------------------------------ */
 
-/** Six-digit numeric code from a CSPRNG (uniform, zero-padded). */
+/** Six-digit numeric code; uses a fixed value only in non-production demo mode. */
 export function generateOtp() {
+  if (config.demoOtpEnabled) return DEMO_OTP_CODE;
   return String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
 }
 
@@ -173,7 +174,7 @@ export async function verifyOtp({ email, purpose, orderId = null, code } = {}) {
   const target = normalizeEmail(email);
   const value = String(code ?? "").trim();
   if (!/^\d{6}$/.test(value)) {
-    throw httpError(400, "Enter the 6-digit code from your email.");
+    throw httpError(400, "Enter the 6-digit verification code.");
   }
 
   return AppDataSource.transaction(async (manager) => {

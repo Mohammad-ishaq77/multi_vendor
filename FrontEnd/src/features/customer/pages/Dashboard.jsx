@@ -296,7 +296,7 @@ const ScrollToTop = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-5 right-5 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-[#155c43] text-white shadow-lg shadow-[#155c43]/25 sm:bottom-6 sm:right-6 sm:h-11 sm:w-11"
+          className="fixed bottom-16 right-5 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-[#155c43] text-white shadow-lg shadow-[#155c43]/25 sm:bottom-6 sm:right-6 sm:h-11 sm:w-11"
           aria-label="Scroll to top"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -498,7 +498,7 @@ const CustomerDashboard = () => {
             )}
             {categories.length > 0 && (
             <div
-              className="flex gap-2 overflow-x-auto pb-2 pt-1 snap-x snap-mandatory sm:grid sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 sm:overflow-visible sm:gap-3 sm:pb-0 sm:pt-0"
+              className="flex gap-2 overflow-x-auto pb-2 pt-1 snap-x snap-mandatory sm:grid sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-6 sm:overflow-visible sm:gap-3 sm:pb-0 sm:pt-0"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {categories.map((category) => (

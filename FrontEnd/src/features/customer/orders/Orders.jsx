@@ -266,7 +266,7 @@ const Orders = () => {
                                   {order.statusLabel}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500">
+                              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="w-3 h-3" />
                                   {order.createdAt ? formatDate(order.createdAt) : "Recently"}

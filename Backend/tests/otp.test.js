@@ -2,6 +2,7 @@ import {
   OTP_POLICY,
   OTP_PURPOSES,
   RESET_TOKEN_TTL_MINUTES,
+  DEMO_OTP_CODE,
   evaluateOtp,
   generateOtp,
   generateResetToken,
@@ -12,6 +13,7 @@ import {
 } from "../src/common/utils/otp.js";
 import { OTP_PURPOSES as ENTITY_PURPOSES } from "../src/entities/OtpCode.js";
 import { maskEmail } from "../src/common/utils/helpers.js";
+import { config } from "../src/config/env.js";
 
 const PURPOSE = OTP_PURPOSES.REGISTER;
 
@@ -22,7 +24,11 @@ describe("OTP generation", () => {
     }
   });
 
-  test("codes are not constant (CSPRNG, no fixed default)", () => {
+  test("demo mode uses the fixed code; normal mode uses the CSPRNG", () => {
+    if (config.demoOtpEnabled) {
+      expect(generateOtp()).toBe(DEMO_OTP_CODE);
+      return;
+    }
     const seen = new Set();
     for (let i = 0; i < 200; i += 1) seen.add(generateOtp());
     expect(seen.size).toBeGreaterThan(1);

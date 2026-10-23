@@ -284,8 +284,8 @@ const ProductDetail = () => {
                 {reviews.map((review) => (
                   <article key={review.id} className="rounded-lg border border-gray-100 bg-white p-5 shadow-sm">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-semibold text-gray-800">{review.customer}</span>
-                      <time dateTime={review.createdAt} className="text-xs text-gray-500">
+                      <span className="min-w-0 truncate text-sm font-semibold text-gray-800">{review.customer}</span>
+                      <time dateTime={review.createdAt} className="shrink-0 text-xs text-gray-500">
                         {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : ""}
                       </time>
                     </div>

@@ -377,7 +377,7 @@ const TrackOrder = () => {
                   </div>
 
                   {/* Text */}
-                  <div className="pt-1">
+                  <div className="min-w-0 pt-1">
                     <h4
                       className={`text-sm font-bold ${
                         isActive ? "text-[#0F172A]" : "text-gray-400"

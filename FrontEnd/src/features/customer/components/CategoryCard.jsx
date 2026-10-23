@@ -56,7 +56,7 @@ const CategoryCard = ({ category, onClick }) => {
           <Icon className="h-5 w-5" />
         </span>
 
-        <p className="text-sm font-semibold text-(--color-text) group-hover:text-(--color-primary)">
+        <p className="min-w-0 truncate text-sm font-semibold text-(--color-text) group-hover:text-(--color-primary)">
           {category.name}
         </p>
       </div>

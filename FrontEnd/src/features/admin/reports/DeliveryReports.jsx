@@ -75,7 +75,7 @@ export default function DeliveryReports() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100"><h3 className="text-sm font-bold text-gray-900">Partner Performance</h3></div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[700px] text-sm">
               <thead><tr className="border-b border-gray-100 bg-gray-50/50">
                 <th className="text-left px-5 py-3 font-semibold text-gray-600">Partner</th>
                 <th className="text-center px-5 py-3 font-semibold text-gray-600">Deliveries</th>

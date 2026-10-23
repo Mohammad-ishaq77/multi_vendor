@@ -113,7 +113,7 @@ const MarketplaceCategoryPage = () => {
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{products.length} products</h2>
           {products.length ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
               {products.map((product) => (
                 <MarketplaceProductCard key={product.id} product={product} />
               ))}

@@ -266,7 +266,7 @@ const Profile = () => {
                   )}
 
                   {/* Save */}
-                  <div className="mt-6 flex items-center gap-4">
+                  <div className="mt-6 flex flex-wrap items-center gap-4 gap-y-2">
                     <motion.button
                       whileTap={{ scale: 0.98 }}
                       type="submit"

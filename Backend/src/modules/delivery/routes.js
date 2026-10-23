@@ -8,6 +8,7 @@ import { validate } from "../../common/middleware/validate.js";
 import { getPagination, pagedResponse } from "../../common/utils/pagination.js";
 import { DELIVERY_PARTNER_SHARE_PERCENT } from "../../common/utils/deliveryPricing.js";
 import { AppDataSource, repo } from "../../config/db.js";
+import { config } from "../../config/env.js";
 import { emitToRole, emitToUser } from "../../realtime/socket.js";
 import { canDeliveryTransition } from "../orders/status.js";
 import { maskEmail } from "../../common/utils/helpers.js";
@@ -346,7 +347,7 @@ router.post(
 );
 
 /**
- * POST /api/delivery/orders/:id/request-otp — email a delivery OTP to the
+ * POST /api/delivery/orders/:id/request-otp — issue a delivery OTP to the
  * customer who placed the order. Only the assigned partner can trigger it, and
  * the OTP is bound to this order so it cannot complete any other.
  */
@@ -383,20 +384,27 @@ router.post(
       userId: order.customerId,
       orderId: order.id,
     });
-    try {
-      await sendDeliveryOtpEmail({
-        to: email,
-        orderReference: `#${String(order.id).slice(0, 8).toUpperCase()}`,
-        code,
-        expiresInMinutes: ttlMinutes,
-      });
-    } catch {
-      await consumeActiveOtps({ email, purpose: OTP_PURPOSES.DELIVERY, orderId: order.id }).catch(() => {});
-      return res.status(502).json({ ok: false, error: "We could not send the delivery code. Please try again." });
+    if (!config.demoOtpEnabled) {
+      try {
+        await sendDeliveryOtpEmail({
+          to: email,
+          orderReference: `#${String(order.id).slice(0, 8).toUpperCase()}`,
+          code,
+          expiresInMinutes: ttlMinutes,
+        });
+      } catch {
+        await consumeActiveOtps({ email, purpose: OTP_PURPOSES.DELIVERY, orderId: order.id }).catch(() => {});
+        return res.status(502).json({ ok: false, error: "We could not send the delivery code. Please try again." });
+      }
     }
     res.json({
       ok: true,
-      data: { sent: true, maskedEmail: maskEmail(email), expiresInMinutes: ttlMinutes },
+      data: {
+        sent: true,
+        maskedEmail: maskEmail(email),
+        expiresInMinutes: ttlMinutes,
+        ...(config.demoOtpEnabled ? { demoOtp: code } : {}),
+      },
     });
   })
 );
@@ -431,10 +439,10 @@ router.patch(
       return res.status(400).json({ ok: false, error: `Cannot mark this delivery ${status.replace(/_/g, " ")} from its current status.` });
     }
 
-    // Delivery is confirmed by the customer's emailed OTP, never by the client.
+    // Delivery is confirmed by the customer's OTP, never by the client.
     if (status === "delivered") {
       if (!req.body.otp) {
-        return res.status(400).json({ ok: false, error: "Enter the delivery verification code the customer received." });
+        return res.status(400).json({ ok: false, error: "Enter the customer's delivery verification code." });
       }
       const customerEmail = order.customer?.email;
       if (!customerEmail) {

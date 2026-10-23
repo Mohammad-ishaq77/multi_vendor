@@ -112,10 +112,10 @@ const MarketplaceSearch = ({
           aria-label="Search marketplace"
           className={
             hero
-              ? `h-9 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-white/70"} bg-white pl-9 pr-[8.5rem] text-xs text-(--color-text) outline-none placeholder:text-(--color-text-muted) focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[10.5rem] lg:text-sm`
+              ? `h-9 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-white/70"} bg-white pl-9 pr-[9.5rem] text-xs text-(--color-text) outline-none placeholder:text-(--color-text-muted) focus:border-white lg:h-12 lg:rounded-2xl lg:pl-11 lg:pr-[11rem] lg:text-sm`
               : mobile
-                ? `h-11 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-11 pr-[9rem] text-sm outline-none`
-                : `h-10 w-full rounded-full border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-10 pr-[9.5rem] text-sm text-(--color-text) outline-none focus:border-(--color-green) focus:bg-white focus:ring-4 focus:ring-(--color-green-light)/15`
+                ? `h-11 w-full rounded-xl border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-11 pr-[10.5rem] text-sm outline-none`
+                : `h-10 w-full rounded-full border ${isListening ? "border-red-500 ring-2 ring-red-400/30" : "border-(--color-green-soft)"} bg-(--color-surface) pl-10 pr-[11rem] text-sm text-(--color-text) outline-none focus:border-(--color-green) focus:bg-white focus:ring-4 focus:ring-(--color-green-light)/15`
           }
         />
 

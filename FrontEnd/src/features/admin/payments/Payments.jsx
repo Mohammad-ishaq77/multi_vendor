@@ -96,9 +96,9 @@ export default function Payments() {
           </select>
         </div>
 
-        <div className="hidden md:block bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[900px] text-sm">
               <thead><tr className="border-b border-gray-100 bg-gray-50/50">
                 <th className="text-left px-5 py-3 font-semibold text-gray-600">Order ID</th>
                 <th className="text-left px-5 py-3 font-semibold text-gray-600">Customer</th>
@@ -133,7 +133,7 @@ export default function Payments() {
           </div>
         </div>
 
-        <div className="md:hidden space-y-3">
+        <div className="lg:hidden space-y-3">
           {payments.map((p) => (
             <motion.div key={p.orderId} whileHover={{ y: -2 }} onClick={() => navigate(`/admin/payments/${p.orderId}`)} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm cursor-pointer">
               <div className="flex items-start justify-between mb-2">

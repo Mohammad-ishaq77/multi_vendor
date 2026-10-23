@@ -138,10 +138,14 @@ const Register = () => {
       return;
     }
 
-    // No session yet: the account is pending until the emailed OTP is verified.
-    showToast(`We sent a 6-digit code to ${result.email}. Verify to finish.`);
+    // No session yet: the account is pending until the OTP is verified.
+    showToast(
+      result.demoOtp
+        ? `Demo verification code: ${result.demoOtp}`
+        : `We sent a 6-digit code to ${result.email}. Verify to finish.`
+    );
     navigate("/verify-email", {
-      state: { email: result.email, role: result.role },
+      state: { email: result.email, role: result.role, demoOtp: result.demoOtp },
       replace: true,
     });
   };

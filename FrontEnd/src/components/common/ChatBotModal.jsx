@@ -151,26 +151,26 @@ const ChatBotModal = () => {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className={`fixed bottom-24 right-4 z-50 flex flex-col overflow-hidden rounded-3xl border border-(--color-green-soft)/40 bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] transition-all sm:right-6 ${
               isExpanded
-                ? "h-[80vh] w-[92vw] max-w-3xl sm:w-[700px]"
-                : "h-[560px] w-[calc(100vw-2rem)] sm:w-[420px]"
+                ? "h-[min(80vh,calc(100dvh-7rem))] w-[92vw] sm:w-[min(700px,calc(100vw-3rem))]"
+                : "h-[min(560px,calc(100dvh-7rem))] w-[calc(100vw-2rem)] sm:w-[min(420px,calc(100vw-3rem))]"
             }`}
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/10 bg-linear-to-r from-(--color-primary-dark) to-(--color-primary) px-4 py-3.5 text-white">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-xs">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-xs">
                   <Sparkles className="h-5 w-5 text-emerald-300" />
                 </div>
-                <div>
-                  <h3 className="font-display text-sm font-bold tracking-tight">NearMart AI Assistant</h3>
+                <div className="min-w-0">
+                  <h3 className="truncate font-display text-sm font-bold tracking-tight">NearMart AI Assistant</h3>
                   <div className="flex items-center gap-1.5 text-[11px] text-emerald-200/90">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Always Online · Powered by Local AI</span>
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="truncate">Always Online · Powered by Local AI</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 text-white/80">
+              <div className="flex shrink-0 items-center gap-1 text-white/80">
                 <button
                   type="button"
                   onClick={clearChat}

@@ -47,7 +47,7 @@ export default function OtpInputs({
 
   return (
     <div>
-      <div className="flex justify-center gap-2 sm:gap-3" onPaste={handlePaste}>
+      <div className="flex justify-center gap-1.5 sm:gap-3" onPaste={handlePaste}>
         {digits.map((digit, index) => (
           <input
             key={index}
@@ -63,7 +63,7 @@ export default function OtpInputs({
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             aria-label={`Digit ${index + 1}`}
-            className={`h-12 w-10 rounded-[12px] border text-center text-lg font-bold outline-none transition sm:h-14 sm:w-12 ${
+            className={`h-12 w-9 min-w-0 rounded-[12px] border text-center text-lg font-bold outline-none transition sm:h-14 sm:w-12 ${
               error
                 ? "border-rose-300 bg-rose-50 text-rose-700"
                 : digit

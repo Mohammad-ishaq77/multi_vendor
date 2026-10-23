@@ -44,7 +44,7 @@ const About = () => {
       />
 
       {/* OUR STORY */}
-      <section className="py-12 px-6 lg:px-8 bg-gray-50/30">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/30">
         <div className="max-w-7xl mx-auto">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
             <h2 className="text-xl font-bold text-[#0F172A] mb-4 inline-block border-b-2 border-[#1B4332] pb-1">Our Story</h2>
@@ -56,7 +56,7 @@ const About = () => {
       </section>
 
       {/* MISSION / VISION / VALUES */}
-      <section className="py-16 px-6 lg:px-8">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex gap-4">
             <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
@@ -108,7 +108,7 @@ const About = () => {
       </section>
 
       {/* WHO WE SERVE */}
-      <section className="py-12 px-6 lg:px-8 bg-gray-50/30">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/30">
         <div className="max-w-7xl mx-auto">
           <motion.h2 custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-xl font-bold text-[#0F172A] mb-8">
             Who We Serve
@@ -135,13 +135,13 @@ const About = () => {
       </section>
 
       {/* HOW NEARMART WORKS */}
-      <section className="py-16 px-6 lg:px-8">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.h2 custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-xl font-bold text-[#0F172A] mb-10">
             How NearMart Works
           </motion.h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 relative">
             {[
               { icon: Search, num: "1", title: "Browse & Shop", desc: "Explore products from local shops and add your favorites to cart." },
               { icon: ShoppingBag, num: "2", title: "Place Order", desc: "Place your order and choose a payment method." },
@@ -172,9 +172,9 @@ const About = () => {
       </section>
 
       {/* TRUST BANNER */}
-      <section className="py-12 px-6 lg:px-8 bg-gray-50/50">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50/50">
         <div className="max-w-7xl mx-auto">
-          <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-gray-100 shadow-sm">
+          <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 p-5 sm:p-8 rounded-3xl bg-white border border-gray-100 shadow-sm">
             <div className="flex gap-4 items-start">
               <div className="w-12 h-12 rounded-full bg-[#1B4332]/10 flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-6 h-6 text-[#1B4332]" />
@@ -187,7 +187,7 @@ const About = () => {
               </div>
             </div>
 
-            <div className="flex gap-8 lg:gap-12">
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
                   <Lock className="w-5 h-5 text-[#1B4332]" />
@@ -212,7 +212,7 @@ const About = () => {
       </section>
 
       {/* TECH & PARTNERS */}
-      <section className="py-16 px-6 lg:px-8">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
             <h3 className="text-lg font-bold text-[#0F172A] mb-4">Technology & Innovation</h3>
@@ -247,7 +247,7 @@ const About = () => {
       </section>
 
       {/* COMMUNITY SECTION */}
-      <section className="py-16 px-6 lg:px-8 bg-gray-50/30">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50/30">
         <div className="max-w-7xl mx-auto">
           <motion.div custom={0} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="overflow-hidden rounded-[28px] shadow-[0_24px_50px_-28px_rgba(6,78,59,0.4)]">

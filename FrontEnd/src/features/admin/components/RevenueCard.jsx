@@ -40,7 +40,8 @@ export default function RevenueCard({ revenue = {} }) {
         <p className="text-sm font-semibold mb-3" style={{ color: "#14261f" }}>
           Weekly Breakdown
         </p>
-        <div className="flex items-end gap-2 h-32">
+        <div className="overflow-x-auto">
+          <div className="flex h-32 min-w-[360px] items-end gap-2">
           {weeklyBreakdown.map((day, idx) => {
             const pct = maxVal > 0 ? (day.amount / maxVal) * 100 : 0;
             return (
@@ -60,6 +61,7 @@ export default function RevenueCard({ revenue = {} }) {
               </motion.div>
             );
           })}
+          </div>
         </div>
       </div>
     </motion.div>

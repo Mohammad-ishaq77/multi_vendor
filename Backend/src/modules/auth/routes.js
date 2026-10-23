@@ -29,7 +29,7 @@ const router = Router();
  * /api/auth/register:
  *   post:
  *     tags: [Auth]
- *     summary: Register a new user (role-selected) and email a verification OTP
+ *     summary: Register a new user (role-selected) and issue a verification OTP
  *     requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
  *     responses: { 201: { description: Pending email verification } }
  */
@@ -85,7 +85,7 @@ router.post(
  * /api/auth/forgot-password:
  *   post:
  *     tags: [Auth]
- *     summary: Start a password reset (generic response, emails an OTP)
+ *     summary: Start a password reset (generic response, issues an OTP)
  *     responses: { 200: { description: OK } }
  */
 router.post(

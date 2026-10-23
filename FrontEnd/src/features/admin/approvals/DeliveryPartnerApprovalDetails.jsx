@@ -44,9 +44,9 @@ function InfoRow({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-3">
       <Icon className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-      <div>
+      <div className="min-w-0">
         <p className="text-xs text-gray-500">{label}</p>
-        <p className="text-sm font-medium text-gray-900">{value || "—"}</p>
+        <p className="break-words text-sm font-medium text-gray-900">{value || "—"}</p>
       </div>
     </div>
   );
@@ -253,13 +253,13 @@ const timeline = [
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <button onClick={() => navigate("/admin/approvals/delivery-partners")} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Delivery Partner Application</h1>
-          <p className="text-sm text-gray-500 mt-1">Application ID: {approval.id}</p>
+          <p className="break-all text-sm text-gray-500 mt-1">Application ID: {approval.id}</p>
         </div>
         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[approval.status]}`}>
           {STATUS_LABELS[approval.status]}

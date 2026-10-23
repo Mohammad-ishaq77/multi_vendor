@@ -71,7 +71,7 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.85 }}
           onClick={toggleWishlist}
-          className={`absolute top-1.5 right-1.5 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 sm:top-2.5 sm:right-2.5 sm:w-9 sm:h-9 ${
+          className={`absolute top-1.5 right-1.5 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 sm:top-2.5 sm:right-2.5 sm:w-9 sm:h-9 ${
             saved
               ? "bg-(--color-green-bg) border-(--color-green-soft) text-(--color-primary)"
               : "bg-white/80 border-white/50 text-gray-400 hover:text-(--color-primary)"
@@ -123,8 +123,8 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
         <p className="text-[10px] text-gray-400 mt-0.5 sm:text-xs">{product.unit}</p>
 
         {/* Shop Name — Prominent Display */}
-        <div className="mt-1.5 mb-1.5 inline-flex items-center gap-1 px-1.5 py-1 bg-linear-to-r from-[#155c43]/8 to-[#155c43]/5 rounded-md border border-[#155c43]/10 sm:mt-2 sm:mb-3 sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:rounded-lg">
-          <span className="text-[9px] font-bold text-[#155c43] uppercase tracking-wide sm:text-[11px]">{product.shop}</span>
+        <div className="mt-1.5 mb-1.5 inline-flex max-w-full items-center gap-1 overflow-hidden px-1.5 py-1 bg-linear-to-r from-[#155c43]/8 to-[#155c43]/5 rounded-md border border-[#155c43]/10 sm:mt-2 sm:mb-3 sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:rounded-lg">
+          <span className="truncate text-[9px] font-bold text-[#155c43] uppercase tracking-wide sm:text-[11px]">{product.shop}</span>
         </div>
 
         <div className="flex items-end justify-between mt-1.5 gap-1 sm:mt-3 sm:gap-2">
@@ -144,7 +144,7 @@ const ProductCard = ({ product, onAddToCart, redirectToCartOnAdd = false }) => {
           whileTap={{ scale: 0.95 }}
           onClick={handleAddToCart}
           disabled={!product.available || product.stock < 1}
-          className={`w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg font-semibold text-[10px] transition-all duration-300 overflow-hidden sm:gap-1.5 sm:px-3 sm:py-2.5 sm:rounded-md sm:text-xs ${
+          className={`w-full flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-semibold text-[10px] transition-all duration-300 overflow-hidden sm:gap-1.5 sm:px-3 sm:py-2.5 sm:rounded-md sm:text-xs ${
             added
               ? "bg-green-100 text-green-700 border border-green-200"
               : "bg-[#155c43] text-white shadow-lg shadow-[#155c43]/25 hover:bg-[#104b36] hover:shadow-xl hover:shadow-[#155c43]/30 disabled:cursor-not-allowed disabled:opacity-50"

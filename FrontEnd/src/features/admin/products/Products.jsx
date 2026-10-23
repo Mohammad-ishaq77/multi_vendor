@@ -289,7 +289,7 @@ export default function Products() {
           className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden"
         >
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[750px] text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
                   {[

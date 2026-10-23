@@ -11,6 +11,7 @@ import {
   sendPasswordResetOtpEmail,
 } from "../../common/email/service.js";
 import {
+  DEMO_OTP_CODE,
   OTP_PURPOSES,
   attachResetToken,
   consumeActiveOtps,
@@ -79,28 +80,31 @@ function refreshExpiry() {
 const isOtpRateError = (err) =>
   err?.code === "OTP_COOLDOWN" || err?.code === "OTP_RATE_LIMIT";
 
-/** Persist a registration OTP and email it. Rolls back the code if mail fails. */
+/** Persist a registration OTP and deliver it through the configured mode. */
 async function sendRegistrationOtp(user) {
   const { code, ttlMinutes } = await createOtp({
     email: user.email,
     purpose: OTP_PURPOSES.REGISTER,
     userId: user.id,
   });
-  try {
-    await sendRegistrationOtpEmail({
-      to: user.email,
-      name: user.name,
-      code,
-      expiresInMinutes: ttlMinutes,
-    });
-  } catch {
-    await consumeActiveOtps({ email: user.email, purpose: OTP_PURPOSES.REGISTER }).catch(() => {});
-    throw httpError(502, "We could not send the verification email. Please try again shortly.");
+  if (!config.demoOtpEnabled) {
+    try {
+      await sendRegistrationOtpEmail({
+        to: user.email,
+        name: user.name,
+        code,
+        expiresInMinutes: ttlMinutes,
+      });
+    } catch {
+      await consumeActiveOtps({ email: user.email, purpose: OTP_PURPOSES.REGISTER }).catch(() => {});
+      throw httpError(502, "We could not send the verification email. Please try again shortly.");
+    }
   }
+  return config.demoOtpEnabled ? { demoOtp: code } : {};
 }
 
 /**
- * Create (or refresh) an unverified account and email a verification OTP.
+ * Create (or refresh) an unverified account and issue a verification OTP.
  * No session is issued — the account only becomes usable after `verifyEmail`.
  */
 export async function registerUser(input) {
@@ -119,8 +123,8 @@ export async function registerUser(input) {
     existing.passwordHash = passwordHash;
     existing.role = input.role || existing.role;
     await users.save(existing);
-    await sendRegistrationOtp(existing);
-    return { pending: true, email, role: existing.role, emailVerified: false };
+    const otpResult = await sendRegistrationOtp(existing);
+    return { pending: true, email, role: existing.role, emailVerified: false, ...otpResult };
   }
 
   const user = await users.save(
@@ -133,8 +137,8 @@ export async function registerUser(input) {
       emailVerified: false,
     })
   );
-  await sendRegistrationOtp(user);
-  return { pending: true, email, role: user.role, emailVerified: false };
+  const otpResult = await sendRegistrationOtp(user);
+  return { pending: true, email, role: user.role, emailVerified: false, ...otpResult };
 }
 
 /** Verify a registration OTP, activate the account and start a session. */
@@ -159,14 +163,15 @@ export async function verifyEmail({ email, otp }) {
 export async function resendVerification({ email }) {
   const normalized = String(email).toLowerCase().trim();
   const user = await repo("User").findOne({ where: { email: normalized } });
-  if (!user || user.emailVerified || !user.isActive) return { ok: true };
+  const demoResponse = config.demoOtpEnabled ? { demoOtp: DEMO_OTP_CODE } : {};
+  if (!user || user.emailVerified || !user.isActive) return { ok: true, ...demoResponse };
   try {
     await sendRegistrationOtp(user);
   } catch (err) {
-    if (isOtpRateError(err)) return { ok: true };
+    if (isOtpRateError(err)) return { ok: true, ...demoResponse };
     throw err;
   }
-  return { ok: true };
+  return { ok: true, ...demoResponse };
 }
 
 /**
@@ -176,7 +181,11 @@ export async function resendVerification({ email }) {
 export async function forgotPassword({ email }) {
   const normalized = String(email).toLowerCase().trim();
   const user = await repo("User").findOne({ where: { email: normalized } });
-  const generic = { ok: true, message: "If an account exists for that email, a reset code has been sent." };
+  const generic = {
+    ok: true,
+    message: "If an account exists for that email, a reset code has been sent.",
+    ...(config.demoOtpEnabled ? { demoOtp: DEMO_OTP_CODE } : {}),
+  };
   if (!user || !user.isActive) return generic;
   try {
     const { code, ttlMinutes } = await createOtp({
@@ -184,16 +193,18 @@ export async function forgotPassword({ email }) {
       purpose: OTP_PURPOSES.PASSWORD_RESET,
       userId: user.id,
     });
-    await sendPasswordResetOtpEmail({
-      to: normalized,
-      name: user.name,
-      code,
-      expiresInMinutes: ttlMinutes,
-    }).catch(async (err) => {
-      // Release the code so the user can retry immediately; never echo why.
-      await consumeActiveOtps({ email: normalized, purpose: OTP_PURPOSES.PASSWORD_RESET }).catch(() => {});
-      console.warn(`password-reset email failed for ${normalized}: ${err?.name || "Error"}`);
-    });
+    if (!config.demoOtpEnabled) {
+      await sendPasswordResetOtpEmail({
+        to: normalized,
+        name: user.name,
+        code,
+        expiresInMinutes: ttlMinutes,
+      }).catch(async (err) => {
+        // Release the code so the user can retry immediately; never echo why.
+        await consumeActiveOtps({ email: normalized, purpose: OTP_PURPOSES.PASSWORD_RESET }).catch(() => {});
+        console.warn(`password-reset email failed for ${normalized}: ${err?.name || "Error"}`);
+      });
+    }
   } catch (err) {
     // Cooldown/rate limits are also swallowed: surfacing them would leak
     // whether the address is registered.

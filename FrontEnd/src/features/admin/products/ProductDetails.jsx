@@ -165,14 +165,14 @@ export default function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.05 }}
-              className="bg-white rounded-lg border border-gray-100 shadow-sm p-5"
+              className="bg-white rounded-lg border border-gray-100 shadow-sm p-3 sm:p-5"
             >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
-                  <p className="mt-2 text-2xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
+                  <p className="mt-2 text-lg sm:text-2xl font-bold" style={{ color: "#14261f" }}>{stat.value}</p>
                 </div>
-                <div className={`w-12 h-12 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-md bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
                   <stat.icon className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -248,7 +248,7 @@ export default function ProductDetails() {
                 </h3>
               </div>
               <div className="overflow-x-auto mt-3">
-                <table className="w-full text-sm">
+                <table className="w-full min-w-[600px] text-sm">
                   <thead>
                     <tr className="border-b border-gray-100">
                       <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
@@ -319,7 +319,7 @@ export default function ProductDetails() {
                   <div className="w-11 h-11 rounded-md bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold">
                     {shop.name?.charAt(0)}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="font-semibold" style={{ color: "#14261f" }}>{shop.name}</p>
                     <p className="text-xs text-gray-400">{shop.category || shop.type || "—"}</p>
                   </div>

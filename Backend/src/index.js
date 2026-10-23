@@ -117,8 +117,11 @@ if (process.env.JEST_WORKER_ID === undefined && isMain) {
   if (isDevSecret) {
     console.warn("WARNING: using default JWT secrets — set JWT_ACCESS_SECRET/JWT_REFRESH_SECRET in .env");
   }
-  if (!isMailConfigured) {
+  if (!isMailConfigured && !config.demoOtpEnabled) {
     console.warn("WARNING: MAIL_USER/MAIL_PASS not set — OTP and reset emails will fail to send.");
+  }
+  if (config.demoOtpEnabled) {
+    console.warn("WARNING: demo OTP mode is enabled; all OTPs use 123456 and emails are disabled.");
   }
   server.listen(config.port, () => {
     console.log(`NearMart API running on http://localhost:${config.port} (docs: /docs)`);

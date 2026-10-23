@@ -87,7 +87,7 @@ const MarketplacePage = () => {
               <VoiceSearchToast speechToast={speechToast} isListening={isListening} />
             </div>
             <div className="flex gap-2">
-              <label className="relative min-w-[160px] flex-1 lg:flex-none">
+              <label className="relative min-w-[140px] flex-1 lg:flex-none">
                 <span className="sr-only">Sort products</span>
                 <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-(--color-text-muted)" />
                 <select
@@ -102,7 +102,7 @@ const MarketplacePage = () => {
                   ))}
                 </select>
               </label>
-              <button type="submit" className="btn-primary !min-h-10">
+              <button type="submit" className="btn-primary !min-h-10 shrink-0">
                 <Filter className="h-4 w-4" />
                 Search
               </button>
@@ -160,7 +160,7 @@ const MarketplacePage = () => {
         <div className="container-app">
           <h2 className="mb-3 font-display text-lg font-bold">{products.length} products</h2>
           {products.length ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
               {products.map((product) => (
                 <MarketplaceProductCard key={product.id} product={product} />
               ))}

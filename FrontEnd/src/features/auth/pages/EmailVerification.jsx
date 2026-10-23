@@ -39,6 +39,7 @@ const EmailVerification = () => {
   const [digits, setDigits] = useState(EMPTY_DIGITS);
   const [otpError, setOtpError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [demoOtp, setDemoOtp] = useState(location.state?.demoOtp || "");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
@@ -51,7 +52,7 @@ const EmailVerification = () => {
   const submit = async (value) => {
     const otp = value ?? code;
     if (!/^\d{6}$/.test(otp)) {
-      setOtpError("Enter the 6-digit code from your email.");
+      setOtpError("Enter the 6-digit verification code.");
       return;
     }
     setIsVerifying(true);
@@ -84,10 +85,15 @@ const EmailVerification = () => {
     }
 
     setSubmitError("");
+    setDemoOtp(result.demoOtp || "");
     setOtpError("");
     setDigits(EMPTY_DIGITS);
     countdown.start(RESEND_COOLDOWN_SECONDS);
-    showToast(`If ${maskEmail(email)} is unverified, a new code is on its way.`);
+    showToast(
+      result.demoOtp
+        ? `Demo verification code: ${result.demoOtp}`
+        : `If ${maskEmail(email)} is unverified, a new code is on its way.`
+    );
   };
 
   const resendLabel = () => {
@@ -117,10 +123,17 @@ const EmailVerification = () => {
           </span>
           <h1 className="mt-4 font-display text-[1.7rem] font-bold tracking-tight">Verify your email</h1>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-(--color-text-muted)">
-            We sent a 6-digit code to <span className="font-semibold text-(--color-text)">{maskEmail(email)}</span>.
-            Enter it below to activate your {APP_CONFIG.name} account.
+            {demoOtp
+              ? `Use the demo code below to activate your ${APP_CONFIG.name} account.`
+              : <>We sent a 6-digit code to <span className="font-semibold text-(--color-text)">{maskEmail(email)}</span>. Enter it below to activate your {APP_CONFIG.name} account.</>}
           </p>
         </div>
+
+        {demoOtp && (
+          <p className="mb-5 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
+            Demo verification code: <span className="font-bold tracking-wider">{demoOtp}</span>
+          </p>
+        )}
 
         <form
           onSubmit={(event) => {

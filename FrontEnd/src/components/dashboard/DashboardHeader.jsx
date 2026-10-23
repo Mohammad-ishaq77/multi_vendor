@@ -18,7 +18,7 @@ const DashboardHeader = ({
         type="button"
         whileTap={{ scale: 0.92 }}
         onClick={onMenuToggle}
-        className="lg:hidden relative z-50 flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-500 transition-all hover:border-emerald-200 hover:bg-emerald-50/50 hover:text-emerald-600 sm:h-9 sm:w-9 sm:rounded-lg"
+        className="lg:hidden relative z-50 flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-500 transition-all hover:border-emerald-200 hover:bg-emerald-50/50 hover:text-emerald-600 sm:h-9 sm:w-9 sm:rounded-lg"
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         aria-expanded={isMenuOpen}
       >
@@ -52,7 +52,7 @@ const DashboardHeader = ({
       </h1>
 
       {/* Dashboard Top Search Bar */}
-      <div className="flex-1 max-w-lg sm:max-w-2xl mx-2 sm:mx-6 flex items-center">
+      <div className="hidden sm:flex flex-1 max-w-lg sm:max-w-2xl mx-2 sm:mx-6 items-center">
         <MarketplaceSearch variant="nav" placeholder="Search everywhere..." />
       </div>
 

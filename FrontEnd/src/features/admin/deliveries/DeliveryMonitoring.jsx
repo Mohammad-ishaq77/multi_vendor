@@ -83,9 +83,9 @@ export default function DeliveryMonitoring() {
         </div>
 
         {/* Desktop Table */}
-        <div className="hidden md:block bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[750px] text-sm">
               <thead><tr className="border-b border-gray-100 bg-gray-50/50">
                 <th className="text-left px-5 py-3 font-semibold text-gray-600">Order ID</th>
                 <th className="text-left px-5 py-3 font-semibold text-gray-600">Shop</th>
@@ -114,7 +114,7 @@ export default function DeliveryMonitoring() {
         </div>
 
         {/* Mobile Cards */}
-        <div className="md:hidden space-y-3">
+        <div className="lg:hidden space-y-3">
           {deliveries.map((d) => (
             <motion.div key={d.id} whileHover={{ y: -2 }} onClick={() => navigate(`/admin/deliveries/${d.id}`)} className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm cursor-pointer">
               <div className="flex items-start justify-between mb-2">

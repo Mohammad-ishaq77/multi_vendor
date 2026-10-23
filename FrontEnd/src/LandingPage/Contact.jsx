@@ -86,7 +86,7 @@ const Contact = () => {
     <MainLayout>
       <PageHero {...pageHeroes.contact} />
 
-      <main className="py-10 lg:py-14 px-6 lg:px-8">
+      <main className="py-10 lg:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Main Grid: Contact Info + Form */}
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 mb-16">
@@ -135,7 +135,7 @@ const Contact = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div id="contact-form" className="scroll-mt-32 bg-white border border-gray-100 rounded-3xl p-8 lg:p-10 shadow-lg shadow-gray-100/50">
+              <div id="contact-form" className="scroll-mt-32 bg-white border border-gray-100 rounded-3xl p-5 sm:p-8 lg:p-10 shadow-lg shadow-gray-100/50">
                 <h2 className="text-xl font-bold text-[#0F172A] mb-1">
                   Send Us a Message
                 </h2>
@@ -200,19 +200,19 @@ const Contact = () => {
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-[#0F172A] placeholder:text-gray-400 outline-none focus:border-[#1B4332] transition-all resize-none"
                     />
 
-                    <div className="flex items-center justify-between pt-1">
+                    <div className="flex flex-col items-stretch gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
                       <motion.button
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                         type="submit"
-                        className="flex items-center gap-2 px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors"
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors"
                       >
                         <Send className="w-4 h-4" />
                         Send Message
                       </motion.button>
 
-                      <div className="flex items-center gap-2 text-xs text-[#64748B]">
-                        <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
+                      <div className="flex items-center justify-center gap-2 text-xs text-[#64748B] sm:justify-start">
+                        <ShieldCheck className="w-4 h-4 shrink-0 text-[#1B4332]" />
                         <span>
                           We respect your privacy<br className="hidden sm:block" /> and keep your data safe.
                         </span>

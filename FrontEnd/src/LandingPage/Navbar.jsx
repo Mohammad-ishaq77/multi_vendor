@@ -150,7 +150,7 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="border-b border-(--color-green-soft) bg-white lg:hidden"
+            className="max-h-[calc(100dvh-3.75rem)] overflow-y-auto overscroll-contain border-b border-(--color-green-soft) bg-white lg:hidden"
           >
             <div className="container-app space-y-3 py-3">
               <MarketplaceSearch variant="mobile" placeholder="Search marketplace" />
@@ -181,8 +181,8 @@ const Navbar = () => {
               <div className="grid grid-cols-2 gap-2 pt-1">
                 {isAuthenticated ? (
                   <>
-                    <Link to={accountPath} className="btn-secondary">View Dashboard</Link>
-                    <button type="button" className="btn-primary" onClick={requestLogout}>Logout</button>
+                    <Link to={accountPath} className="btn-secondary !px-3">View Dashboard</Link>
+                    <button type="button" className="btn-primary !px-3" onClick={requestLogout}>Logout</button>
                   </>
                 ) : (
                   <>

@@ -113,7 +113,7 @@ export const authService = {
   },
 
   /**
-   * Create an account. The backend emails a verification OTP and does NOT
+   * Create an account. The backend issues a verification OTP and does NOT
    * return a session — the caller must route the user to /verify-email.
    */
   async register({ name, email, password, phone, role, remember = true } = {}) {
@@ -151,6 +151,7 @@ export const authService = {
         remember,
         email: result?.email || trimmedEmail,
         role: result?.role || role,
+        demoOtp: result?.demoOtp,
       };
     } catch (error) {
       return {
@@ -163,7 +164,7 @@ export const authService = {
   /** Confirm a registration OTP and start the session. */
   async verifyEmail({ email, otp } = {}) {
     if (!email?.trim() || !otp) {
-      return { ok: false, error: "Enter the 6-digit code from your email." };
+      return { ok: false, error: "Enter the 6-digit verification code." };
     }
 
     try {
@@ -183,8 +184,8 @@ export const authService = {
   async resendVerification({ email } = {}) {
     if (!email?.trim()) return { ok: false, error: "Enter your email address first." };
     try {
-      await apiClient.post("/auth/resend-verification", { email: email.trim() }, { auth: false, retry: false });
-      return { ok: true };
+      const result = await apiClient.post("/auth/resend-verification", { email: email.trim() }, { auth: false, retry: false });
+      return { ok: true, demoOtp: result?.demoOtp };
     } catch (error) {
       return { ok: false, error: friendlyError(error, "We could not send a new code right now.") };
     }
@@ -197,8 +198,8 @@ export const authService = {
   async forgotPassword({ email } = {}) {
     if (!email?.trim()) return { ok: false, error: "Enter your email address." };
     try {
-      await apiClient.post("/auth/forgot-password", { email: email.trim() }, { auth: false, retry: false });
-      return { ok: true };
+      const result = await apiClient.post("/auth/forgot-password", { email: email.trim() }, { auth: false, retry: false });
+      return { ok: true, demoOtp: result?.demoOtp };
     } catch (error) {
       return { ok: false, error: friendlyError(error, "We could not send the reset code right now.") };
     }
@@ -206,7 +207,7 @@ export const authService = {
 
   /** Swap a password-reset OTP for a single-use reset token. */
   async verifyResetOtp({ email, otp } = {}) {
-    if (!email?.trim() || !otp) return { ok: false, error: "Enter the 6-digit code from your email." };
+    if (!email?.trim() || !otp) return { ok: false, error: "Enter the 6-digit verification code." };
     try {
       const result = await apiClient.post(
         "/auth/verify-reset-otp",

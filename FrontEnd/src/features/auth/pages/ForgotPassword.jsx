@@ -62,6 +62,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [digits, setDigits] = useState(EMPTY_DIGITS);
   const [resetToken, setResetToken] = useState("");
+  const [demoOtp, setDemoOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
@@ -93,7 +94,12 @@ const ForgotPassword = () => {
 
       // The backend always answers the same way, so nothing here may hint at
       // whether an account exists.
-      showToast("If that email is registered, a reset code is on its way.");
+      setDemoOtp(result.demoOtp || "");
+      showToast(
+        result.demoOtp
+          ? `Demo reset code: ${result.demoOtp}`
+          : "If that email is registered, a reset code is on its way."
+      );
       setStep("otp");
       startResendCooldown();
     } catch (error) {
@@ -113,15 +119,16 @@ const ForgotPassword = () => {
       return;
     }
     setDigits(EMPTY_DIGITS);
+    setDemoOtp(result.demoOtp || "");
     setFieldError("");
     startResendCooldown();
-    showToast("A new reset code is on its way.");
+    showToast(result.demoOtp ? `Demo reset code: ${result.demoOtp}` : "A new reset code is on its way.");
   };
 
   const runOtpCheck = async (submittedCode = code) => {
     if (otpCheckInProgress.current || isBusy) return;
     if (!/^\d{6}$/.test(submittedCode)) {
-      setFieldError("Enter the 6-digit code from your email.");
+      setFieldError("Enter the 6-digit verification code.");
       return;
     }
     setFieldError("");
@@ -200,7 +207,7 @@ const ForgotPassword = () => {
           </div>
           <h1 className="font-display text-[1.7rem] font-bold tracking-tight">Forgot your password?</h1>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-(--color-text-muted)">
-            We'll email you a 6-digit code to confirm it's you, then you can set a new password.
+            We'll send a 6-digit code to confirm it's you, then you can set a new password.
           </p>
         </div>
 
@@ -249,8 +256,18 @@ const ForgotPassword = () => {
         {step === "otp" && (
           <form onSubmit={submitOtp} className="space-y-6" noValidate>
             <p className="text-center text-sm text-(--color-text-muted)">
-              Enter the code sent to <span className="font-semibold text-(--color-text)">{email}</span>.
+              {demoOtp ? (
+                <>Use the demo code below to confirm your identity for <span className="font-semibold text-(--color-text)">{email}</span>.</>
+              ) : (
+                <>Enter the code sent to <span className="font-semibold text-(--color-text)">{email}</span>.</>
+              )}
             </p>
+
+            {demoOtp && (
+              <p className="rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
+                Demo verification code: <span className="font-bold tracking-wider">{demoOtp}</span>
+              </p>
+            )}
 
             <OtpInputs
               value={digits}

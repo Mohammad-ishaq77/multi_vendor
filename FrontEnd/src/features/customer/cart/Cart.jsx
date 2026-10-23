@@ -75,8 +75,8 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
           </div>
 
           {/* Price & Quantity */}
-          <div className="flex items-end justify-between mt-auto pt-3">
-            <div className="flex items-center gap-2">
+          <div className="mt-auto flex flex-wrap items-end justify-between gap-y-2 pt-3">
+            <div className="flex min-w-0 items-center gap-2">
               <span className="text-lg sm:text-xl font-bold text-emerald-700">
                 ₹{item.price * item.quantity}
               </span>
@@ -87,7 +87,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => {
               )}
             </div>
 
-            <div className="flex items-center bg-gray-50 rounded-md border border-gray-200 p-0.5">
+            <div className="flex shrink-0 items-center bg-gray-50 rounded-md border border-gray-200 p-0.5">
               <motion.button
                 whileTap={{ scale: 0.85 }}
                 onClick={() => onDecrease(item.id)}
@@ -200,7 +200,7 @@ const Cart = () => {
                   <motion.button
                     whileHover={{ x: 2 }}
                     onClick={clearCart}
-                    className="text-sm font-medium text-gray-400 hover:text-rose-500 transition-colors flex items-center gap-1.5 mt-4"
+                    className="mt-4 flex items-center gap-1.5 py-1 text-sm font-medium text-gray-400 transition-colors hover:text-rose-500"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     Clear Cart

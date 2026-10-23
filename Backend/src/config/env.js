@@ -7,6 +7,15 @@ const num = (v, fallback) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
+const demoOtpEnabled =
+  process.env.DEMO_OTP_ENABLED === "true" ||
+  (process.env.NODE_ENV !== "production" && process.env.DEMO_OTP_ENABLED !== "false");
+
+// A fixed, client-visible OTP must never be available in a production deployment.
+if (process.env.NODE_ENV === "production" && demoOtpEnabled) {
+  throw new Error("DEMO_OTP_ENABLED cannot be enabled in production.");
+}
+
 /**
  * Never let a placeholder reach production: outside development a missing value
  * stops the process instead of booting with a known secret.
@@ -21,6 +30,7 @@ function required(name, value, devFallback) {
 
 export const config = {
   port: num(process.env.PORT, 5000),
+  demoOtpEnabled,
   clientOrigin: required(
     "CLIENT_ORIGIN",
     process.env.CLIENT_ORIGIN,
