@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BadgeCheck, CheckCircle2, ChevronRight, ClipboardList, FileCheck, Info, Loader2, MapPin, User } from "lucide-react";
+import { CheckCircle2, ChevronRight, ClipboardList, FileCheck, Info, Loader2, MapPin, User } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import OnboardingLayout from "./OnboardingLayout";
 
@@ -35,11 +35,6 @@ export default function DocumentsUpload() {
       icon: User,
       title: contactData?.fullName || "Partner details",
       desc: [contactData?.phone, contactData?.email].filter(Boolean).join(" · ") || "Name, mobile and email saved",
-    },
-    {
-      icon: BadgeCheck,
-      title: contactData?.vehicleType || "Vehicle",
-      desc: contactData?.vehicleNumber || "Vehicle details saved",
     },
     {
       icon: MapPin,

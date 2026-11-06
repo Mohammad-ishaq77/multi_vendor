@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, ShieldCheck, Truck, Star, Settings } from "lucide-react";
+import { User, Mail, Phone, ShieldCheck, Star, Settings } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 
 export default function DeliveryProfile() {
@@ -44,15 +44,6 @@ export default function DeliveryProfile() {
               <div className="flex items-center gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-emerald-500" /><span className="text-gray-700">Identity</span><span className="ml-auto text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full">{identityData?.status === "verified" ? "Verified" : "Pending"}</span></div>
               <div className="flex items-center gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-emerald-500" /><span className="text-gray-700">Address</span><span className="ml-auto text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full">{addressData?.aadhaarAddressMatch ? "Verified" : "Pending"}</span></div>
               <div className="flex items-center gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-emerald-500" /><span className="text-gray-700">Application</span><span className="ml-auto text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full">{applicationStatus.replace("_", " ")}</span></div>
-            </div>
-          </div>
-
-          {/* Vehicle */}
-          <div className="border-t border-gray-100 pt-4">
-            <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">Vehicle</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm"><Truck className="w-4 h-4 text-gray-400" /><span className="text-gray-500">Type</span><span className="ml-auto font-medium text-gray-700">{profile.vehicleType}</span></div>
-              <div className="flex items-center gap-3 text-sm"><Truck className="w-4 h-4 text-gray-400" /><span className="text-gray-500">Number</span><span className="ml-auto font-medium text-gray-700">{profile.vehicleNumber}</span></div>
             </div>
           </div>
 

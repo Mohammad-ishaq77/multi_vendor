@@ -191,54 +191,55 @@ router.get(
     if (!partner.isApproved) {
       return res.status(403).json({ ok: false, error: "Your delivery application must be approved to view available deliveries." });
     }
-    const { lat, lng, radiusKm = 10, city } = req.query;
+
+    const addressData = partner?.addressData || {};
+    const rawLat = req.query.lat ?? addressData.lat ?? addressData.latitude ?? addressData.location?.lat ?? null;
+    const rawLng = req.query.lng ?? addressData.lng ?? addressData.longitude ?? addressData.location?.lng ?? null;
+    const radiusKm = Number(req.query.radiusKm ?? 10);
     const orders = repo("Order");
-    if (lat && lng) {
-      const radiusM = Number(radiusKm) * 1000;
-      const nearby = await orders.query(
-        `SELECT o.id, ST_Distance(s.location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography) AS distance_m
-         FROM orders o
-         JOIN shops s ON s.id = o.shop_id
-         WHERE o.status IN ('preparing', 'ready_for_pickup')
-           AND NOT EXISTS (
-             SELECT 1 FROM delivery_assignments da
-             WHERE da.order_id = o.id AND da.partner_id IS NOT NULL
-           )
-           AND s.location IS NOT NULL
-           AND ST_DWithin(s.location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography, $3)
-         ORDER BY distance_m ASC
-         LIMIT 50`,
-        [Number(lng), Number(lat), radiusM]
-      );
-      if (!nearby.length) return res.json({ ok: true, data: [] });
-      const ordersById = new Map(
-        (await orders.find({
-          where: { id: In(nearby.map((row) => row.id)) },
-          relations: { shop: true, customer: true, address: true, items: true },
-        })).map((order) => [order.id, order])
-      );
-      return res.json({
-        ok: true,
-        data: nearby
-          .map((row) => {
-            const order = ordersById.get(row.id);
-            return order
-              ? { ...deliveryOrderView(order), pickupDistanceKm: Number(row.distance_m || 0) / 1000 }
-              : null;
-          })
-          .filter(Boolean),
-      });
+
+    const lat = Number(rawLat);
+    const lng = Number(rawLng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      return res.json({ ok: true, data: [] });
     }
-    const qb = orders.createQueryBuilder("o")
-      .leftJoinAndSelect("o.shop", "shop")
-      .leftJoinAndSelect("o.customer", "customer")
-      .leftJoinAndSelect("o.address", "address")
-      .leftJoinAndSelect("o.items", "items");
-    qb.where("o.status IN (:...statuses)", { statuses: ["preparing", "ready_for_pickup"] })
-      .andWhere("NOT EXISTS (SELECT 1 FROM delivery_assignments da WHERE da.order_id = o.id AND da.partner_id IS NOT NULL)");
-    if (city) qb.andWhere("shop.city = :city", { city });
-    qb.orderBy("o.createdAt", "ASC").limit(50);
-    res.json({ ok: true, data: (await qb.getMany()).map(deliveryOrderView) });
+
+    const radiusM = Number.isFinite(radiusKm) && radiusKm > 0 ? radiusKm * 1000 : 10_000;
+    const nearby = await orders.query(
+      `SELECT o.id, ST_Distance(s.location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography) AS distance_m
+       FROM orders o
+       JOIN shops s ON s.id = o.shop_id
+       WHERE o.status IN ('preparing', 'ready_for_pickup')
+         AND NOT EXISTS (
+           SELECT 1 FROM delivery_assignments da
+           WHERE da.order_id = o.id AND da.partner_id IS NOT NULL
+         )
+         AND s.location IS NOT NULL
+         AND ST_DWithin(s.location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography, $3)
+       ORDER BY distance_m ASC
+       LIMIT 50`,
+      [lng, lat, radiusM]
+    );
+
+    if (!nearby.length) return res.json({ ok: true, data: [] });
+    const ordersById = new Map(
+      (await orders.find({
+        where: { id: In(nearby.map((row) => row.id)) },
+        relations: { shop: true, customer: true, address: true, items: true },
+      })).map((order) => [order.id, order])
+    );
+
+    return res.json({
+      ok: true,
+      data: nearby
+        .map((row) => {
+          const order = ordersById.get(row.id);
+          return order
+            ? { ...deliveryOrderView(order), pickupDistanceKm: Number(row.distance_m || 0) / 1000 }
+            : null;
+        })
+        .filter(Boolean),
+    });
   })
 );
 
@@ -564,12 +565,23 @@ router.put(
     body: z.object({
       vehicleType: z.string().max(50).optional(),
       vehicleNumber: z.string().max(30).optional(),
+      addressData: z.record(z.any()).optional(),
+      lat: z.coerce.number().optional(),
+      lng: z.coerce.number().optional(),
     }),
   }),
   asyncHandler(async (req, res) => {
     const partners = repo("DeliveryPartner");
     const partner = await myPartner(req.user.id);
-    Object.assign(partner, req.body);
+    const { addressData, lat, lng, ...updates } = req.body;
+
+    Object.assign(partner, updates);
+    const nextAddressData = { ...(partner.addressData || {}) };
+    if (addressData && typeof addressData === "object") Object.assign(nextAddressData, addressData);
+    if (lat != null) nextAddressData.lat = Number(lat);
+    if (lng != null) nextAddressData.lng = Number(lng);
+    if (Object.keys(nextAddressData).length > 0) partner.addressData = nextAddressData;
+
     res.json({ ok: true, data: await partners.save(partner) });
   })
 );

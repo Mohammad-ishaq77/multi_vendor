@@ -14,6 +14,16 @@ import { useLogoutConfirm } from "../../../context/LogoutContext";
 import DashboardHeader from "../../../components/dashboard/DashboardHeader";
 import { resolvePageTitle } from "../../../components/dashboard/pageTitles";
 
+const getInitials = (name) => {
+  const source = String(name || "").trim();
+  if (!source) return "U";
+
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+};
+
 const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +35,8 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
     () => resolvePageTitle(location.pathname),
     [location.pathname]
   );
+  const profileName = profile?.name || shop?.ownerName || "Vendor";
+  const profileInitials = getInitials(profileName);
 
   useEffect(() => {
     const handler = (e) => {
@@ -40,13 +52,13 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
       <div
         className={`hidden items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold sm:flex ${
           shop?.isOpen
-            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+            ? "border-emerald-200 bg-[#ecfdf5] text-[#14532d]"
             : "border-gray-200 bg-gray-50 text-gray-500"
         }`}
       >
         <div
           className={`h-2 w-2 rounded-full ${
-            shop?.isOpen ? "bg-emerald-500 animate-pulse" : "bg-gray-400"
+            shop?.isOpen ? "bg-[#10b981] animate-pulse" : "bg-gray-400"
           }`}
         />
         {shop?.isOpen ? "Open" : "Closed"}
@@ -60,7 +72,7 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
             setNotifOpen(!notifOpen);
             setProfileOpen(false);
           }}
-          className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-sm transition-all hover:border-emerald-200 hover:bg-emerald-50/50 hover:text-emerald-600"
+          className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-200 bg-white text-gray-600 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50/60 hover:text-[#155c43]"
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
@@ -136,17 +148,17 @@ const ShopkeeperTopbar = ({ onMenuToggle, isMenuOpen = false }) => {
             setProfileOpen(!profileOpen);
             setNotifOpen(false);
           }}
-          className="flex items-center gap-2 rounded-lg border border-gray-200/80 bg-white py-1 pl-1 pr-2 shadow-sm transition-shadow hover:shadow-md"
+          className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white py-1 pl-1 pr-2 shadow-sm transition-shadow hover:shadow-md"
         >
-          <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+          <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-[#155c43] to-[#0f766e] text-white">
             {profile?.image ? (
-              <img src={profile.image} alt="" className="h-full w-full object-cover" />
+              <img src={profile.image} alt={profileName} className="h-full w-full object-cover" />
             ) : (
-              <User className="h-3.5 w-3.5" />
+              <span className="text-[0.55rem] font-bold tracking-wide">{profileInitials}</span>
             )}
           </div>
           <span className="hidden max-w-[80px] truncate text-sm font-semibold text-gray-700 sm:block">
-            {profile?.name || "Vendor"}
+            {profileName}
           </span>
           <ChevronDown className="hidden h-3.5 w-3.5 text-gray-400 sm:block" />
         </motion.button>

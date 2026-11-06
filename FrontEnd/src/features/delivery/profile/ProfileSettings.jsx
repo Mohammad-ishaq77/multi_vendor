@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, User, Mail, Phone, Truck } from "lucide-react";
+import { ArrowLeft, Save, User, Mail, Phone, MapPin } from "lucide-react";
+import LocationPicker from "../../../components/common/LocationPicker";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import { useToast } from "../components/Toast";
 
@@ -13,9 +14,12 @@ export default function ProfileSettings() {
     name: profile.name,
     email: profile.email,
     phone: profile.phone,
-    vehicleType: profile.vehicleType,
-    vehicleNumber: profile.vehicleNumber,
   });
+  const [location, setLocation] = useState(
+    profile?.address?.lat != null && profile?.address?.lng != null
+      ? { lat: Number(profile.address.lat), lng: Number(profile.address.lng) }
+      : null
+  );
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
@@ -25,16 +29,27 @@ export default function ProfileSettings() {
     if (!form.email.trim()) errs.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Enter a valid email";
     if (!form.phone.trim()) errs.phone = "Phone is required";
-    if (!form.vehicleType.trim()) errs.vehicleType = "Vehicle type is required";
-    if (!form.vehicleNumber.trim()) errs.vehicleNumber = "Vehicle number is required";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
   const handleSave = async () => {
     if (!validate()) return;
+    if (!location) {
+      addToast("Please set your delivery location on the map.", "error");
+      return;
+    }
     setSaving(true);
-    const result = await updateProfile(form);
+    const result = await updateProfile({
+      ...form,
+      addressData: {
+        ...(profile?.address || {}),
+        lat: location.lat,
+        lng: location.lng,
+      },
+      lat: location.lat,
+      lng: location.lng,
+    });
     setSaving(false);
     if (result?.ok === false) {
       addToast(result.error || "We could not save your profile.", "error");
@@ -86,27 +101,18 @@ export default function ProfileSettings() {
             {errors.phone && <p className="text-xs text-rose-500 mt-1">{errors.phone}</p>}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Type</label>
-              <div className="relative">
-                <Truck className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <select value={form.vehicleType} onChange={(e) => setForm({ ...form, vehicleType: e.target.value })} className={`${inputClass("vehicleType")} pl-10 bg-white`}>
-                  <option value="Motorcycle">Motorcycle</option>
-                  <option value="Scooter">Scooter</option>
-                  <option value="Bicycle">Bicycle</option>
-                  <option value="Car">Car</option>
-                  <option value="Van">Van</option>
-                </select>
-              </div>
-              {errors.vehicleType && <p className="text-xs text-rose-500 mt-1">{errors.vehicleType}</p>}
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+              <MapPin className="h-4 w-4 text-emerald-600" />
+              Delivery location
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Number</label>
-              <input type="text" value={form.vehicleNumber} onChange={(e) => setForm({ ...form, vehicleNumber: e.target.value.toUpperCase() })} placeholder="JK01AB1234" className={inputClass("vehicleNumber")} />
-              {errors.vehicleNumber && <p className="text-xs text-rose-500 mt-1">{errors.vehicleNumber}</p>}
-            </div>
+            <LocationPicker
+              value={location}
+              onChange={setLocation}
+              label="Current delivery location"
+              hint="This updates the position used when matching nearby delivery jobs."
+              mapHeight="h-60"
+            />
           </div>
         </div>
 

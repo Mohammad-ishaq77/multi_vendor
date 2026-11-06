@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, MapPin, Sparkles } from "lucide-react";
+import LocationPicker from "../../../components/common/LocationPicker";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import OnboardingLayout from "./OnboardingLayout";
 
@@ -28,6 +29,11 @@ export default function AddressVerification() {
     pinCode: addressData?.pinCode || "",
     aadhaarAddressMatch: addressData?.aadhaarAddressMatch || false,
   });
+  const [location, setLocation] = useState(
+    addressData?.lat != null && addressData?.lng != null
+      ? { lat: Number(addressData.lat), lng: Number(addressData.lng) }
+      : null
+  );
   const [errors, setErrors] = useState({});
 
   const update = (field, value) => {
@@ -43,14 +49,32 @@ export default function AddressVerification() {
     if (!form.district.trim()) next.district = "District is required";
     if (!form.state.trim()) next.state = "State is required";
     if (!/^\d{6}$/.test(form.pinCode.trim())) next.pinCode = "Enter a valid 6-digit PIN code";
+    if (!location) next.location = "Choose your current location on the map";
     if (!form.aadhaarAddressMatch) next.aadhaarAddressMatch = "Confirm this matches your Aadhaar address";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
+  const handleLocationAddress = (place) => {
+    if (!place) return;
+    setForm((prev) => ({
+      ...prev,
+      house: prev.house || place.line1 || "",
+      area: prev.area || place.name || "",
+      city: prev.city || place.city || "",
+      district: prev.district || place.city || "",
+      state: prev.state || place.state || "",
+      pinCode: prev.pinCode || place.pincode || "",
+    }));
+  };
+
   const handleSave = () => {
     if (!validate()) return;
-    setAddressVerified(form);
+    setAddressVerified({
+      ...form,
+      lat: location?.lat ?? null,
+      lng: location?.lng ?? null,
+    });
     updateOnboardingStep("documents");
     navigate("/delivery/onboarding/documents");
   };
@@ -77,6 +101,18 @@ export default function AddressVerification() {
           <Sparkles className="h-4 w-4" />
           Use address from Aadhaar
         </button>
+
+        <div className="rounded-[14px] border border-[#dce8e2] bg-[#f8fbf9] p-3.5">
+          <LocationPicker
+            value={location}
+            onChange={setLocation}
+            onAddressChange={handleLocationAddress}
+            label="Delivery location"
+            hint="Set the place you usually work from so nearby pickup jobs are assigned correctly."
+            mapHeight="h-64"
+          />
+          {errors.location && <p className="mt-2 text-xs text-rose-600">{errors.location}</p>}
+        </div>
 
         <div className="space-y-3">
           <div>

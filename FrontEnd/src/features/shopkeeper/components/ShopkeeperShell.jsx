@@ -24,12 +24,12 @@ const ShopkeeperShell = ({ children }) => {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen min-h-screen overflow-hidden bg-[#f7faf8] font-sans selection:bg-[#155c43]/20 selection:text-[#155c43]">
+    <div className="flex h-screen min-h-screen overflow-hidden bg-[#edf7f1] font-sans selection:bg-[#155c43]/20 selection:text-[#155c43]">
       <div className="pointer-events-none fixed inset-0 z-0">
         <motion.div
           animate={{ opacity: [0.03, 0.06, 0.03], scale: [1, 1.2, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-20 -right-20 h-[500px] w-[500px] rounded-full bg-[#155c43] blur-[150px]"
+          className="absolute -top-20 -right-20 h-[500px] w-[500px] rounded-full bg-[#0f3d2e] blur-[150px]"
         />
       </div>
 

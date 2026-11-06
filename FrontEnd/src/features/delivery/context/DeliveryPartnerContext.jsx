@@ -137,25 +137,55 @@ export function DeliveryPartnerProvider({ children }) {
     });
   }, []);
 
+  const resolvePartnerLocation = useCallback(() => new Promise((resolve) => {
+    if (!navigator?.geolocation) {
+      resolve(null);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const lat = Number(coords?.latitude);
+        const lng = Number(coords?.longitude);
+        resolve(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null);
+      },
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: 6000, maximumAge: 300000 }
+    );
+  }), []);
+
   /* ------------------------------ loaders ------------------------------ */
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [stats, profile, available, active, history, earningsRes, notificationsRes, documents] =
-        await Promise.all([
-          deliveryService.stats(),
-          // /delivery/stats is an aggregate only; /delivery/profile carries the
-          // persisted contact/identity/address/vehicle onboarding data.
-          deliveryService.profile().catch(() => null),
-          deliveryService.available().catch(() => []),
-          deliveryService.active().catch(() => null),
-          deliveryService.history({ limit: 50 }).then(({ items }) => items).catch(() => []),
-          deliveryService.earnings().catch(() => null),
-          deliveryService.notifications().catch(() => []),
-          deliveryService.documents(),
-        ]);
+      const [stats, profile, currentLocation] = await Promise.all([
+        deliveryService.stats(),
+        // /delivery/stats is an aggregate only; /delivery/profile carries the
+        // persisted contact/identity/address/vehicle onboarding data.
+        deliveryService.profile().catch(() => null),
+        resolvePartnerLocation(),
+      ]);
+
+      const availableLocation = currentLocation || {
+        lat: profile?.addressData?.lat ?? profile?.addressData?.latitude ?? null,
+        lng: profile?.addressData?.lng ?? profile?.addressData?.longitude ?? null,
+      };
+
+      const available = await deliveryService.available(
+        availableLocation.lat != null && availableLocation.lng != null
+          ? { lat: availableLocation.lat, lng: availableLocation.lng, radiusKm: 10 }
+          : { radiusKm: 10 }
+      ).catch(() => []);
+
+      const [active, history, earningsRes, notificationsRes, documents] = await Promise.all([
+        deliveryService.active().catch(() => null),
+        deliveryService.history({ limit: 50 }).then(({ items }) => items).catch(() => []),
+        deliveryService.earnings().catch(() => null),
+        deliveryService.notifications().catch(() => []),
+        deliveryService.documents(),
+      ]);
 
       setPartner({ ...(profile || {}), ...(stats || {}) });
       setIsOnline(Boolean(stats?.isOnline));
@@ -230,8 +260,6 @@ export function DeliveryPartnerProvider({ children }) {
       joinedDate: partner?.createdAt
         ? new Date(partner.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
         : "",
-      vehicleType: partner?.vehicleType || "",
-      vehicleNumber: partner?.vehicleNumber || "",
       address: partner?.addressData || null,
       identity: identity ? { ...identity, status: identity.status || "submitted" } : null,
       verificationStatus: partner?.isApproved ? "approved" : partner?.applicationStatus || "draft",
@@ -304,15 +332,22 @@ export function DeliveryPartnerProvider({ children }) {
           await customerService.updateProfile(accountPayload);
         }
 
+        const addressData = updates.addressData || {};
         const payload = {
-          vehicleType: updates.vehicleType,
-          vehicleNumber: updates.vehicleNumber,
+          addressData: Object.keys(addressData).length ? addressData : undefined,
+          lat: updates.lat != null ? Number(updates.lat) : undefined,
+          lng: updates.lng != null ? Number(updates.lng) : undefined,
         };
         Object.keys(payload).forEach((key) => payload[key] === undefined && delete payload[key]);
         if (Object.keys(payload).length) {
           await deliveryService.updateProfile(payload);
         }
-        setPartner((prev) => ({ ...(prev || {}), ...accountPayload, ...payload }));
+        setPartner((prev) => ({
+          ...(prev || {}),
+          ...accountPayload,
+          ...payload,
+          addressData: payload.addressData ?? prev?.addressData ?? null,
+        }));
         await loadAll();
         return { ok: true };
       } catch (err) {

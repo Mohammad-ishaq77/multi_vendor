@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Banknote,
-  Bike,
   CheckCircle2,
   Clock,
   FileText,
@@ -458,7 +457,7 @@ export default function DeliveryPartnerDashboard() {
             <section className="rounded-[20px] border border-[#edf3ef] bg-white p-5 shadow-[var(--shadow-card)]">
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-(--color-primary)">
-                  <Bike className="h-4 w-4" />
+                  <User className="h-4 w-4" />
                   <h2 className="text-sm font-bold uppercase tracking-wider">Partner details</h2>
                 </div>
                 <button type="button" onClick={() => navigate("/delivery/profile")} className="text-xs font-semibold text-(--color-primary)">
@@ -469,14 +468,6 @@ export default function DeliveryPartnerDashboard() {
                 <div className="flex justify-between gap-3">
                   <dt className="text-(--color-text-muted)">Name</dt>
                   <dd className="font-semibold">{profile.name || "—"}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-(--color-text-muted)">Vehicle</dt>
-                  <dd className="font-semibold">{profile.vehicleType || "—"}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-(--color-text-muted)">Number</dt>
-                  <dd className="font-mono font-semibold">{profile.vehicleNumber || "—"}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
                   <dt className="text-(--color-text-muted)">Phone</dt>

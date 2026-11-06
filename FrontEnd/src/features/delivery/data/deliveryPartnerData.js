@@ -12,8 +12,6 @@ export const deliveryPartnerProfile = {
   todayEarnings: 640,
   totalEarnings: 28450,
   joinedDate: "January 2026",
-  vehicleType: "Motorcycle",
-  vehicleNumber: "JK01AB1234",
   address: {
     house: "14, Green Avenue",
     area: "Rajbagh",
