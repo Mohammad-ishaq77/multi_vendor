@@ -12,7 +12,7 @@ import { config } from "../../config/env.js";
 import { emitToRole, emitToUser } from "../../realtime/socket.js";
 import { canDeliveryTransition } from "../orders/status.js";
 import { maskEmail } from "../../common/utils/helpers.js";
-import { OTP_PURPOSES, createOtp, consumeActiveOtps, verifyOtp } from "../../common/utils/otp.js";
+import { OTP_PURPOSES, DEMO_OTP_CODE, createOtp, consumeActiveOtps, verifyOtp } from "../../common/utils/otp.js";
 import { sendDeliveryOtpEmail } from "../../common/email/service.js";
 import { deliveryOtpLimiter } from "../../common/middleware/rateLimit.js";
 
@@ -453,12 +453,15 @@ router.patch(
       if (!customerEmail && !config.demoOtpEnabled) {
         return res.status(400).json({ ok: false, error: "The customer has no email address on file." });
       }
-      await verifyOtp({
-        email: customerEmail,
-        purpose: OTP_PURPOSES.DELIVERY,
-        orderId: order.id,
-        code: req.body.otp,
-      });
+      // Demo mode accepts the fixed demo code without a prior OTP request.
+      if (!(config.demoOtpEnabled && req.body.otp === DEMO_OTP_CODE)) {
+        await verifyOtp({
+          email: customerEmail,
+          purpose: OTP_PURPOSES.DELIVERY,
+          orderId: order.id,
+          code: req.body.otp,
+        });
+      }
     }
 
     if (status === "ready_for_pickup") {

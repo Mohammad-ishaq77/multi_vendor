@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Clock, IndianRupee, Store, User, Phone, Package, MessageSquare, Loader2, RefreshCw, CheckCircle, PackageCheck, Mail } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, IndianRupee, Store, User, Phone, Package, MessageSquare, Loader2, RefreshCw, CheckCircle, PackageCheck } from "lucide-react";
 import { useDeliveryPartner } from "../context/DeliveryPartnerContext";
 import { useToast } from "../components/Toast";
 import { deliveryService } from "../../../services/orderService";
 import OtpInputs from "../../../components/auth/OtpInputs";
-import useCountdown from "../../../hooks/useCountdown";
 
-const RESEND_COOLDOWN_SECONDS = 30;
+const DEMO_DELIVERY_CODE = "1234";
 const EMPTY_DIGITS = Array.from({ length: 4 }, () => "");
 
 export default function DeliveryDetails() {
@@ -21,13 +20,11 @@ export default function DeliveryDetails() {
     markReadyForPickup,
     verifyPickup,
     startDelivery,
-    requestDeliveryOtp,
     completeDelivery,
     isOnline,
   } = useDeliveryPartner();
   const deliveryId = String(routeDeliveryId || activeDelivery?.id || "");
   const { addToast } = useToast();
-  const otpCountdown = useCountdown();
 
   const listedDelivery =
     availableDeliveries.find((item) => String(item.id) === deliveryId) ||
@@ -37,10 +34,7 @@ export default function DeliveryDetails() {
   const [loadError, setLoadError] = useState("");
   const [accepting, setAccepting] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-  const [requestingOtp, setRequestingOtp] = useState(false);
   const [otpDigits, setOtpDigits] = useState(EMPTY_DIGITS);
-  const [maskedEmail, setMaskedEmail] = useState("");
-  const [demoOtp, setDemoOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [otpStatus, setOtpStatus] = useState("idle");
   const otpVerificationInProgress = useRef(false);
@@ -221,26 +215,6 @@ export default function DeliveryDetails() {
     }
   };
 
-  const handleRequestOtp = async () => {
-    setOtpError("");
-    setOtpStatus("idle");
-    setRequestingOtp(true);
-    try {
-      const result = await requestDeliveryOtp(deliveryId);
-      addToast(result.message, result.success ? "success" : "error");
-      if (result.success) {
-        setMaskedEmail(result.data?.maskedEmail || "");
-        setDemoOtp(result.data?.demoOtp || "");
-        setOtpDigits(EMPTY_DIGITS);
-        otpCountdown.start(RESEND_COOLDOWN_SECONDS);
-      } else {
-        setOtpError(result.message);
-      }
-    } finally {
-      setRequestingOtp(false);
-    }
-  };
-
   const handleCompleteDelivery = async (submittedCode = otpDigits.join("")) => {
     if (otpVerificationInProgress.current || otpStatus === "verified") return;
     const code = String(submittedCode).trim();
@@ -262,7 +236,6 @@ export default function DeliveryDetails() {
         // Let the tick animation play before leaving the page.
         redirectTimer.current = setTimeout(() => {
           setOtpDigits(EMPTY_DIGITS);
-          setMaskedEmail("");
           navigate("/delivery/completed", {
             state: {
               delivery: {
@@ -300,10 +273,11 @@ export default function DeliveryDetails() {
   const isCodeComplete = /^\d{4}$/.test(otpDigits.join(""));
   const earning = Number(delivery.partnerEarning ?? delivery.assignment?.partnerEarning ?? 0);
   const estimatedTime = delivery.estimatedTime || "25-30 mins";
+  const goBack = () => navigate(isAssignedDelivery ? "/delivery/active" : "/delivery/available");
 
   return (
     <div className="w-full space-y-4">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 font-medium">
+      <button onClick={goBack} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 font-medium">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
@@ -441,38 +415,12 @@ export default function DeliveryDetails() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
                   <CheckCircle className="h-4 w-4" />
-                  Out for delivery. {demoOtp ? "Use the demo confirmation code below." : "Send the confirmation code to the email on the customer's NearMart account."}
+                  Out for delivery. Use the demo confirmation code below to complete this delivery.
                 </div>
 
-                {demoOtp && (
-                  <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
-                    Demo delivery code: <span className="font-bold tracking-wider">{demoOtp}</span>
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between gap-3 rounded-md border border-gray-100 bg-white px-3 py-2">
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <Mail className="h-4 w-4 text-emerald-600" />
-                      {demoOtp ? (
-                        <span>Demo code ready</span>
-                      ) : maskedEmail ? (
-                        <span>
-                          Code sent to <span className="font-semibold">{maskedEmail}</span>
-                        </span>
-                      ) : (
-                        <span>Customer's registered account email</span>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleRequestOtp}
-                      disabled={requestingOtp || updatingStatus || otpCountdown.isRunning}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {requestingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-                      {requestingOtp ? "Sending..." : otpCountdown.isRunning ? `Resend in ${otpCountdown.secondsLeft}s` : maskedEmail ? "Resend code" : "Send code"}
-                    </button>
-                </div>
+                <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
+                  Demo delivery code: <span className="font-bold tracking-wider">{DEMO_DELIVERY_CODE}</span>
+                </p>
 
                 <label htmlFor="details-delivery-otp" className="block text-xs font-semibold uppercase tracking-wide text-gray-700">
                   Delivery code
@@ -502,7 +450,7 @@ export default function DeliveryDetails() {
           </div>
         )}
         <div className="p-5 border-t border-gray-100 flex gap-3">
-          <button onClick={() => navigate(-1)} className="flex-1 px-4 py-2.5 rounded-md text-sm font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all">
+          <button onClick={goBack} className="flex-1 px-4 py-2.5 rounded-md text-sm font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all">
             Go Back
           </button>
           {canAccept && (
