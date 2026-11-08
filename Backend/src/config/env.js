@@ -11,9 +11,12 @@ const demoOtpEnabled =
   process.env.DEMO_OTP_ENABLED === "true" ||
   (process.env.NODE_ENV !== "production" && process.env.DEMO_OTP_ENABLED !== "false");
 
-// A fixed, client-visible OTP must never be available in a production deployment.
+// Demo OTPs are opt-in in production: a normal production boot can never expose
+// 1234 by accident, but a demo deployment can still enable it explicitly.
 if (process.env.NODE_ENV === "production" && demoOtpEnabled) {
-  throw new Error("DEMO_OTP_ENABLED cannot be enabled in production.");
+  console.warn(
+    "WARNING: DEMO_OTP_ENABLED is on in production — every OTP is 1234 and OTP emails are skipped."
+  );
 }
 
 /**

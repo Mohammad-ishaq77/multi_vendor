@@ -372,12 +372,16 @@ router.post(
     if (order.status !== "out_for_delivery") {
       return res.status(400).json({ ok: false, error: "Start the delivery before requesting a confirmation code." });
     }
-    const email = order.customer?.email;
-    if (!email) {
-      return res.status(400).json({ ok: false, error: "The customer has no email address on file." });
-    }
-    if (!order.customer.emailVerified) {
-      return res.status(400).json({ ok: false, error: "The customer's email address has not been verified." });
+    const email = order.customer?.email || "";
+    // Demo mode never sends mail, so it does not depend on the customer's email
+    // being present or verified. Real sends still require a verified address.
+    if (!config.demoOtpEnabled) {
+      if (!email) {
+        return res.status(400).json({ ok: false, error: "The customer has no email address on file." });
+      }
+      if (!order.customer.emailVerified) {
+        return res.status(400).json({ ok: false, error: "The customer's email address has not been verified." });
+      }
     }
     const { code, ttlMinutes } = await createOtp({
       email,
@@ -445,8 +449,8 @@ router.patch(
       if (!req.body.otp) {
         return res.status(400).json({ ok: false, error: "Enter the customer's delivery verification code." });
       }
-      const customerEmail = order.customer?.email;
-      if (!customerEmail) {
+      const customerEmail = order.customer?.email || "";
+      if (!customerEmail && !config.demoOtpEnabled) {
         return res.status(400).json({ ok: false, error: "The customer has no email address on file." });
       }
       await verifyOtp({
