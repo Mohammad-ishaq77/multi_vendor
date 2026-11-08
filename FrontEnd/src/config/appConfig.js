@@ -7,8 +7,8 @@ export const APP_CONFIG = {
   favicon: "/favicon.ico",
   heroImage: "/images/hero-img.png",
   loginArt: "/images/loginBg.png",
-  supportEmail: "support@nearmart.com",
-  supportPhone: "+91 98765 43210",
+  supportEmail: "nearmart.business@gmail.com",
+  supportPhone: "+91 9622085113",
 };
 
 /**

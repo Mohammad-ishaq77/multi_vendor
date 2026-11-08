@@ -18,9 +18,9 @@ import { config } from "../src/config/env.js";
 const PURPOSE = OTP_PURPOSES.REGISTER;
 
 describe("OTP generation", () => {
-  test("codes are six numeric digits, zero-padded", () => {
+  test("codes are four numeric digits, zero-padded", () => {
     for (let i = 0; i < 200; i += 1) {
-      expect(generateOtp()).toMatch(/^\d{6}$/);
+      expect(generateOtp()).toMatch(/^\d{4}$/);
     }
   });
 
@@ -37,21 +37,21 @@ describe("OTP generation", () => {
 
 describe("OTP hashing", () => {
   test("hash is deterministic for the same code + purpose", () => {
-    expect(hashOtp("123456", PURPOSE)).toBe(hashOtp("123456", PURPOSE));
+    expect(hashOtp("1234", PURPOSE)).toBe(hashOtp("1234", PURPOSE));
   });
 
   test("the same code hashes differently per purpose", () => {
-    expect(hashOtp("123456", OTP_PURPOSES.REGISTER)).not.toBe(
-      hashOtp("123456", OTP_PURPOSES.DELIVERY)
+    expect(hashOtp("1234", OTP_PURPOSES.REGISTER)).not.toBe(
+      hashOtp("1234", OTP_PURPOSES.DELIVERY)
     );
   });
 
   test("different codes hash differently", () => {
-    expect(hashOtp("123456", PURPOSE)).not.toBe(hashOtp("654321", PURPOSE));
+    expect(hashOtp("1234", PURPOSE)).not.toBe(hashOtp("4321", PURPOSE));
   });
 
   test("whitespace is tolerated on input", () => {
-    expect(hashOtp(" 123456 ", PURPOSE)).toBe(hashOtp("123456", PURPOSE));
+    expect(hashOtp(" 1234 ", PURPOSE)).toBe(hashOtp("1234", PURPOSE));
   });
 
   test("delivery/reset tokens are purpose-scoped and unique", () => {
@@ -66,7 +66,7 @@ describe("OTP hashing", () => {
 
 describe("evaluateOtp", () => {
   const row = (overrides = {}) => ({
-    codeHash: hashOtp("123456", PURPOSE),
+    codeHash: hashOtp("1234", PURPOSE),
     attempts: 0,
     maxAttempts: 5,
     consumedAt: null,
@@ -75,31 +75,31 @@ describe("evaluateOtp", () => {
   });
 
   test("valid code passes", () => {
-    expect(evaluateOtp(row(), "123456", PURPOSE).status).toBe("ok");
+    expect(evaluateOtp(row(), "1234", PURPOSE).status).toBe("ok");
   });
 
   test("no matching row is missing", () => {
-    expect(evaluateOtp(null, "123456", PURPOSE).status).toBe("missing");
+    expect(evaluateOtp(null, "1234", PURPOSE).status).toBe("missing");
   });
 
   test("consumed code cannot be replayed", () => {
-    expect(evaluateOtp(row({ consumedAt: new Date() }), "123456", PURPOSE).status).toBe("used");
+    expect(evaluateOtp(row({ consumedAt: new Date() }), "1234", PURPOSE).status).toBe("used");
   });
 
   test("expired code is rejected", () => {
-    expect(evaluateOtp(row({ expiresAt: new Date(Date.now() - 1000) }), "123456", PURPOSE).status).toBe("expired");
+    expect(evaluateOtp(row({ expiresAt: new Date(Date.now() - 1000) }), "1234", PURPOSE).status).toBe("expired");
   });
 
   test("attempts exhausted locks the code", () => {
-    expect(evaluateOtp(row({ attempts: 5 }), "123456", PURPOSE).status).toBe("locked");
+    expect(evaluateOtp(row({ attempts: 5 }), "1234", PURPOSE).status).toBe("locked");
   });
 
   test("wrong code is a mismatch", () => {
-    expect(evaluateOtp(row(), "000000", PURPOSE).status).toBe("mismatch");
+    expect(evaluateOtp(row(), "0000", PURPOSE).status).toBe("mismatch");
   });
 
   test("a code minted for another purpose is a mismatch", () => {
-    expect(evaluateOtp(row(), "123456", OTP_PURPOSES.DELIVERY).status).toBe("mismatch");
+    expect(evaluateOtp(row(), "1234", OTP_PURPOSES.DELIVERY).status).toBe("mismatch");
   });
 
   test("isExpired treats missing expiry as expired", () => {

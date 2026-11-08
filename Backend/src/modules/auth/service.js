@@ -40,7 +40,7 @@ export const emailOnlySchema = z.object({
 
 export const verifyEmailSchema = z.object({
   email: z.string().email().max(150),
-  otp: z.string().regex(/^\d{6}$/, "Enter the 6-digit code."),
+  otp: z.string().regex(/^\d{4}$/, "Enter the 4-digit code."),
 });
 
 export const resetPasswordSchema = z.object({

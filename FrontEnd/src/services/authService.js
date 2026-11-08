@@ -164,7 +164,7 @@ export const authService = {
   /** Confirm a registration OTP and start the session. */
   async verifyEmail({ email, otp } = {}) {
     if (!email?.trim() || !otp) {
-      return { ok: false, error: "Enter the 6-digit verification code." };
+      return { ok: false, error: "Enter the 4-digit verification code." };
     }
 
     try {
@@ -207,7 +207,7 @@ export const authService = {
 
   /** Swap a password-reset OTP for a single-use reset token. */
   async verifyResetOtp({ email, otp } = {}) {
-    if (!email?.trim() || !otp) return { ok: false, error: "Enter the 6-digit verification code." };
+    if (!email?.trim() || !otp) return { ok: false, error: "Enter the 4-digit verification code." };
     try {
       const result = await apiClient.post(
         "/auth/verify-reset-otp",

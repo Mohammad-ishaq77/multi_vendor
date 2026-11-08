@@ -47,8 +47,8 @@ const SETTINGS_KEY = "nearmart_admin_settings";
 
 const DEFAULT_SETTINGS = {
   platformName: "NearMart",
-  supportEmail: "support@nearmart.in",
-  supportPhone: "",
+  supportEmail: "nearmart.business@gmail.com",
+  supportPhone: "+91 9622085113",
   maxDeliveryDistance: 20,
   deliveryFeeRules: [],
   minOrderRules: [],

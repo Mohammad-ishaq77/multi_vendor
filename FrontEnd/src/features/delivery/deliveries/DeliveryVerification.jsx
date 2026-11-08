@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -18,7 +18,7 @@ import OtpInputs from "../../../components/auth/OtpInputs";
 import useCountdown from "../../../hooks/useCountdown";
 
 const RESEND_COOLDOWN_SECONDS = 30;
-const EMPTY_DIGITS = Array.from({ length: 6 }, () => "");
+const EMPTY_DIGITS = Array.from({ length: 4 }, () => "");
 
 export default function DeliveryVerification() {
   const navigate = useNavigate();
@@ -27,12 +27,16 @@ export default function DeliveryVerification() {
   const countdown = useCountdown();
 
   const [verifying, setVerifying] = useState(false);
+  const [otpStatus, setOtpStatus] = useState("idle");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
   const [digits, setDigits] = useState(EMPTY_DIGITS);
   const [maskedEmail, setMaskedEmail] = useState("");
   const [demoOtp, setDemoOtp] = useState("");
   const verificationInProgress = useRef(false);
+  const redirectTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(redirectTimer.current), []);
 
   if (!activeDelivery) {
     return (
@@ -46,7 +50,7 @@ export default function DeliveryVerification() {
   }
 
   const code = digits.join("");
-  const isComplete = /^\d{6}$/.test(code);
+  const isComplete = /^\d{4}$/.test(code);
 
   const handleSendCode = async () => {
     setSending(true);
@@ -63,31 +67,38 @@ export default function DeliveryVerification() {
   };
 
   const handleComplete = async (submittedCode = code) => {
-    if (verificationInProgress.current) return;
+    if (verificationInProgress.current || otpStatus === "verified") return;
     const value = String(submittedCode).trim();
-    if (!/^\d{6}$/.test(value)) {
-      setResult({ success: false, message: "Enter the 6-digit code the customer received." });
+    if (!/^\d{4}$/.test(value)) {
+      setResult({ success: false, message: "Enter the 4-digit code the customer received." });
       return;
     }
 
     verificationInProgress.current = true;
     setVerifying(true);
+    setOtpStatus("verifying");
     try {
       const res = await completeDelivery(value);
       setResult(res);
       addToast(res.message, res.success ? "success" : "error");
       if (res.success) {
-        setDigits(EMPTY_DIGITS);
-        navigate("/delivery/completed", {
-          state: {
-            delivery: {
-              id: activeDelivery.id,
-              partnerEarning: activeDelivery.partnerEarning ?? activeDelivery.assignment?.partnerEarning,
-              distance: activeDelivery.distance,
-              estimatedTime: activeDelivery.estimatedTime,
+        setOtpStatus("verified");
+        // Let the tick animation play before leaving the page.
+        redirectTimer.current = setTimeout(() => {
+          setDigits(EMPTY_DIGITS);
+          navigate("/delivery/completed", {
+            state: {
+              delivery: {
+                id: activeDelivery.id,
+                partnerEarning: activeDelivery.partnerEarning ?? activeDelivery.assignment?.partnerEarning,
+                distance: activeDelivery.distance,
+                estimatedTime: activeDelivery.estimatedTime,
+              },
             },
-          },
-        });
+          });
+        }, 1200);
+      } else {
+        setOtpStatus("idle");
       }
     } finally {
       verificationInProgress.current = false;
@@ -128,7 +139,7 @@ export default function DeliveryVerification() {
             <span>
               {demoOtp
                 ? "Use the demo confirmation code shown below to complete this delivery."
-                : "The customer receives a 6-digit code by email once you request it. Ask them for it at the door and enter it below."}{" "}
+                : "The customer receives a 4-digit code by email once you request it. Ask them for it at the door and enter it below."}{" "}
               On success the order is marked delivered, your earnings are credited and the customer&apos;s tracking updates.
             </span>
           </div>
@@ -176,7 +187,8 @@ export default function DeliveryVerification() {
                 if (result && !result.success) setResult(null);
               }}
               error={result && !result.success ? result.message : ""}
-              disabled={verifying}
+              disabled={verifying || otpStatus !== "idle"}
+              status={otpStatus}
               autoFocus
               onComplete={(submittedCode) => handleComplete(submittedCode)}
             />
@@ -195,10 +207,15 @@ export default function DeliveryVerification() {
 
           <button
             onClick={() => handleComplete()}
-            disabled={verifying || result?.success || !isComplete}
+            disabled={verifying || result?.success || otpStatus !== "idle" || !isComplete}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-md text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
           >
-            {verifying ? (
+            {otpStatus === "verified" ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                Verified
+              </>
+            ) : verifying ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Completing...

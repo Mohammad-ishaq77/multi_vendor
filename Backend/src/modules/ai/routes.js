@@ -33,7 +33,7 @@ async function getMarketplaceContext() {
 
     const catNames = categories.map((c) => c.name).join(", ");
     const shopList = shops.map((s) => `${s.name} (${s.city || "Local"})`).join(", ");
-    const prodList = products.map((p) => `${p.name} - Ôé¦${p.price}`).join("; ");
+    const prodList = products.map((p) => `${p.name} - ï¿½ï¿½${p.price}`).join("; ");
 
     return `Available Categories: ${catNames || "General Store, Groceries, Electronics"}.
 Featured Approved Shops: ${shopList || "Local Express, Daily Mart"}.
@@ -71,7 +71,7 @@ function getFallbackResponse(message, contextInfo) {
   }
 
   if (query.includes("contact") || query.includes("phone") || query.includes("email") || query.includes("support")) {
-    return "You can reach out to NearMart support via email at support@nearmart.in or call us at +91-9876543210 for any assistance.";
+    return "You can reach out to NearMart support via email at nearmart.business@gmail.com or call us at +91-9622085113 for any assistance.";
   }
   if (query.includes("frontend") || query.includes("backend") || query.includes("database") || query.includes("tech") || query.includes("stack") || query.includes("project")) {
     return "NearMart is built with a modern tech stack: React.js and Tailwind CSS for the frontend, Node.js and Express for the backend, and PostgreSQL as the database.";
@@ -81,7 +81,7 @@ function getFallbackResponse(message, contextInfo) {
 }
 
 /**
- * POST /api/ai/chat ÔÇö Send user prompt & history to backend AI (Ollama with fallback)
+ * POST /api/ai/chat ï¿½ï¿½ï¿½ Send user prompt & history to backend AI (Ollama with fallback)
  */
 router.post(
   "/chat",
@@ -96,7 +96,7 @@ Keep your responses concise, clear, friendly, and structured.
 
 Project Information:
 - Tech Stack: Frontend (React.js, Tailwind CSS), Backend (Node.js, Express), Database (PostgreSQL).
-- Contact Info: Email (support@nearmart.in), Phone (+91-9876543210).
+- Contact Info: Email (nearmart.business@gmail.com), Phone (+91-9622085113).
 
 Here is real-time catalog context from the NearMart database:
 ${contextInfo}`;

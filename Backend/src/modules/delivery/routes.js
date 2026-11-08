@@ -417,7 +417,7 @@ router.patch(
     body: z.object({
       status: z.enum(["ready_for_pickup", "picked_up", "out_for_delivery", "delivered", "failed"]),
       // Required only for "delivered": the customer's emailed confirmation code.
-      otp: z.string().regex(/^\d{6}$/).optional(),
+      otp: z.string().regex(/^\d{4}$/).optional(),
     }),
   }),
   asyncHandler(async (req, res) => {

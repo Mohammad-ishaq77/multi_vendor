@@ -28,14 +28,50 @@ function required(name, value, devFallback) {
   return devFallback;
 }
 
+/**
+ * Pick the outbound email provider without hardcoding credentials.
+ *
+ * - `EMAIL_PROVIDER` forces `resend` or `smtp`.
+ * - Otherwise Resend wins when an API key is present, then SMTP (Gmail).
+ */
+function resolveMailProvider() {
+  const explicit = (process.env.EMAIL_PROVIDER || "").trim().toLowerCase();
+  if (explicit === "resend" || explicit === "smtp") return explicit;
+  if (process.env.RESEND_API_KEY || process.env.EMAIL_SERVICE_API_KEY) return "resend";
+  if (process.env.SMTP_HOST || process.env.MAIL_USER) return "smtp";
+  return "";
+}
+
+const mailProvider = resolveMailProvider();
+
+// Gmail app passwords are shown grouped with spaces; the real secret has none.
+const cleanSecret = (value) => String(value || "").replace(/\s+/g, "");
+
+const smtpUser = process.env.SMTP_USER || process.env.MAIL_USER || "";
+const smtpPass = cleanSecret(process.env.SMTP_PASS || process.env.MAIL_PASS);
+const smtpPort = num(process.env.SMTP_PORT, 587);
+
+const mailSenderEmail =
+  process.env.SENDER_EMAIL || smtpUser || process.env.MAIL_USER || "";
+
+const clientOrigin = required(
+  "CLIENT_ORIGIN",
+  process.env.CLIENT_ORIGIN,
+  "http://localhost:5173"
+);
+
+// Support a comma-separated allow-list so local + deployed frontends can share
+// one backend without loosening CORS to "*".
+const clientOrigins = clientOrigin
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 export const config = {
   port: num(process.env.PORT, 5000),
   demoOtpEnabled,
-  clientOrigin: required(
-    "CLIENT_ORIGIN",
-    process.env.CLIENT_ORIGIN,
-    "http://localhost:5173"
-  ),
+  clientOrigin,
+  clientOrigins,
   databaseUrl: required(
     "DATABASE_URL",
     process.env.DATABASE_URL,
@@ -76,15 +112,43 @@ export const config = {
     osrmBaseUrl: (process.env.OSRM_BASE_URL || "https://router.project-osrm.org").replace(/\/+$/, ""),
     timeoutMs: num(process.env.ROUTING_TIMEOUT_MS, 8000),
   },
-  // Gmail SMTP credentials for transactional OTP emails. Optional so the API can
-  // still boot without them; the email service reports a clear failure instead.
+  // Outbound email. Optional so the API can still boot without it; the email
+  // service reports a clear failure instead of pretending to send.
+  // Supports Resend (HTTP API) or SMTP/Gmail (Nodemailer).
   mail: {
-    user: process.env.MAIL_USER || "",
-    pass: process.env.MAIL_PASS || "",
+    provider: mailProvider,
+    resendApiKey:
+      process.env.RESEND_API_KEY || process.env.EMAIL_SERVICE_API_KEY || "",
+    smtp: {
+      host: process.env.SMTP_HOST || "",
+      port: smtpPort,
+      secure:
+        process.env.SMTP_SECURE === "true" ||
+        (process.env.SMTP_SECURE !== "false" && smtpPort === 465),
+      user: smtpUser,
+      pass: smtpPass,
+    },
+    senderEmail: mailSenderEmail,
+    senderName: process.env.SENDER_NAME || "NearMart",
+    // `contactTo` is the NearMart inbox that receives public contact messages.
+    contactTo:
+      process.env.RECEIVER_EMAIL ||
+      process.env.MAIL_CONTACT_TO ||
+      process.env.MAIL_USER ||
+      "",
   },
 };
 
-export const isMailConfigured = Boolean(config.mail.user && config.mail.pass);
+export const isMailConfigured =
+  mailProvider === "resend"
+    ? Boolean(config.mail.resendApiKey && config.mail.senderEmail)
+    : mailProvider === "smtp"
+      ? Boolean(
+          config.mail.senderEmail &&
+            (config.mail.smtp.host || config.mail.smtp.user) &&
+            (config.mail.smtp.host ? true : config.mail.smtp.pass)
+        )
+      : false;
 
 export const isDevSecret =
   config.jwt.accessSecret.includes("change-me") ||

@@ -86,8 +86,8 @@ export const pageHeroes = {
     image: HD("photo-1556742049-0cfed4f6a45d"),
     showHours: true,
     quickActions: [
-      { label: "Call support", meta: "+91 98765 43210", href: "tel:+919876543210", icon: "phone" },
-      { label: "Email the team", meta: "support@nearmart.com", href: "mailto:support@nearmart.com", icon: "mail" },
+      { label: "Call support", meta: "+91 9622085113", href: "tel:+919622085113", icon: "phone" },
+      { label: "Email the team", meta: "nearmart.business@gmail.com", href: "mailto:nearmart.business@gmail.com", icon: "mail" },
       { label: "Write a message", meta: "We reply in under a day", href: "#contact-form", icon: "message" },
     ],
     chips: [

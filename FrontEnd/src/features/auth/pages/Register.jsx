@@ -142,7 +142,7 @@ const Register = () => {
     showToast(
       result.demoOtp
         ? `Demo verification code: ${result.demoOtp}`
-        : `We sent a 6-digit code to ${result.email}. Verify to finish.`
+        : `We sent a 4-digit code to ${result.email}. Verify to finish.`
     );
     navigate("/verify-email", {
       state: { email: result.email, role: result.role, demoOtp: result.demoOtp },

@@ -16,36 +16,50 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import PageHero from "../components/hero/PageHero";
 import { pageHeroes } from "../config/heroes";
+import { contactService } from "../services/contactService";
 
 const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
+    _honey: "",
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
+    setError("");
+    setSubmitting(true);
+    try {
+      await contactService.sendMessage(formData);
+      setSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "", _honey: "" });
+      setTimeout(() => setSubmitted(false), 6000);
+    } catch (err) {
+      setError(err?.message || "We could not send your message. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const contactInfo = [
     {
       icon: Phone,
       label: "Phone",
-      value: "+91 98765 43210",
+      value: "+91 9622085113",
     },
     {
       icon: Mail,
       label: "Email",
-      value: "support@nearmart.com",
+      value: "nearmart.business@gmail.com",
     },
     {
       icon: MapPin,
@@ -159,6 +173,16 @@ const Contact = () => {
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
+                    <input
+                      type="text"
+                      name="_honey"
+                      value={formData._honey}
+                      onChange={handleChange}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="hidden"
+                    />
                     <div className="grid sm:grid-cols-2 gap-4">
                       <input
                         name="name"
@@ -200,15 +224,22 @@ const Contact = () => {
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-[#0F172A] placeholder:text-gray-400 outline-none focus:border-[#1B4332] transition-all resize-none"
                     />
 
+                    {error ? (
+                      <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                        {error}
+                      </p>
+                    ) : null}
+
                     <div className="flex flex-col items-stretch gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
                       <motion.button
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
+                        whileHover={{ scale: submitting ? 1 : 1.01 }}
+                        whileTap={{ scale: submitting ? 1 : 0.99 }}
                         type="submit"
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors"
+                        disabled={submitting}
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold rounded-xl hover:bg-[#143728] transition-colors disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         <Send className="w-4 h-4" />
-                        Send Message
+                        {submitting ? "Sending..." : "Send Message"}
                       </motion.button>
 
                       <div className="flex items-center justify-center gap-2 text-xs text-[#64748B] sm:justify-start">

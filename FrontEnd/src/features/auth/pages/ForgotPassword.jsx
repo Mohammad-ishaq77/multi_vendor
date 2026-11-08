@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, KeyRound, Lock, Mail, RefreshCw, ShieldCheck } from "lucide-react";
@@ -11,7 +11,7 @@ import useCountdown from "../../../hooks/useCountdown";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESEND_COOLDOWN_SECONDS = 30;
-const EMPTY_DIGITS = Array.from({ length: 6 }, () => "");
+const EMPTY_DIGITS = Array.from({ length: 4 }, () => "");
 
 const STEPS = [
   { id: "email", label: "Email", icon: Mail },
@@ -69,10 +69,14 @@ const ForgotPassword = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [fieldError, setFieldError] = useState("");
   const [isBusy, setIsBusy] = useState(false);
+  const [otpStatus, setOtpStatus] = useState("idle");
   const otpCheckInProgress = useRef(false);
+  const otpStepTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(otpStepTimer.current), []);
 
   const code = digits.join("");
-  const isCodeComplete = /^\d{6}$/.test(code);
+  const isCodeComplete = /^\d{4}$/.test(code);
 
   const startResendCooldown = () => countdown.start(RESEND_COOLDOWN_SECONDS);
 
@@ -111,7 +115,9 @@ const ForgotPassword = () => {
 
   const handleResend = async () => {
     if (countdown.isRunning || isBusy) return;
+    clearTimeout(otpStepTimer.current);
     setIsBusy(true);
+    setOtpStatus("idle");
     const result = await authService.forgotPassword({ email: email.trim().toLowerCase() });
     setIsBusy(false);
     if (!result.ok) {
@@ -126,27 +132,36 @@ const ForgotPassword = () => {
   };
 
   const runOtpCheck = async (submittedCode = code) => {
-    if (otpCheckInProgress.current || isBusy) return;
-    if (!/^\d{6}$/.test(submittedCode)) {
-      setFieldError("Enter the 6-digit verification code.");
+    if (otpCheckInProgress.current || isBusy || otpStatus === "verified") return;
+    if (!/^\d{4}$/.test(submittedCode)) {
+      setFieldError("Enter the 4-digit verification code.");
       return;
     }
     setFieldError("");
     otpCheckInProgress.current = true;
     setIsBusy(true);
+    setOtpStatus("verifying");
     try {
       const result = await authService.verifyResetOtp({
         email: email.trim().toLowerCase(),
         otp: submittedCode,
       });
       if (!result.ok || !result.resetToken) {
+        setOtpStatus("idle");
         setFieldError(result.error || "That code could not be verified.");
         return;
       }
 
       setResetToken(result.resetToken);
-      setStep("password");
+      setOtpStatus("verified");
+      // Let the tick animation play before advancing to the password step.
+      otpStepTimer.current = setTimeout(() => {
+        setOtpStatus("idle");
+        setDigits(EMPTY_DIGITS);
+        setStep("password");
+      }, 1200);
     } catch (error) {
+      setOtpStatus("idle");
       setFieldError(error?.message || "That code could not be verified.");
     } finally {
       otpCheckInProgress.current = false;
@@ -207,7 +222,7 @@ const ForgotPassword = () => {
           </div>
           <h1 className="font-display text-[1.7rem] font-bold tracking-tight">Forgot your password?</h1>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-(--color-text-muted)">
-            We'll send a 6-digit code to confirm it's you, then you can set a new password.
+            We'll send a 4-digit code to confirm it's you, then you can set a new password.
           </p>
         </div>
 
@@ -276,14 +291,15 @@ const ForgotPassword = () => {
                 if (fieldError) setFieldError("");
               }}
               error={fieldError}
-              disabled={isBusy}
+              disabled={isBusy || otpStatus !== "idle"}
+              status={otpStatus}
               autoFocus
               onComplete={(completedCode) => runOtpCheck(completedCode)}
             />
 
-            <button type="submit" disabled={!isCodeComplete || isBusy} className="btn-primary w-full">
-              {isBusy ? "Checking..." : "Verify code"}
-              {!isBusy && <ArrowRight className="h-4 w-4" />}
+            <button type="submit" disabled={!isCodeComplete || isBusy || otpStatus !== "idle"} className="btn-primary w-full">
+              {otpStatus === "verified" ? "Verified" : otpStatus === "verifying" ? "Checking..." : "Verify code"}
+              {otpStatus === "idle" && <ArrowRight className="h-4 w-4" />}
             </button>
 
             <div className="flex flex-col items-center gap-2 text-sm text-(--color-text-muted)">
@@ -299,8 +315,10 @@ const ForgotPassword = () => {
               <button
                 type="button"
                 onClick={() => {
+                  clearTimeout(otpStepTimer.current);
                   setStep("email");
                   setFieldError("");
+                  setOtpStatus("idle");
                   setDigits(EMPTY_DIGITS);
                 }}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-(--color-text-muted) hover:text-(--color-primary)"

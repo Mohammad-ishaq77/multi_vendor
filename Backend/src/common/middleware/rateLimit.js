@@ -27,3 +27,6 @@ export const otpVerifyLimiter = limiter({ windowMs: 15 * 60 * 1000, max: 30, mes
 
 /** Delivery OTP request/submission. */
 export const deliveryOtpLimiter = limiter({ windowMs: 15 * 60 * 1000, max: 30, message: TOO_MANY });
+
+/** Public contact form — sends email, so throttle abuse. */
+export const contactLimiter = limiter({ windowMs: 15 * 60 * 1000, max: 10, message: TOO_MANY });

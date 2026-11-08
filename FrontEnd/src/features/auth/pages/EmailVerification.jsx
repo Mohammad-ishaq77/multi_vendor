@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, MailCheck, RefreshCw } from "lucide-react";
@@ -11,7 +11,7 @@ import { APP_CONFIG } from "../../../config/appConfig";
 import useCountdown from "../../../hooks/useCountdown";
 
 const RESEND_COOLDOWN_SECONDS = 30;
-const EMPTY_DIGITS = Array.from({ length: 6 }, () => "");
+const EMPTY_DIGITS = Array.from({ length: 4 }, () => "");
 
 /** Local part hidden, domain kept — enough to recognise your own inbox. */
 const maskEmail = (email) => {
@@ -41,18 +41,22 @@ const EmailVerification = () => {
   const [submitError, setSubmitError] = useState("");
   const [demoOtp, setDemoOtp] = useState(location.state?.demoOtp || "");
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const redirectTimer = useRef(null);
 
   const code = digits.join("");
-  const isComplete = /^\d{6}$/.test(code);
+  const isComplete = /^\d{4}$/.test(code);
+
+  useEffect(() => () => clearTimeout(redirectTimer.current), []);
 
   // Nothing to verify without an address — send the user back to sign up.
   if (!email) return <Navigate to="/register" replace />;
 
   const submit = async (value) => {
     const otp = value ?? code;
-    if (!/^\d{6}$/.test(otp)) {
-      setOtpError("Enter the 6-digit verification code.");
+    if (!/^\d{4}$/.test(otp)) {
+      setOtpError("Enter the 4-digit verification code.");
       return;
     }
     setIsVerifying(true);
@@ -68,12 +72,14 @@ const EmailVerification = () => {
       return;
     }
 
+    setIsVerified(true);
     showToast("Email verified. Welcome aboard!");
-    navigate(result.redirectTo, { replace: true });
+    // Let the tick animation play before leaving the page.
+    redirectTimer.current = setTimeout(() => navigate(result.redirectTo, { replace: true }), 1200);
   };
 
   const handleResend = async () => {
-    if (countdown.isRunning || isResending) return;
+    if (countdown.isRunning || isResending || isVerifying || isVerified) return;
     setIsResending(true);
     const result = await resendVerification({ email });
     setIsResending(false);
@@ -125,7 +131,7 @@ const EmailVerification = () => {
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-(--color-text-muted)">
             {demoOtp
               ? `Use the demo code below to activate your ${APP_CONFIG.name} account.`
-              : <>We sent a 6-digit code to <span className="font-semibold text-(--color-text)">{maskEmail(email)}</span>. Enter it below to activate your {APP_CONFIG.name} account.</>}
+              : <>We sent a 4-digit code to <span className="font-semibold text-(--color-text)">{maskEmail(email)}</span>. Enter it below to activate your {APP_CONFIG.name} account.</>}
           </p>
         </div>
 
@@ -150,7 +156,8 @@ const EmailVerification = () => {
               if (otpError) setOtpError("");
             }}
             error={otpError}
-            disabled={isVerifying}
+            disabled={isVerifying || isVerified}
+            status={isVerifying ? "verifying" : isVerified ? "verified" : "idle"}
             autoFocus
             onComplete={(value) => submit(value)}
           />
@@ -164,9 +171,9 @@ const EmailVerification = () => {
             </p>
           )}
 
-          <button type="submit" disabled={!isComplete || isVerifying} className="btn-primary w-full">
-            {isVerifying ? "Verifying..." : "Verify email"}
-            {!isVerifying && <ArrowRight className="h-4 w-4" />}
+          <button type="submit" disabled={!isComplete || isVerifying || isVerified} className="btn-primary w-full">
+            {isVerified ? "Verified" : isVerifying ? "Verifying..." : "Verify email"}
+            {!isVerifying && !isVerified && <ArrowRight className="h-4 w-4" />}
           </button>
         </form>
 
@@ -174,7 +181,7 @@ const EmailVerification = () => {
           <button
             type="button"
             onClick={handleResend}
-            disabled={countdown.isRunning || isResending}
+            disabled={countdown.isRunning || isResending || isVerifying || isVerified}
             className="inline-flex items-center gap-2 font-semibold text-(--color-primary) disabled:cursor-not-allowed disabled:text-(--color-text-muted)"
           >
             <RefreshCw className={`h-4 w-4 ${isResending ? "animate-spin" : ""}`} />

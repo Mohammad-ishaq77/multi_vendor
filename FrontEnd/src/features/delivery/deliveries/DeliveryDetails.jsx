@@ -9,7 +9,7 @@ import OtpInputs from "../../../components/auth/OtpInputs";
 import useCountdown from "../../../hooks/useCountdown";
 
 const RESEND_COOLDOWN_SECONDS = 30;
-const EMPTY_DIGITS = Array.from({ length: 6 }, () => "");
+const EMPTY_DIGITS = Array.from({ length: 4 }, () => "");
 
 export default function DeliveryDetails() {
   const { deliveryId: routeDeliveryId } = useParams();
@@ -42,7 +42,11 @@ export default function DeliveryDetails() {
   const [maskedEmail, setMaskedEmail] = useState("");
   const [demoOtp, setDemoOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [otpStatus, setOtpStatus] = useState("idle");
   const otpVerificationInProgress = useRef(false);
+  const redirectTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(redirectTimer.current), []);
 
   const loadDelivery = useCallback(async () => {
     setLoading(true);
@@ -219,6 +223,7 @@ export default function DeliveryDetails() {
 
   const handleRequestOtp = async () => {
     setOtpError("");
+    setOtpStatus("idle");
     setRequestingOtp(true);
     try {
       const result = await requestDeliveryOtp(deliveryId);
@@ -237,34 +242,40 @@ export default function DeliveryDetails() {
   };
 
   const handleCompleteDelivery = async (submittedCode = otpDigits.join("")) => {
-    if (otpVerificationInProgress.current) return;
+    if (otpVerificationInProgress.current || otpStatus === "verified") return;
     const code = String(submittedCode).trim();
-    if (!/^\d{6}$/.test(code)) {
-      setOtpError("Enter the 6-digit code the customer received.");
+    if (!/^\d{4}$/.test(code)) {
+      setOtpError("Enter the 4-digit code the customer received.");
       return;
     }
 
     otpVerificationInProgress.current = true;
     setUpdatingStatus(true);
     setOtpError("");
+    setOtpStatus("verifying");
     try {
       const result = await completeDelivery(code, deliveryId);
       addToast(result.message, result.success ? "success" : "error");
       if (result.success) {
         setDelivery((current) => ({ ...current, status: "delivered" }));
-        setOtpDigits(EMPTY_DIGITS);
-        setMaskedEmail("");
-        navigate("/delivery/completed", {
-          state: {
-            delivery: {
-              id: delivery.id,
-              partnerEarning: earning,
-              distance: delivery.distance,
-              estimatedTime,
+        setOtpStatus("verified");
+        // Let the tick animation play before leaving the page.
+        redirectTimer.current = setTimeout(() => {
+          setOtpDigits(EMPTY_DIGITS);
+          setMaskedEmail("");
+          navigate("/delivery/completed", {
+            state: {
+              delivery: {
+                id: delivery.id,
+                partnerEarning: earning,
+                distance: delivery.distance,
+                estimatedTime,
+              },
             },
-          },
-        });
+          });
+        }, 1200);
       } else {
+        setOtpStatus("idle");
         setOtpError(result.message);
         setOtpDigits(EMPTY_DIGITS);
       }
@@ -286,7 +297,7 @@ export default function DeliveryDetails() {
   // The server refuses "delivered" unless the order is out for delivery and the
   // customer's OTP is supplied, so the UI gates on the same state.
   const canConfirmDelivery = isAssignedDelivery && delivery.status === "out_for_delivery";
-  const isCodeComplete = /^\d{6}$/.test(otpDigits.join(""));
+  const isCodeComplete = /^\d{4}$/.test(otpDigits.join(""));
   const earning = Number(delivery.partnerEarning ?? delivery.assignment?.partnerEarning ?? 0);
   const estimatedTime = delivery.estimatedTime || "25-30 mins";
 
@@ -473,17 +484,18 @@ export default function DeliveryDetails() {
                     if (otpError) setOtpError("");
                   }}
                   error={otpError}
-                  disabled={updatingStatus}
+                  disabled={updatingStatus || otpStatus !== "idle"}
+                  status={otpStatus}
                   autoFocus
                   onComplete={(submittedCode) => handleCompleteDelivery(submittedCode)}
                 />
                 <button
                   onClick={() => handleCompleteDelivery()}
-                  disabled={updatingStatus || !isCodeComplete}
+                  disabled={updatingStatus || otpStatus !== "idle" || !isCodeComplete}
                   className="flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:cursor-wait disabled:opacity-60"
                 >
-                  {updatingStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
-                  {updatingStatus ? "Verifying..." : "Verify code and Mark Delivered"}
+                  {otpStatus === "verified" ? <CheckCircle className="h-4 w-4" /> : updatingStatus ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+                  {otpStatus === "verified" ? "Verified" : updatingStatus ? "Verifying..." : "Verify code and Mark Delivered"}
                 </button>
               </div>
             )}

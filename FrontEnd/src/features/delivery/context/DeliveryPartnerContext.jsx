@@ -546,8 +546,8 @@ export function DeliveryPartnerProvider({ children }) {
     if (activeDelivery?.id === orderId && activeDelivery.status !== "out_for_delivery") {
       return { success: false, message: "Start the delivery before completing it." };
     }
-    if (!/^\d{6}$/.test(String(otp || ""))) {
-      return { success: false, message: "Enter the 6-digit code the customer received." };
+    if (!/^\d{4}$/.test(String(otp || ""))) {
+      return { success: false, message: "Enter the 4-digit code the customer received." };
     }
     return runDeliveryAction(() =>
       deliveryService.updateStatus(orderId, "delivered", { otp })

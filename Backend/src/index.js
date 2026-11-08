@@ -33,13 +33,23 @@ import adminRoutes from "./modules/admin/routes.js";
 import shopkeeperRoutes from "./modules/shopkeeper/routes.js";
 import customerRoutes from "./modules/customer/routes.js";
 import aiRoutes from "./modules/ai/routes.js";
+import contactRoutes from "./modules/contact/routes.js";
 
 export function buildApp() {
   const app = express();
   app.disable("x-powered-by");
 
   app.use(helmet({ crossOriginResourcePolicy: false }));
-  app.use(cors({ origin: config.clientOrigin, methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] }));
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // No Origin header = same-origin or server-to-server request.
+        if (!origin || config.clientOrigins.includes(origin)) return callback(null, true);
+        return callback(null, false);
+      },
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    })
+  );
   app.use(rateLimit({ windowMs: 60_000, max: 300, standardHeaders: true, legacyHeaders: false }));
   // Development stub uploads (Cloudinary not configured) are served from here.
   app.use("/uploads", express.static(LOCAL_UPLOAD_DIR, { fallthrough: true, maxAge: "1h" }));
@@ -91,6 +101,7 @@ export function buildApp() {
     "/api/shopkeeper": shopkeeperRoutes,
     "/api/customer": customerRoutes,
     "/api/ai": aiRoutes,
+    "/api/contact": contactRoutes,
   };
 
   // Malformed UUIDs must fail with 400 instead of a driver-level 500. Route params
@@ -117,11 +128,13 @@ if (process.env.JEST_WORKER_ID === undefined && isMain) {
   if (isDevSecret) {
     console.warn("WARNING: using default JWT secrets — set JWT_ACCESS_SECRET/JWT_REFRESH_SECRET in .env");
   }
-  if (!isMailConfigured && !config.demoOtpEnabled) {
-    console.warn("WARNING: MAIL_USER/MAIL_PASS not set — OTP and reset emails will fail to send.");
+  if (!isMailConfigured) {
+    console.warn(
+      "WARNING: outbound email is not configured — contact-form and OTP emails will fail. Set SMTP_* or RESEND_API_KEY."
+    );
   }
   if (config.demoOtpEnabled) {
-    console.warn("WARNING: demo OTP mode is enabled; all OTPs use 123456 and emails are disabled.");
+    console.warn("WARNING: demo OTP mode is enabled; all OTPs use 1234 and OTP emails are skipped.");
   }
   server.listen(config.port, () => {
     console.log(`NearMart API running on http://localhost:${config.port} (docs: /docs)`);
