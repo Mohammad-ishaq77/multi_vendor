@@ -7,7 +7,6 @@ import { useToast } from "../components/Toast";
 import { deliveryService } from "../../../services/orderService";
 import OtpInputs from "../../../components/auth/OtpInputs";
 
-const DEMO_DELIVERY_CODE = "1234";
 const EMPTY_DIGITS = Array.from({ length: 4 }, () => "");
 
 export default function DeliveryDetails() {
@@ -21,6 +20,7 @@ export default function DeliveryDetails() {
     verifyPickup,
     startDelivery,
     completeDelivery,
+    requestDeliveryOtp,
     isOnline,
   } = useDeliveryPartner();
   const deliveryId = String(routeDeliveryId || activeDelivery?.id || "");
@@ -37,7 +37,12 @@ export default function DeliveryDetails() {
   const [otpDigits, setOtpDigits] = useState(EMPTY_DIGITS);
   const [otpError, setOtpError] = useState("");
   const [otpStatus, setOtpStatus] = useState("idle");
+  const [demoOtp, setDemoOtp] = useState("");
+  const [maskedEmail, setMaskedEmail] = useState("");
+  const [requestingOtp, setRequestingOtp] = useState(false);
+  const [otpNotice, setOtpNotice] = useState("");
   const otpVerificationInProgress = useRef(false);
+  const otpAutoRequested = useRef(false);
   const redirectTimer = useRef(null);
 
   useEffect(() => () => clearTimeout(redirectTimer.current), []);
@@ -104,6 +109,30 @@ export default function DeliveryDetails() {
   useEffect(() => {
     loadDelivery();
   }, [loadDelivery]);
+
+  const handleRequestOtp = useCallback(async () => {
+    if (!deliveryId) return;
+    setRequestingOtp(true);
+    setOtpNotice("");
+    try {
+      const result = await requestDeliveryOtp(deliveryId);
+      if (result.success) {
+        setDemoOtp(result.data?.demoOtp || "");
+        setMaskedEmail(result.data?.maskedEmail || "");
+      } else {
+        setOtpNotice(result.message);
+      }
+    } finally {
+      setRequestingOtp(false);
+    }
+  }, [deliveryId, requestDeliveryOtp]);
+
+  useEffect(() => {
+    if (!deliveryId || otpAutoRequested.current) return;
+    if (delivery?.status !== "out_for_delivery") return;
+    otpAutoRequested.current = true;
+    handleRequestOtp();
+  }, [deliveryId, delivery?.status, handleRequestOtp]);
 
   if (!delivery && loading) {
     return (
@@ -415,12 +444,43 @@ export default function DeliveryDetails() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
                   <CheckCircle className="h-4 w-4" />
-                  Out for delivery. Use the demo confirmation code below to complete this delivery.
+                  {demoOtp
+                    ? "Out for delivery. Use the demo confirmation code below to complete this delivery."
+                    : maskedEmail
+                      ? `Out for delivery. A confirmation code was sent to ${maskedEmail}. Ask the customer for it.`
+                      : "Out for delivery. Request the customer's confirmation code before completing this delivery."}
                 </div>
 
-                <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
-                  Demo delivery code: <span className="font-bold tracking-wider">{DEMO_DELIVERY_CODE}</span>
-                </p>
+                {demoOtp && (
+                  <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-center text-sm text-emerald-800">
+                    Demo delivery code: <span className="font-bold tracking-wider">{demoOtp}</span>
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-3 py-2">
+                  <span className="text-sm text-gray-700">
+                    {demoOtp
+                      ? "Demo code ready"
+                      : maskedEmail
+                        ? `Code sent to ${maskedEmail}`
+                        : "No code requested yet"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRequestOtp}
+                    disabled={requestingOtp || updatingStatus}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {requestingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                    {requestingOtp ? "Sending..." : maskedEmail ? "Resend code" : "Send code"}
+                  </button>
+                </div>
+
+                {otpNotice && (
+                  <p role="alert" className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                    {otpNotice}
+                  </p>
+                )}
 
                 <label htmlFor="details-delivery-otp" className="block text-xs font-semibold uppercase tracking-wide text-gray-700">
                   Delivery code

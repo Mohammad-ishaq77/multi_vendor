@@ -107,9 +107,10 @@ npm run dev
 ```
 
 The API server will start on `http://localhost:5000`.
-In non-production environments OTPs use the demo code `1234` and are shown in
-the app instead of being emailed. Set `DEMO_OTP_ENABLED=false` to use random
-codes delivered by email; demo OTP mode is rejected in production.
+OTPs use the demo code `1234` and are shown in the app instead of being emailed
+by default (both locally and on demo deployments). Set `DEMO_OTP_ENABLED=false`
+to use random codes delivered by email — required for a real production
+deployment.
 
 ---
 
@@ -138,7 +139,7 @@ The frontend application will start on `http://localhost:5173`.
 | `DATABASE_URL` | PostgreSQL / Neon DB connection URL |
 | `JWT_ACCESS_SECRET` | Secret key for signing access tokens |
 | `JWT_REFRESH_SECRET` | Secret key for signing refresh tokens |
-| `DEMO_OTP_ENABLED` | Use the fixed `1234` OTP and display it in-app (defaults on outside production; forbidden in production) |
+| `DEMO_OTP_ENABLED` | Use the fixed `1234` OTP and display it in-app (defaults on; set `false` for real production/email OTPs) |
 | `OLLAMA_HOST` | Ollama local server host URL (`http://localhost:11434`) |
 | `OLLAMA_MODEL` | Ollama LLM model name (`llama3`) |
 

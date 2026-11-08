@@ -7,15 +7,15 @@ const num = (v, fallback) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
+// Demo OTPs are on by default so local and demo deployments work out of the
+// box. A real production deployment must opt out with DEMO_OTP_ENABLED=false
+// to get random, emailed codes.
 const demoOtpEnabled =
-  process.env.DEMO_OTP_ENABLED === "true" ||
-  (process.env.NODE_ENV !== "production" && process.env.DEMO_OTP_ENABLED !== "false");
+  String(process.env.DEMO_OTP_ENABLED ?? "").trim().toLowerCase() !== "false";
 
-// Demo OTPs are opt-in in production: a normal production boot can never expose
-// 1234 by accident, but a demo deployment can still enable it explicitly.
 if (process.env.NODE_ENV === "production" && demoOtpEnabled) {
   console.warn(
-    "WARNING: DEMO_OTP_ENABLED is on in production — every OTP is 1234 and OTP emails are skipped."
+    "WARNING: DEMO_OTP_ENABLED is on — every OTP is 1234 and OTP emails are skipped. Set DEMO_OTP_ENABLED=false for real production."
   );
 }
 
